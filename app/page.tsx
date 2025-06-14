@@ -1,103 +1,427 @@
-import Image from "next/image";
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Separator } from "@/components/ui/separator"
+import {
+  MessageCircle,
+  Zap,
+  Shield,
+  Users,
+  Globe,
+  Star,
+  ArrowRight,
+  CheckCircle,
+  Smartphone,
+  Clock,
+  Heart
+} from "lucide-react"
 
 export default function Home() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
+      {/* Navigation */}
+      <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center space-x-3">
+              <div className="p-2 bg-primary/10 rounded-lg">
+                <MessageCircle className="h-6 w-6 text-primary" />
+              </div>
+              <span className="font-bold text-xl bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+                ChatNow
+              </span>
+            </div>
+            <div className="flex items-center space-x-4">
+              <Button variant="ghost" asChild>
+                <Link href="/auth/signin">Sign In</Link>
+              </Button>
+              <Button asChild>
+                <Link href="/auth/signup">Get Started</Link>
+              </Button>
+            </div>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+      </nav>
+
+      {/* Hero Section */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8">
+        <div className="container mx-auto text-center">
+          <Badge variant="secondary" className="mb-6">
+            🚀 Fast & Smooth Chat Experience
+          </Badge>
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight mb-6">
+            Connect Instantly with{" "}
+            <span className="bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">
+              ChatNow
+            </span>
+          </h1>
+          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+            Experience lightning-fast messaging with friends and communities.
+            Real-time conversations, seamless design, and powerful features.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <Button size="lg" className="px-8" asChild>
+              <Link href="/auth/signup">
+                Start Chatting Now
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+            <Button size="lg" variant="outline" className="px-8" asChild>
+              <Link href="/auth/guest">Try as Guest</Link>
+            </Button>
+          </div>
+          <p className="text-sm text-muted-foreground mt-4">
+            No credit card required • Free forever • Join 10,000+ users
+          </p>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-muted/30">
+        <div className="container mx-auto">
+          <div className="text-center mb-16">
+            <Badge variant="outline" className="mb-4">Features</Badge>
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4">
+              Everything you need for perfect conversations
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Built with modern technology for the smoothest chat experience possible.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <Card className="border-border/50 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+              <CardHeader>
+                <div className="p-3 bg-primary/10 rounded-lg w-fit">
+                  <Zap className="h-6 w-6 text-primary" />
+                </div>
+                <CardTitle>Lightning Fast</CardTitle>
+                <CardDescription>
+                  Messages delivered instantly with real-time synchronization across all devices.
+                </CardDescription>
+              </CardHeader>
+            </Card>
+
+            <Card className="border-border/50 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+              <CardHeader>
+                <div className="p-3 bg-primary/10 rounded-lg w-fit">
+                  <Shield className="h-6 w-6 text-primary" />
+                </div>
+                <CardTitle>Secure & Private</CardTitle>
+                <CardDescription>
+                  Your conversations are protected with enterprise-grade security and encryption.
+                </CardDescription>
+              </CardHeader>
+            </Card>
+
+            <Card className="border-border/50 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+              <CardHeader>
+                <div className="p-3 bg-primary/10 rounded-lg w-fit">
+                  <Users className="h-6 w-6 text-primary" />
+                </div>
+                <CardTitle>Connect Anyone</CardTitle>
+                <CardDescription>
+                  Chat with friends, family, or join communities. Guest mode available for quick access.
+                </CardDescription>
+              </CardHeader>
+            </Card>
+
+            <Card className="border-border/50 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+              <CardHeader>
+                <div className="p-3 bg-primary/10 rounded-lg w-fit">
+                  <Smartphone className="h-6 w-6 text-primary" />
+                </div>
+                <CardTitle>Mobile Ready</CardTitle>
+                <CardDescription>
+                  Responsive design that works perfectly on desktop, tablet, and mobile devices.
+                </CardDescription>
+              </CardHeader>
+            </Card>
+
+            <Card className="border-border/50 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+              <CardHeader>
+                <div className="p-3 bg-primary/10 rounded-lg w-fit">
+                  <Clock className="h-6 w-6 text-primary" />
+                </div>
+                <CardTitle>Always Available</CardTitle>
+                <CardDescription>
+                  24/7 uptime with reliable infrastructure. Your messages are always accessible.
+                </CardDescription>
+              </CardHeader>
+            </Card>
+
+            <Card className="border-border/50 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+              <CardHeader>
+                <div className="p-3 bg-primary/10 rounded-lg w-fit">
+                  <Heart className="h-6 w-6 text-primary" />
+                </div>
+                <CardTitle>User Friendly</CardTitle>
+                <CardDescription>
+                  Intuitive interface designed for effortless communication and great user experience.
+                </CardDescription>
+              </CardHeader>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* How It Works Section */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8">
+        <div className="container mx-auto">
+          <div className="text-center mb-16">
+            <Badge variant="outline" className="mb-4">How It Works</Badge>
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4">
+              Get started in 3 simple steps
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Join thousands of users already enjoying seamless conversations.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="text-center">
+              <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-6">
+                <span className="text-2xl font-bold text-primary">1</span>
+              </div>
+              <h3 className="text-xl font-semibold mb-4">Sign Up or Go Guest</h3>
+              <p className="text-muted-foreground">
+                Create your account in seconds or try our guest mode for instant access.
+              </p>
+            </div>
+
+            <div className="text-center">
+              <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-6">
+                <span className="text-2xl font-bold text-primary">2</span>
+              </div>
+              <h3 className="text-xl font-semibold mb-4">Find Friends</h3>
+              <p className="text-muted-foreground">
+                Search for friends, browse online users, or join existing conversations.
+              </p>
+            </div>
+
+            <div className="text-center">
+              <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-6">
+                <span className="text-2xl font-bold text-primary">3</span>
+              </div>
+              <h3 className="text-xl font-semibold mb-4">Start Chatting</h3>
+              <p className="text-muted-foreground">
+                Send messages instantly and enjoy real-time conversations with anyone.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Stats Section */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-muted/30">
+        <div className="container mx-auto">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            <div>
+              <div className="text-3xl sm:text-4xl font-bold text-primary mb-2">10K+</div>
+              <div className="text-muted-foreground">Active Users</div>
+            </div>
+            <div>
+              <div className="text-3xl sm:text-4xl font-bold text-primary mb-2">1M+</div>
+              <div className="text-muted-foreground">Messages Sent</div>
+            </div>
+            <div>
+              <div className="text-3xl sm:text-4xl font-bold text-primary mb-2">99.9%</div>
+              <div className="text-muted-foreground">Uptime</div>
+            </div>
+            <div>
+              <div className="text-3xl sm:text-4xl font-bold text-primary mb-2">24/7</div>
+              <div className="text-muted-foreground">Support</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials Section */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8">
+        <div className="container mx-auto">
+          <div className="text-center mb-16">
+            <Badge variant="outline" className="mb-4">Testimonials</Badge>
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4">
+              Loved by users worldwide
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              See what our community has to say about their ChatNow experience.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <Card className="border-border/50">
+              <CardContent className="pt-6">
+                <div className="flex items-center mb-4">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="h-4 w-4 fill-primary text-primary" />
+                  ))}
+                </div>
+                <p className="text-muted-foreground mb-4">
+                  "ChatNow is incredibly fast and reliable. The interface is so clean and intuitive.
+                  Best chat app I've ever used!"
+                </p>
+                <div className="flex items-center">
+                  <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center mr-3">
+                    <span className="font-semibold text-primary">SA</span>
+                  </div>
+                  <div>
+                    <div className="font-semibold">Sarah Anderson</div>
+                    <div className="text-sm text-muted-foreground">Product Designer</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-border/50">
+              <CardContent className="pt-6">
+                <div className="flex items-center mb-4">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="h-4 w-4 fill-primary text-primary" />
+                  ))}
+                </div>
+                <p className="text-muted-foreground mb-4">
+                  "The guest mode feature is brilliant! I can quickly chat with clients without
+                  asking them to sign up. Game changer for my business."
+                </p>
+                <div className="flex items-center">
+                  <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center mr-3">
+                    <span className="font-semibold text-primary">MJ</span>
+                  </div>
+                  <div>
+                    <div className="font-semibold">Mike Johnson</div>
+                    <div className="text-sm text-muted-foreground">Freelancer</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-border/50">
+              <CardContent className="pt-6">
+                <div className="flex items-center mb-4">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="h-4 w-4 fill-primary text-primary" />
+                  ))}
+                </div>
+                <p className="text-muted-foreground mb-4">
+                  "Real-time messaging that actually works! No delays, no glitches.
+                  Perfect for our team collaboration."
+                </p>
+                <div className="flex items-center">
+                  <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center mr-3">
+                    <span className="font-semibold text-primary">EC</span>
+                  </div>
+                  <div>
+                    <div className="font-semibold">Emily Chen</div>
+                    <div className="text-sm text-muted-foreground">Team Lead</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* Final CTA Section */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10">
+        <div className="container mx-auto text-center">
+          <h2 className="text-3xl sm:text-4xl font-bold mb-4">
+            Ready to start chatting?
+          </h2>
+          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+            Join thousands of users who are already enjoying fast, secure, and seamless conversations.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <Button size="lg" className="px-8" asChild>
+              <Link href="/auth/signup">
+                Get Started Free
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+            <Button size="lg" variant="outline" className="px-8" asChild>
+              <Link href="/auth/guest">Try Guest Mode</Link>
+            </Button>
+          </div>
+          <div className="flex items-center justify-center mt-6 space-x-6 text-sm text-muted-foreground">
+            <div className="flex items-center">
+              <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
+              Free forever
+            </div>
+            <div className="flex items-center">
+              <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
+              No credit card
+            </div>
+            <div className="flex items-center">
+              <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
+              Instant access
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div className="space-y-4">
+              <div className="flex items-center space-x-3">
+                <div className="p-2 bg-primary/10 rounded-lg">
+                  <MessageCircle className="h-5 w-5 text-primary" />
+                </div>
+                <span className="font-bold text-lg bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+                  ChatNow
+                </span>
+              </div>
+              <p className="text-muted-foreground">
+                Fast, secure, and smooth chat experience for everyone.
+              </p>
+            </div>
+
+            <div>
+              <h3 className="font-semibold mb-4">Product</h3>
+              <ul className="space-y-2 text-muted-foreground">
+                <li><Link href="/auth/signup" className="hover:text-foreground transition-colors">Sign Up</Link></li>
+                <li><Link href="/auth/signin" className="hover:text-foreground transition-colors">Sign In</Link></li>
+                <li><Link href="/auth/guest" className="hover:text-foreground transition-colors">Guest Mode</Link></li>
+                <li><Link href="/chat" className="hover:text-foreground transition-colors">Chat</Link></li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="font-semibold mb-4">Company</h3>
+              <ul className="space-y-2 text-muted-foreground">
+                <li><a href="#" className="hover:text-foreground transition-colors">About</a></li>
+                <li><a href="#" className="hover:text-foreground transition-colors">Privacy</a></li>
+                <li><a href="#" className="hover:text-foreground transition-colors">Terms</a></li>
+                <li><a href="#" className="hover:text-foreground transition-colors">Support</a></li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="font-semibold mb-4">Connect</h3>
+              <ul className="space-y-2 text-muted-foreground">
+                <li><a href="#" className="hover:text-foreground transition-colors">Twitter</a></li>
+                <li><a href="#" className="hover:text-foreground transition-colors">GitHub</a></li>
+                <li><a href="#" className="hover:text-foreground transition-colors">Discord</a></li>
+                <li><a href="#" className="hover:text-foreground transition-colors">Email</a></li>
+              </ul>
+            </div>
+          </div>
+
+          <Separator className="my-8" />
+
+          <div className="flex flex-col sm:flex-row justify-between items-center">
+            <p className="text-muted-foreground text-sm">
+              © 2024 ChatNow. All rights reserved.
+            </p>
+            <div className="flex items-center space-x-4 mt-4 sm:mt-0">
+              <Globe className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm text-muted-foreground">Made with ❤️ for seamless communication</span>
+            </div>
+          </div>
+        </div>
       </footer>
     </div>
-  );
+  )
 }
