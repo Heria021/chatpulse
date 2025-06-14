@@ -18,6 +18,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Separator } from "@/components/ui/separator";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { cn } from "@/lib/utils";
 
 interface SidebarProps {
@@ -149,6 +150,13 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
             );
           })}
         </nav>
+
+        <Separator />
+
+        {/* Theme Toggle */}
+        <div className="flex h-16 items-center justify-center px-3">
+          <ThemeToggle showTooltip={true} />
+        </div>
 
         <Separator />
 

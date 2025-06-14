@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
+import { ThemeToggle } from "@/components/ui/theme-toggle"
+import { TooltipProvider } from "@/components/ui/tooltip"
 import {
   MessageCircle,
   Zap,
@@ -33,6 +35,9 @@ export default function Home() {
               </span>
             </div>
             <div className="flex items-center space-x-4">
+              <TooltipProvider>
+                <ThemeToggle />
+              </TooltipProvider>
               <Button variant="ghost" asChild>
                 <Link href="/auth/signin">Sign In</Link>
               </Button>
