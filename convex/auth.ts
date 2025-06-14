@@ -7,7 +7,18 @@ function hashPassword(password: string): string {
   // Simple hash with salt for better security than plain base64
   const salt = "chatnow_salt_2024"; // In production, use random salt per user
   const combined = password + salt;
-  return Buffer.from(combined).toString('base64');
+
+  // Convert to base64 without using Buffer (Convex compatible)
+  const encoder = new TextEncoder();
+  const data = encoder.encode(combined);
+
+  // Simple base64 encoding without Buffer
+  let binary = '';
+  for (let i = 0; i < data.length; i++) {
+    binary += String.fromCharCode(data[i]);
+  }
+
+  return btoa(binary);
 }
 
 // Helper function to verify passwords
@@ -254,16 +265,104 @@ export const createGuestUser = mutation({
   },
 });
 
+// Upgrade guest user to full account
+export const upgradeGuestUser = mutation({
+  args: {
+    sessionToken: v.string(),
+    email: v.string(),
+    password: v.string(),
+  },
+  handler: async (ctx, args) => {
+    // Get current session
+    const session = await ctx.db
+      .query("sessions")
+      .withIndex("by_token", (q) => q.eq("sessionToken", args.sessionToken))
+      .first();
+
+    if (!session || !session.isActive || session.expiresAt < Date.now()) {
+      throw new ConvexError("Invalid or expired session");
+    }
+
+    const user = await ctx.db.get(session.userId);
+    if (!user || !user.isGuest) {
+      throw new ConvexError("User not found or not a guest user");
+    }
+
+    // Check if email already exists
+    const existingEmail = await ctx.db
+      .query("users")
+      .withIndex("by_email", (q) => q.eq("email", args.email))
+      .first();
+
+    if (existingEmail) {
+      throw new ConvexError("Email already exists");
+    }
+
+    // Hash password
+    const passwordHash = hashPassword(args.password);
+
+    // Update user to full account
+    const now = Date.now();
+    await ctx.db.patch(user._id, {
+      email: args.email,
+      passwordHash,
+      isGuest: false,
+      guestSessionId: undefined,
+      guestExpiresAt: undefined,
+      updatedAt: now,
+    });
+
+    // Update session expiration to 30 days
+    await ctx.db.patch(session._id, {
+      expiresAt: now + (30 * 24 * 60 * 60 * 1000), // 30 days
+      lastActivity: now,
+    });
+
+    // Log activity
+    await ctx.db.insert("activityLogs", {
+      userId: user._id,
+      action: "account_upgraded",
+      createdAt: now,
+    });
+
+    // Get updated user
+    const updatedUser = await ctx.db.get(user._id);
+    return { user: updatedUser, sessionToken: args.sessionToken };
+  },
+});
+
 // Check username availability
-export const checkUsernameAvailability = query({
-  args: { username: v.string() },
+export const checkUsernameAvailability = mutation({
+  args: {
+    username: v.string(),
+    sessionToken: v.optional(v.string()),
+  },
   handler: async (ctx, args) => {
     const existing = await ctx.db
       .query("users")
       .withIndex("by_username", (q) => q.eq("username", args.username))
       .first();
-    
-    return { available: !existing };
+
+    // If no existing user, username is available
+    if (!existing) {
+      return { available: true };
+    }
+
+    // If sessionToken is provided, check if the existing user is the current user
+    if (args.sessionToken) {
+      const sessionToken = args.sessionToken; // TypeScript assertion
+      const session = await ctx.db
+        .query("sessions")
+        .withIndex("by_token", (q) => q.eq("sessionToken", sessionToken))
+        .first();
+
+      if (session && session.userId === existing._id) {
+        // Username belongs to current user, so it's available for them
+        return { available: true };
+      }
+    }
+
+    return { available: false };
   },
 });
 

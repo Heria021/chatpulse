@@ -20,6 +20,7 @@ import { useAuth } from "@/lib/contexts/auth-context";
 import { api } from "@/convex/_generated/api";
 import { ActiveUser, ChatUser } from "@/lib/types/auth";
 import { getSessionToken } from "@/lib/utils/auth";
+import { useUnreadCounts } from "@/lib/hooks/use-unread-counts";
 
 
 // Helper function to format timestamp
@@ -77,6 +78,9 @@ export function UserList() {
       ? { sessionToken, searchQuery: searchQuery || undefined }
       : "skip"
   );
+
+  // Get unread counts from hook
+  const { totalUnreadCount, usersWithNewMessages } = useUnreadCounts();
 
 
 
@@ -144,6 +148,11 @@ export function UserList() {
             <TabsTrigger value="chats" className="flex items-center justify-center gap-1 text-xs px-1 data-[state=active]:bg-background">
               <MessageCircle className="h-3 w-3 flex-shrink-0" />
               <span className="truncate min-w-0">Chats</span>
+              {totalUnreadCount > 0 && (
+                <Badge variant="default" className="ml-1 h-4 w-4 p-0 flex items-center justify-center text-xs">
+                  {totalUnreadCount > 99 ? '99+' : totalUnreadCount}
+                </Badge>
+              )}
             </TabsTrigger>
           </TabsList>
         </div>
@@ -194,7 +203,14 @@ export function UserList() {
                       className="flex-1 min-w-0 cursor-pointer"
                       onClick={() => handleUserClick(user._id)}
                     >
-                      <p className="font-medium truncate text-sm lg:text-base">{user.username}</p>
+                      <div className="flex items-center justify-between">
+                        <p className="font-medium truncate text-sm lg:text-base">{user.username}</p>
+                        {user.unreadCount > 0 && (
+                          <Badge variant="default" className="ml-2 h-4 w-4 lg:h-5 lg:w-5 p-0 flex items-center justify-center text-xs flex-shrink-0">
+                            {user.unreadCount > 99 ? '99+' : user.unreadCount}
+                          </Badge>
+                        )}
+                      </div>
                       <p className="text-xs lg:text-sm text-muted-foreground truncate">
                         {user.bio || `${user.age} years old, ${user.gender}`}
                       </p>
@@ -229,9 +245,18 @@ export function UserList() {
               <p className="text-sm text-muted-foreground">Start a new chat to get started</p>
             </div>
           ) : (
-            <div className="flex-1 overflow-y-auto scrollbar-hide">
-              <div className="space-y-0.5 lg:space-y-1 p-1">
-                {chatUsers.map((user: ChatUser) => (
+            <>
+              {/* Chat Summary */}
+              {usersWithNewMessages > 0 && (
+                <div className="px-3 py-2 bg-muted/30 border-b">
+                  <p className="text-xs text-muted-foreground">
+                    {usersWithNewMessages} {usersWithNewMessages === 1 ? 'person has' : 'people have'} sent new messages
+                  </p>
+                </div>
+              )}
+              <div className="flex-1 overflow-y-auto scrollbar-hide">
+                <div className="space-y-0.5 lg:space-y-1 p-1">
+                  {chatUsers.map((user: ChatUser) => (
                   <div
                     key={user._id}
                     className={`
@@ -290,9 +315,10 @@ export function UserList() {
                       />
                     </div>
                   </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
+            </>
           )}
         </TabsContent>
       </Tabs>

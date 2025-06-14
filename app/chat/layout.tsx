@@ -3,10 +3,12 @@
 import { useState } from "react";
 import { Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { AppLayout } from "@/components/chat/app-layout";
 import { UserList } from "@/components/chat/user-list";
+import { useUnreadCounts } from "@/lib/hooks/use-unread-counts";
 
 interface ChatLayoutProps {
   children: React.ReactNode;
@@ -14,6 +16,7 @@ interface ChatLayoutProps {
 
 export default function ChatLayout({ children }: ChatLayoutProps) {
   const [isMobileUserListOpen, setIsMobileUserListOpen] = useState(false);
+  const { totalUnreadCount } = useUnreadCounts();
 
   return (
     <AppLayout
@@ -21,9 +24,14 @@ export default function ChatLayout({ children }: ChatLayoutProps) {
       mobileHeaderExtra={
         <Sheet open={isMobileUserListOpen} onOpenChange={setIsMobileUserListOpen}>
           <SheetTrigger asChild>
-            <Button variant="outline" size="sm" className="flex items-center gap-2">
+            <Button variant="outline" size="sm" className="flex items-center gap-2 relative">
               <Users className="h-4 w-4" />
               <span>Users</span>
+              {totalUnreadCount > 0 && (
+                <Badge variant="default" className="ml-1 h-4 w-4 p-0 flex items-center justify-center text-xs flex-shrink-0">
+                  {totalUnreadCount > 99 ? '99+' : totalUnreadCount}
+                </Badge>
+              )}
             </Button>
           </SheetTrigger>
         </Sheet>

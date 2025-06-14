@@ -42,6 +42,7 @@ export interface ActiveUser {
   gender: "male" | "female" | "other";
   allowGuestMessages: boolean;
   showOnlineStatus: boolean;
+  unreadCount: number;
 }
 
 export interface ChatUser extends ActiveUser {
@@ -216,6 +217,7 @@ export interface AuthContextType {
   signUp: (data: SignUpFormData) => Promise<void>;
   signInAsGuest: (data: GuestFormData) => Promise<void>;
   signOut: () => Promise<void>;
+  upgradeGuestAccount: (email: string, password: string) => Promise<void>;
   checkUsernameAvailability: (username: string) => Promise<boolean>;
 }
 

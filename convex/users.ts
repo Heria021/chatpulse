@@ -55,19 +55,71 @@ export const getActiveUsers = query({
       );
     }
 
-    // Return user data with necessary fields
-    return filteredUsers.map(user => ({
-      _id: user._id,
-      username: user.username,
-      isOnline: user.isOnline,
-      lastSeen: user.lastSeen,
-      isGuest: user.isGuest,
-      bio: user.bio,
-      age: user.age,
-      gender: user.gender,
-      allowGuestMessages: user.allowGuestMessages,
-      showOnlineStatus: user.showOnlineStatus
-    }));
+    // Get unread counts for each user and return user data with necessary fields
+    const usersWithUnreadCounts = await Promise.all(
+      filteredUsers.map(async (user) => {
+        // Find conversation with this user (check both participant orders)
+        let conversation = await ctx.db
+          .query("conversations")
+          .filter((q) =>
+            q.and(
+              q.eq(q.field("type"), "direct"),
+              q.eq(q.field("isActive"), true),
+              q.eq(q.field("participantIds"), [currentUser._id, user._id])
+            )
+          )
+          .first();
+
+        if (!conversation) {
+          conversation = await ctx.db
+            .query("conversations")
+            .filter((q) =>
+              q.and(
+                q.eq(q.field("type"), "direct"),
+                q.eq(q.field("isActive"), true),
+                q.eq(q.field("participantIds"), [user._id, currentUser._id])
+              )
+            )
+            .first();
+        }
+
+        let unreadCount = 0;
+        if (conversation) {
+          // Count unread messages from this user
+          const unreadMessages = await ctx.db
+            .query("messages")
+            .withIndex("by_conversation", (q) => q.eq("conversationId", conversation._id))
+            .filter((q) => q.eq(q.field("senderId"), user._id))
+            .filter((q) => q.eq(q.field("isDeleted"), false))
+            .collect();
+
+          unreadCount = unreadMessages.filter(msg =>
+            !msg.readBy.some(read => read.userId === currentUser._id)
+          ).length;
+        }
+
+        return {
+          _id: user._id,
+          username: user.username,
+          isOnline: user.isOnline,
+          lastSeen: user.lastSeen,
+          isGuest: user.isGuest,
+          bio: user.bio,
+          age: user.age,
+          gender: user.gender,
+          allowGuestMessages: user.allowGuestMessages,
+          showOnlineStatus: user.showOnlineStatus,
+          unreadCount
+        };
+      })
+    );
+
+    // Sort users with unread messages to the top
+    return usersWithUnreadCounts.sort((a, b) => {
+      if (a.unreadCount > 0 && b.unreadCount === 0) return -1;
+      if (a.unreadCount === 0 && b.unreadCount > 0) return 1;
+      return b.unreadCount - a.unreadCount; // Then by unread count descending
+    });
   },
 });
 
@@ -208,8 +260,20 @@ export const getUsersWithMutualChats = query({
       );
     }
 
-    // Sort by last message time (most recent first)
-    return filteredUsers.sort((a, b) => b.lastMessageAt - a.lastMessageAt);
+    // Sort by unread messages first, then by last message time
+    return filteredUsers.sort((a, b) => {
+      // Users with unread messages come first
+      if (a.unreadCount > 0 && b.unreadCount === 0) return -1;
+      if (a.unreadCount === 0 && b.unreadCount > 0) return 1;
+
+      // If both have unread messages, sort by unread count (descending)
+      if (a.unreadCount > 0 && b.unreadCount > 0) {
+        return b.unreadCount - a.unreadCount;
+      }
+
+      // If neither has unread messages, sort by last message time
+      return b.lastMessageAt - a.lastMessageAt;
+    });
   },
 });
 

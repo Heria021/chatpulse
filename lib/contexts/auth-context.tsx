@@ -24,12 +24,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [sessionToken, setSessionTokenState] = useState<string | null>(null);
 
-  // Convex mutations
+  // Convex mutations and queries
   const registerUserMutation = useMutation(api.auth.registerUser);
   const signInUserMutation = useMutation(api.auth.signInUser);
   const createGuestUserMutation = useMutation(api.auth.createGuestUser);
   const signOutUserMutation = useMutation(api.auth.signOutUser);
-  const checkUsernameAvailabilityQuery = useMutation(api.auth.checkUsernameAvailability);
+  const upgradeGuestUserMutation = useMutation(api.auth.upgradeGuestUser);
+  const checkUsernameAvailabilityMutation = useMutation(api.auth.checkUsernameAvailability);
 
   // Get user by session token
   const userBySession = useQuery(
@@ -154,9 +155,40 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const upgradeGuestAccount = async (email: string, password: string) => {
+    try {
+      if (!sessionToken) {
+        throw new Error("No active session");
+      }
+
+      setIsLoading(true);
+      const result = await upgradeGuestUserMutation({
+        sessionToken,
+        email,
+        password,
+      });
+
+      if (result.user && result.sessionToken) {
+        setUser(result.user);
+        setSessionTokenState(result.sessionToken);
+        saveSessionToken(result.sessionToken);
+        toast.success("Account upgraded successfully!");
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Account upgrade failed";
+      toast.error(message);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const checkUsernameAvailability = async (username: string): Promise<boolean> => {
     try {
-      const result = await checkUsernameAvailabilityQuery({ username });
+      const result = await checkUsernameAvailabilityMutation({
+        username,
+        sessionToken: sessionToken || undefined,
+      });
       return result.available;
     } catch (error) {
       console.error("Username availability check failed:", error);
@@ -172,6 +204,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     signUp,
     signInAsGuest,
     signOut,
+    upgradeGuestAccount,
     checkUsernameAvailability,
   };
 

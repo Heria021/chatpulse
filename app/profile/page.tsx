@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "convex/react";
 import { useAuth } from "@/lib/contexts/auth-context";
-import { Loader2, User, Edit, Save, X } from "lucide-react";
+import { Loader2, User, Edit, Save, X, Calendar, Mail, Shield, Eye, Clock, Crown, ArrowUp } from "lucide-react";
 import { AppLayout } from "@/components/chat/app-layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -52,6 +52,7 @@ export default function ProfilePage() {
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showUpgradeForm, setShowUpgradeForm] = useState(false);
 
   // Get session token for API calls
   const sessionToken = getSessionToken();
@@ -148,41 +149,88 @@ export default function ProfilePage() {
                   <p className="text-xs lg:text-base text-muted-foreground">Manage your account information and preferences</p>
                 </div>
                 {!isEditing && (
-                  <Button
-                    onClick={() => setIsEditing(true)}
-                    size="sm"
-                    className="flex items-center gap-1 lg:gap-2 text-xs lg:text-sm flex-shrink-0"
-                  >
-                    <Edit className="h-3 w-3 lg:h-4 lg:w-4" />
-                    <span className="hidden sm:inline">Edit Profile</span>
-                    <span className="sm:hidden">Edit</span>
-                  </Button>
+                  <div className="flex items-center gap-2">
+                    {user.isGuest && (
+                      <Button
+                        onClick={() => router.push('/settings')}
+                        size="sm"
+                        variant="default"
+                        className="flex items-center gap-1 lg:gap-2 text-xs lg:text-sm flex-shrink-0 bg-gradient-to-r from-primary to-primary/80 shadow-lg"
+                      >
+                        <Crown className="h-3 w-3 lg:h-4 lg:w-4" />
+                        <span className="hidden sm:inline">Upgrade Account</span>
+                        <span className="sm:hidden">Upgrade</span>
+                      </Button>
+                    )}
+                    <Button
+                      onClick={() => setIsEditing(true)}
+                      size="sm"
+                      variant={user.isGuest ? "outline" : "default"}
+                      className="flex items-center gap-1 lg:gap-2 text-xs lg:text-sm flex-shrink-0"
+                    >
+                      <Edit className="h-3 w-3 lg:h-4 lg:w-4" />
+                      <span className="hidden sm:inline">Edit Profile</span>
+                      <span className="sm:hidden">Edit</span>
+                    </Button>
+                  </div>
                 )}
               </div>
 
               {/* Profile Card */}
-              <Card>
-                <CardHeader className="pb-2 lg:pb-4">
-                  <div className="flex items-center space-x-2 lg:space-x-4">
-                    <Avatar className="h-12 w-12 lg:h-20 lg:w-20 flex-shrink-0">
-                      <AvatarFallback className="bg-primary text-primary-foreground text-sm lg:text-xl">
-                        {getAvatarInitials(user.username)}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="space-y-0.5 lg:space-y-1 min-w-0 flex-1">
-                      <CardTitle className="text-base lg:text-2xl truncate">{user.username}</CardTitle>
-                      <div className="flex items-center gap-1 lg:gap-2 flex-wrap">
-                        <Badge variant={user.isGuest ? "secondary" : "default"} className="text-xs">
-                          {user.isGuest ? "Guest" : "Member"}
-                        </Badge>
-                        {user.isOnline && (
-                          <Badge variant="outline" className="text-green-600 border-green-600 text-xs">
-                            Online
+              <Card className="shadow-lg">
+                <CardHeader className="pb-3 lg:pb-4">
+                  <div className="flex items-start space-x-3 lg:space-x-4">
+                    <div className="relative flex-shrink-0">
+                      <Avatar className="h-14 w-14 lg:h-20 lg:w-20 ring-2 ring-primary/20">
+                        <AvatarFallback className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground text-sm lg:text-xl font-semibold">
+                          {getAvatarInitials(user.username)}
+                        </AvatarFallback>
+                      </Avatar>
+                      {user.isOnline && (
+                        <div className="absolute -bottom-0.5 -right-0.5 h-4 w-4 lg:h-5 lg:w-5 bg-green-500 border-2 border-background rounded-full" />
+                      )}
+                    </div>
+                    <div className="space-y-1 lg:space-y-2 min-w-0 flex-1">
+                      <div className="flex items-center gap-2 lg:gap-3 flex-wrap">
+                        <CardTitle className="text-lg lg:text-2xl truncate">{user.username}</CardTitle>
+                        <div className="flex items-center gap-1.5">
+                          <Badge variant={user.isGuest ? "secondary" : "default"} className="text-xs font-medium">
+                            {user.isGuest ? "Guest" : "Member"}
                           </Badge>
+                          {user.isOnline && (
+                            <Badge variant="outline" className="text-green-600 border-green-600 text-xs">
+                              Online
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Quick Info Row */}
+                      <div className="flex items-center gap-3 lg:gap-4 text-xs lg:text-sm text-muted-foreground flex-wrap">
+                        <div className="flex items-center gap-1">
+                          <Calendar className="h-3 w-3" />
+                          <span>{user.age} years</span>
+                        </div>
+                        <div className="flex items-center gap-1 capitalize">
+                          <User className="h-3 w-3" />
+                          <span>{user.gender}</span>
+                        </div>
+                        {!user.isGuest && user.email && (
+                          <div className="flex items-center gap-1">
+                            <Mail className="h-3 w-3" />
+                            <span className="truncate max-w-[150px] lg:max-w-[200px]">{user.email}</span>
+                          </div>
+                        )}
+                        {user.lastSeen && (
+                          <div className="flex items-center gap-1">
+                            <Clock className="h-3 w-3" />
+                            <span>Last seen {new Date(user.lastSeen).toLocaleDateString()}</span>
+                          </div>
                         )}
                       </div>
+
                       {user.bio && (
-                        <CardDescription className="text-xs lg:text-base line-clamp-2">
+                        <CardDescription className="text-xs lg:text-sm leading-relaxed line-clamp-2 pt-1">
                           {user.bio}
                         </CardDescription>
                       )}
@@ -190,50 +238,108 @@ export default function ProfilePage() {
                   </div>
                 </CardHeader>
 
-                <CardContent className="space-y-3 lg:space-y-6 pt-2 lg:pt-6">
+                <CardContent className="space-y-4 lg:space-y-6 pt-3 lg:pt-4">
                   {!isEditing ? (
                     // View Mode
-                    <div className="space-y-3 lg:space-y-4">
-                      <div className="grid grid-cols-2 gap-2 lg:gap-4">
-                        <div>
-                          <Label className="text-xs lg:text-sm font-medium text-muted-foreground">Age</Label>
-                          <p className="text-sm lg:text-base">{user.age} years old</p>
-                        </div>
-                        <div>
-                          <Label className="text-xs lg:text-sm font-medium text-muted-foreground">Gender</Label>
-                          <p className="text-sm lg:text-base capitalize">{user.gender}</p>
-                        </div>
-                        {!user.isGuest && user.email && (
-                          <div className="col-span-2">
-                            <Label className="text-xs lg:text-sm font-medium text-muted-foreground">Email</Label>
-                            <p className="text-sm lg:text-base truncate">{user.email}</p>
+                    <div className="space-y-4 lg:space-y-6">
+                      {/* Upgrade Notice for Guest Users */}
+                      {user.isGuest && (
+                        <div className="p-4 bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20 rounded-lg">
+                          <div className="flex items-start gap-3">
+                            <Crown className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                            <div className="flex-1 space-y-2">
+                              <h3 className="text-sm lg:text-base font-semibold text-primary">Upgrade to Full Account</h3>
+                              <p className="text-xs lg:text-sm text-muted-foreground">
+                                Get access to all features including permanent account, email notifications, and enhanced security.
+                              </p>
+                              <Button
+                                onClick={() => router.push('/settings')}
+                                size="sm"
+                                className="bg-gradient-to-r from-primary to-primary/80 shadow-lg text-xs lg:text-sm"
+                              >
+                                <ArrowUp className="h-3 w-3 lg:h-4 lg:w-4 mr-1 lg:mr-2" />
+                                Upgrade Now
+                              </Button>
+                            </div>
                           </div>
-                        )}
+                        </div>
+                      )}
+
+                      {/* Account Information */}
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-2">
+                          <Shield className="h-4 w-4 text-primary" />
+                          <h3 className="text-sm lg:text-base font-semibold">Account Information</h3>
+                        </div>
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-4">
+                          <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
+                            <div className="flex items-center gap-2">
+                              <User className="h-4 w-4 text-muted-foreground" />
+                              <span className="text-xs lg:text-sm font-medium">Account Type</span>
+                            </div>
+                            <Badge variant={user.isGuest ? "secondary" : "default"} className="text-xs">
+                              {user.isGuest ? "Guest Account" : "Full Account"}
+                            </Badge>
+                          </div>
+                          <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
+                            <div className="flex items-center gap-2">
+                              <Calendar className="h-4 w-4 text-muted-foreground" />
+                              <span className="text-xs lg:text-sm font-medium">Age</span>
+                            </div>
+                            <span className="text-xs lg:text-sm font-semibold">{user.age} years old</span>
+                          </div>
+                          <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
+                            <div className="flex items-center gap-2">
+                              <User className="h-4 w-4 text-muted-foreground" />
+                              <span className="text-xs lg:text-sm font-medium">Gender</span>
+                            </div>
+                            <span className="text-xs lg:text-sm font-semibold capitalize">{user.gender}</span>
+                          </div>
+                          {!user.isGuest && user.email && (
+                            <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
+                              <div className="flex items-center gap-2">
+                                <Mail className="h-4 w-4 text-muted-foreground" />
+                                <span className="text-xs lg:text-sm font-medium">Email</span>
+                              </div>
+                              <span className="text-xs lg:text-sm font-semibold truncate max-w-[120px] lg:max-w-[200px]">{user.email}</span>
+                            </div>
+                          )}
+                        </div>
                       </div>
 
-                      <div className="space-y-2 lg:space-y-3 pt-2 border-t">
-                        <h3 className="text-sm lg:text-base font-medium">Privacy Settings</h3>
-                        <div className="space-y-1.5 lg:space-y-2">
-                          <div className="flex items-center justify-between">
+                      {/* Privacy Settings */}
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-2">
+                          <Eye className="h-4 w-4 text-primary" />
+                          <h3 className="text-sm lg:text-base font-semibold">Privacy Settings</h3>
+                        </div>
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
                             <div className="min-w-0 flex-1">
-                              <Label className="text-xs lg:text-sm">Allow guest messages</Label>
-                              <p className="text-xs text-muted-foreground hidden lg:block">
-                                Let guest users send you messages
+                              <div className="flex items-center gap-2">
+                                <Mail className="h-4 w-4 text-muted-foreground" />
+                                <Label className="text-xs lg:text-sm font-medium">Guest Messages</Label>
+                              </div>
+                              <p className="text-xs text-muted-foreground mt-1 hidden lg:block">
+                                Allow guest users to send you messages
                               </p>
                             </div>
                             <Badge variant={user.allowGuestMessages ? "default" : "secondary"} className="text-xs flex-shrink-0">
-                              {user.allowGuestMessages ? "On" : "Off"}
+                              {user.allowGuestMessages ? "Enabled" : "Disabled"}
                             </Badge>
                           </div>
-                          <div className="flex items-center justify-between">
+                          <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
                             <div className="min-w-0 flex-1">
-                              <Label className="text-xs lg:text-sm">Show online status</Label>
-                              <p className="text-xs text-muted-foreground hidden lg:block">
-                                Let others see when you're online
+                              <div className="flex items-center gap-2">
+                                <Eye className="h-4 w-4 text-muted-foreground" />
+                                <Label className="text-xs lg:text-sm font-medium">Online Status</Label>
+                              </div>
+                              <p className="text-xs text-muted-foreground mt-1 hidden lg:block">
+                                Show others when you're online and active
                               </p>
                             </div>
                             <Badge variant={user.showOnlineStatus ? "default" : "secondary"} className="text-xs flex-shrink-0">
-                              {user.showOnlineStatus ? "On" : "Off"}
+                              {user.showOnlineStatus ? "Visible" : "Hidden"}
                             </Badge>
                           </div>
                         </div>
@@ -242,8 +348,14 @@ export default function ProfilePage() {
                   ) : (
                     // Edit Mode
                     <Form {...form}>
-                      <form onSubmit={form.handleSubmit(handleUpdateProfile)} className="space-y-3 lg:space-y-6">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 lg:gap-4">
+                      <form onSubmit={form.handleSubmit(handleUpdateProfile)} className="space-y-4 lg:space-y-6">
+                        {/* Basic Information */}
+                        <div className="space-y-3">
+                          <div className="flex items-center gap-2">
+                            <User className="h-4 w-4 text-primary" />
+                            <h3 className="text-sm lg:text-base font-semibold">Basic Information</h3>
+                          </div>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 lg:gap-4">
                           <FormField
                             control={form.control}
                             name="username"
@@ -277,9 +389,16 @@ export default function ProfilePage() {
                               </FormItem>
                             )}
                           />
+                          </div>
                         </div>
 
-                        <FormField
+                        {/* Bio Section */}
+                        <div className="space-y-3">
+                          <div className="flex items-center gap-2">
+                            <Edit className="h-4 w-4 text-primary" />
+                            <h3 className="text-sm lg:text-base font-semibold">About</h3>
+                          </div>
+                          <FormField
                           control={form.control}
                           name="gender"
                           render={({ field }) => (
@@ -322,10 +441,14 @@ export default function ProfilePage() {
                               <FormMessage className="text-xs" />
                             </FormItem>
                           )}
-                        />
+                          />
+                        </div>
 
-                        <div className="space-y-2 lg:space-y-4 pt-2 border-t">
-                          <h3 className="text-sm lg:text-base font-medium">Privacy Settings</h3>
+                        <div className="space-y-3 lg:space-y-4 pt-4 border-t">
+                          <div className="flex items-center gap-2">
+                            <Eye className="h-4 w-4 text-primary" />
+                            <h3 className="text-sm lg:text-base font-semibold">Privacy Settings</h3>
+                          </div>
 
                           <FormField
                             control={form.control}
@@ -370,19 +493,24 @@ export default function ProfilePage() {
                           />
                         </div>
 
-                        <div className="flex justify-end space-x-2 pt-3 lg:pt-4">
+                        <div className="flex justify-end space-x-3 pt-6 border-t">
                           <Button
                             type="button"
                             variant="outline"
                             size="sm"
                             onClick={handleCancelEdit}
                             disabled={isSubmitting}
-                            className="text-xs lg:text-sm"
+                            className="text-xs lg:text-sm px-4 lg:px-6"
                           >
                             <X className="h-3 w-3 lg:h-4 lg:w-4 mr-1 lg:mr-2" />
                             Cancel
                           </Button>
-                          <Button type="submit" size="sm" disabled={isSubmitting} className="text-xs lg:text-sm">
+                          <Button
+                            type="submit"
+                            size="sm"
+                            disabled={isSubmitting}
+                            className="text-xs lg:text-sm px-4 lg:px-6 shadow-lg"
+                          >
                             {isSubmitting ? (
                               <>
                                 <Loader2 className="h-3 w-3 lg:h-4 lg:w-4 mr-1 lg:mr-2 animate-spin" />
@@ -391,7 +519,7 @@ export default function ProfilePage() {
                             ) : (
                               <>
                                 <Save className="h-3 w-3 lg:h-4 lg:w-4 mr-1 lg:mr-2" />
-                                Save
+                                Save Changes
                               </>
                             )}
                           </Button>
