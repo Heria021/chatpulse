@@ -461,6 +461,93 @@ export const blockUser = mutation({
   }
 });
 
+// Update user profile
+export const updateProfile = mutation({
+  args: {
+    sessionToken: v.string(),
+    username: v.string(),
+    bio: v.optional(v.string()),
+    age: v.number(),
+    gender: v.union(v.literal("male"), v.literal("female"), v.literal("other")),
+    allowGuestMessages: v.boolean(),
+    showOnlineStatus: v.boolean(),
+  },
+  handler: async (ctx, args) => {
+    // Verify session and get current user
+    const session = await ctx.db
+      .query("sessions")
+      .withIndex("by_token", (q) => q.eq("sessionToken", args.sessionToken))
+      .first();
+
+    if (!session || !session.isActive || session.expiresAt < Date.now()) {
+      throw new ConvexError("Authentication required. Please sign in again.");
+    }
+
+    const currentUser = await ctx.db.get(session.userId);
+    if (!currentUser || !currentUser.isActive) {
+      throw new ConvexError("User account not found or deactivated");
+    }
+
+    // Check if username is being changed and if it's available
+    if (args.username !== currentUser.username) {
+      const existingUser = await ctx.db
+        .query("users")
+        .withIndex("by_username", (q) => q.eq("username", args.username))
+        .first();
+
+      if (existingUser && existingUser._id !== currentUser._id) {
+        throw new ConvexError("Username is already taken");
+      }
+    }
+
+    try {
+      const now = Date.now();
+
+      // Update user profile
+      await ctx.db.patch(currentUser._id, {
+        username: args.username,
+        bio: args.bio || undefined,
+        age: args.age,
+        gender: args.gender,
+        allowGuestMessages: args.allowGuestMessages,
+        showOnlineStatus: args.showOnlineStatus,
+        updatedAt: now,
+      });
+
+      // Log activity
+      await ctx.db.insert("activityLogs", {
+        userId: currentUser._id,
+        action: "update_profile",
+        metadata: JSON.stringify({
+          updatedFields: {
+            username: args.username !== currentUser.username,
+            bio: args.bio !== currentUser.bio,
+            age: args.age !== currentUser.age,
+            gender: args.gender !== currentUser.gender,
+            allowGuestMessages: args.allowGuestMessages !== currentUser.allowGuestMessages,
+            showOnlineStatus: args.showOnlineStatus !== currentUser.showOnlineStatus,
+          }
+        }),
+        createdAt: now
+      });
+
+      return { success: true };
+    } catch (error) {
+      // Log failed update attempts
+      await ctx.db.insert("activityLogs", {
+        userId: currentUser._id,
+        action: "update_profile_failed",
+        metadata: JSON.stringify({
+          error: error instanceof Error ? error.message : "Unknown error"
+        }),
+        createdAt: Date.now()
+      });
+
+      throw new ConvexError("Failed to update profile. Please try again.");
+    }
+  }
+});
+
 // Unblock a user
 export const unblockUser = mutation({
   args: {

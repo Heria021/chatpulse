@@ -2,13 +2,12 @@
 
 import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/lib/contexts/auth-context";
-import { 
-  MessageCircle, 
-  Users, 
-  Settings, 
-  LogOut, 
-  User,
-  X
+import {
+  MessageCircle,
+  Users,
+  Settings,
+  LogOut,
+  User
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -87,18 +86,10 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
         isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
       )}>
         {/* Header */}
-        <div className="flex h-16 items-center justify-between px-3">
+        <div className="flex h-16 items-center justify-center px-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
             <MessageCircle className="h-5 w-5 text-primary-foreground" />
           </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-9 w-9 lg:hidden"
-            onClick={onClose}
-          >
-            <X className="h-5 w-5" />
-          </Button>
         </div>
 
         <Separator />

@@ -161,6 +161,32 @@ export const guestSchema = z.object({
   }),
 });
 
+// Profile update schema
+export const updateProfileSchema = z.object({
+  username: z
+    .string()
+    .min(3, "Username must be at least 3 characters")
+    .max(20, "Username must be less than 20 characters")
+    .regex(
+      /^[a-zA-Z0-9_]+$/,
+      "Username can only contain letters, numbers, and underscores"
+    ),
+  bio: z
+    .string()
+    .max(200, "Bio must be less than 200 characters")
+    .optional()
+    .or(z.literal("")),
+  age: z
+    .number()
+    .min(18, "You must be at least 18 years old")
+    .max(120, "Please enter a valid age"),
+  gender: z.enum(["male", "female", "other"], {
+    required_error: "Please select your gender",
+  }),
+  allowGuestMessages: z.boolean(),
+  showOnlineStatus: z.boolean(),
+});
+
 export const forgotPasswordSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
 });
@@ -169,6 +195,7 @@ export const forgotPasswordSchema = z.object({
 export type SignInFormData = z.infer<typeof signInSchema>;
 export type SignUpFormData = z.infer<typeof signUpSchema>;
 export type GuestFormData = z.infer<typeof guestSchema>;
+export type UpdateProfileFormData = z.infer<typeof updateProfileSchema>;
 export type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
 
 // Password strength levels

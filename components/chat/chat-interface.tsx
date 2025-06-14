@@ -49,18 +49,18 @@ function getAvatarInitials(username: string): string {
 function TypingIndicator({ username }: { username: string }) {
   return (
     <div className="flex justify-start">
-      <div className="flex items-end space-x-2 max-w-xs lg:max-w-md">
-        <Avatar className="h-6 w-6 mb-1">
+      <div className="flex items-end space-x-1.5 lg:space-x-2 max-w-xs lg:max-w-md">
+        <Avatar className="h-5 w-5 lg:h-6 lg:w-6 mb-1">
           <AvatarFallback className="bg-muted text-muted-foreground text-xs">
             {getAvatarInitials(username)}
           </AvatarFallback>
         </Avatar>
-        <div className="bg-muted px-4 py-2 rounded-lg rounded-bl-sm">
+        <div className="bg-muted px-3 py-1.5 lg:px-4 lg:py-2 rounded-lg rounded-bl-sm">
           <div className="flex items-center space-x-1">
             <div className="flex space-x-1">
-              <div className="w-2 h-2 bg-muted-foreground/60 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-              <div className="w-2 h-2 bg-muted-foreground/60 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-              <div className="w-2 h-2 bg-muted-foreground/60 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+              <div className="w-1.5 h-1.5 lg:w-2 lg:h-2 bg-muted-foreground/60 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+              <div className="w-1.5 h-1.5 lg:w-2 lg:h-2 bg-muted-foreground/60 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+              <div className="w-1.5 h-1.5 lg:w-2 lg:h-2 bg-muted-foreground/60 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
             </div>
           </div>
         </div>
@@ -361,21 +361,21 @@ export function ChatInterface({ userId }: ChatInterfaceProps) {
   return (
     <div className="flex flex-col h-full">
       {/* Chat Header */}
-      <div className="flex items-center justify-between p-4 border-b border-border bg-card">
-        <div className="flex items-center space-x-3">
+      <div className="flex items-center justify-between p-3 lg:p-4 border-b border-border bg-card">
+        <div className="flex items-center space-x-2 lg:space-x-3">
           <div className="relative">
-            <Avatar className="h-10 w-10">
-              <AvatarFallback className="bg-primary text-primary-foreground">
+            <Avatar className="h-8 w-8 lg:h-10 lg:w-10">
+              <AvatarFallback className="bg-primary text-primary-foreground text-xs lg:text-sm">
                 {getAvatarInitials(conversation.otherUser.username)}
               </AvatarFallback>
             </Avatar>
             {conversation.otherUser.isOnline && (
-              <div className="absolute -bottom-1 -right-1 h-3 w-3 bg-green-500 border-2 border-background rounded-full" />
+              <div className="absolute -bottom-0.5 -right-0.5 lg:-bottom-1 lg:-right-1 h-2.5 w-2.5 lg:h-3 lg:w-3 bg-green-500 border-2 border-background rounded-full" />
             )}
           </div>
           <div>
-            <h3 className="font-semibold">{conversation.otherUser.username}</h3>
-            <p className="text-sm text-muted-foreground">
+            <h3 className="font-semibold text-sm lg:text-base">{conversation.otherUser.username}</h3>
+            <p className="text-xs lg:text-sm text-muted-foreground">
               {conversation.otherUser.isOnline
                 ? "Online"
                 : `Last seen ${formatMessageTime(conversation.otherUser.lastSeen)}`
@@ -389,12 +389,13 @@ export function ChatInterface({ userId }: ChatInterfaceProps) {
             userId={conversation.otherUser._id}
             username={conversation.otherUser.username}
             align="end"
+            triggerClassName="h-7 w-7 lg:h-8 lg:w-8"
           />
         </div>
       </div>
 
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div className="flex-1 overflow-y-auto p-3 lg:p-4 space-y-3 lg:space-y-4">
         {messages === undefined ? (
           <div className="flex items-center justify-center h-full">
             <div className="text-center">
@@ -421,9 +422,9 @@ export function ChatInterface({ userId }: ChatInterfaceProps) {
                 key={msg._id}
                 className={`flex ${msg.isOwn ? "justify-end" : "justify-start"}`}
               >
-                <div className="flex items-end space-x-2 max-w-xs lg:max-w-md">
+                <div className="flex items-end space-x-1.5 lg:space-x-2 max-w-xs lg:max-w-md">
                   {!msg.isOwn && (
-                    <Avatar className="h-6 w-6 mb-1">
+                    <Avatar className="h-5 w-5 lg:h-6 lg:w-6 mb-1">
                       <AvatarFallback className="bg-muted text-muted-foreground text-xs">
                         {getAvatarInitials(msg.senderUsername)}
                       </AvatarFallback>
@@ -431,7 +432,7 @@ export function ChatInterface({ userId }: ChatInterfaceProps) {
                   )}
                   <div
                     className={`
-                      px-4 py-2 rounded-lg
+                      px-3 py-1.5 lg:px-4 lg:py-2 rounded-lg
                       ${msg.isOwn
                         ? "bg-primary text-primary-foreground rounded-br-sm"
                         : "bg-muted rounded-bl-sm"
@@ -503,9 +504,9 @@ export function ChatInterface({ userId }: ChatInterfaceProps) {
       </div>
 
       {/* Message Input */}
-      <div className="p-4 border-t border-border bg-card">
+      <div className="p-3 lg:p-4 border-t border-border bg-card">
         <div className="flex items-center space-x-2">
-          <Button variant="ghost" size="icon" disabled>
+          <Button variant="ghost" size="icon" className="h-8 w-8 lg:h-10 lg:w-10 hidden lg:flex" disabled>
             <Paperclip className="h-4 w-4" />
           </Button>
 
@@ -525,14 +526,14 @@ export function ChatInterface({ userId }: ChatInterfaceProps) {
                   handleSendMessage();
                 }
               }}
-              className="pr-10"
+              className="pr-10 h-9 lg:h-10"
               disabled={isSending}
               maxLength={2000}
             />
             <Button
               variant="ghost"
               size="icon"
-              className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8"
+              className="absolute right-1 top-1/2 transform -translate-y-1/2 h-7 w-7 lg:h-8 lg:w-8 hidden lg:flex"
               disabled
             >
               <Smile className="h-4 w-4" />
@@ -543,6 +544,7 @@ export function ChatInterface({ userId }: ChatInterfaceProps) {
             onClick={handleSendMessage}
             disabled={!message.trim() || isSending}
             size="icon"
+            className="h-9 w-9 lg:h-10 lg:w-10"
           >
             {isSending ? (
               <Loader2 className="h-4 w-4 animate-spin" />

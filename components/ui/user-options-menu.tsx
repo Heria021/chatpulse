@@ -188,41 +188,41 @@ export function UserOptionsMenu({
 
       {/* Enhanced Report Dialog */}
       <Dialog open={reportDialogOpen} onOpenChange={resetReportDialog}>
-        <DialogContent className="sm:max-w-lg">
-          <DialogHeader className="space-y-3">
+        <DialogContent className="w-[95vw] max-w-lg mx-auto">
+          <DialogHeader className="space-y-2 lg:space-y-3">
             <div className="flex items-center justify-between">
-              <DialogTitle className="flex items-center gap-2 text-lg">
-                <div className="p-2 bg-orange-100 rounded-full">
-                  <Flag className="h-5 w-5 text-orange-600" />
+              <DialogTitle className="flex items-center gap-2 text-base lg:text-lg">
+                <div className="p-1.5 lg:p-2 bg-orange-100 rounded-full">
+                  <Flag className="h-4 w-4 lg:h-5 lg:w-5 text-orange-600" />
                 </div>
                 Report User
               </DialogTitle>
               <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                <span className={`w-2 h-2 rounded-full ${reportStep === "reason" ? "bg-orange-500" : "bg-gray-300"}`} />
-                <span className={`w-2 h-2 rounded-full ${reportStep === "details" ? "bg-orange-500" : "bg-gray-300"}`} />
-                <span className={`w-2 h-2 rounded-full ${reportStep === "confirm" ? "bg-orange-500" : "bg-gray-300"}`} />
+                <span className={`w-1.5 h-1.5 lg:w-2 lg:h-2 rounded-full ${reportStep === "reason" ? "bg-orange-500" : "bg-gray-300"}`} />
+                <span className={`w-1.5 h-1.5 lg:w-2 lg:h-2 rounded-full ${reportStep === "details" ? "bg-orange-500" : "bg-gray-300"}`} />
+                <span className={`w-1.5 h-1.5 lg:w-2 lg:h-2 rounded-full ${reportStep === "confirm" ? "bg-orange-500" : "bg-gray-300"}`} />
               </div>
             </div>
-            <DialogDescription className="text-base">
+            <DialogDescription className="text-sm lg:text-base">
               {reportStep === "reason" && "Why are you reporting this user?"}
               {reportStep === "details" && "Please provide additional details"}
               {reportStep === "confirm" && "Review your report"}
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-6">
+          <div className="space-y-4 lg:space-y-6">
             {/* User Info Card */}
-            <Card className="border-orange-200 bg-orange-50/50">
-              <CardContent className="p-4">
-                <div className="flex items-center gap-3">
-                  <Avatar className="h-12 w-12">
-                    <AvatarFallback className="bg-orange-200 text-orange-800">
+            <Card className="border-orange-200 bg-orange-50/50 py-2">
+              <CardContent className="p-2 lg:p-4">
+                <div className="flex items-center gap-2 lg:gap-3">
+                  <Avatar className="h-8 w-8 lg:h-12 lg:w-12">
+                    <AvatarFallback className="bg-orange-200 text-orange-800 text-xs lg:text-sm">
                       {getAvatarInitials(username)}
                     </AvatarFallback>
                   </Avatar>
                   <div>
-                    <p className="font-semibold text-orange-900">{username}</p>
-                    <p className="text-sm text-orange-700">This user will be blocked after reporting</p>
+                    <p className="font-semibold text-orange-900 text-sm lg:text-base">{username}</p>
+                    <p className="text-xs lg:text-sm text-orange-700">This user will be blocked after reporting</p>
                   </div>
                 </div>
               </CardContent>
@@ -230,10 +230,10 @@ export function UserOptionsMenu({
 
             {/* Step 1: Reason Selection */}
             {reportStep === "reason" && (
-              <div className="space-y-4">
+              <div className="space-y-3 lg:space-y-4">
                 <div>
-                  <Label className="text-base font-medium">Select a reason for reporting</Label>
-                  <div className="grid grid-cols-1 gap-2 mt-3">
+                  <Label className="text-xs lg:text-base font-medium">Select a reason for reporting</Label>
+                  <div className="grid grid-cols-1 gap-1.5 lg:gap-2 mt-2 lg:mt-3">
                     {[
                       { value: "spam", label: "Spam or unwanted messages", icon: "📧" },
                       { value: "harassment", label: "Harassment or bullying", icon: "⚠️" },
@@ -245,15 +245,15 @@ export function UserOptionsMenu({
                       <button
                         key={reason.value}
                         onClick={() => setReportReason(reason.value as typeof reportReason)}
-                        className={`p-3 text-left border rounded-lg transition-all hover:border-orange-300 ${
+                        className={`p-2.5 lg:p-3 text-left border rounded-lg transition-all hover:border-orange-300 ${
                           reportReason === reason.value
                             ? "border-orange-500 bg-orange-50 text-orange-900"
                             : "border-gray-200 hover:bg-gray-50"
                         }`}
                       >
-                        <div className="flex items-center gap-3">
-                          <span className="text-lg">{reason.icon}</span>
-                          <span className="font-medium">{reason.label}</span>
+                        <div className="flex items-center gap-2 lg:gap-3">
+                          <span className="text-sm lg:text-lg">{reason.icon}</span>
+                          <span className="font-medium text-xs lg:text-base">{reason.label}</span>
                         </div>
                       </button>
                     ))}
@@ -264,12 +264,12 @@ export function UserOptionsMenu({
 
             {/* Step 2: Additional Details */}
             {reportStep === "details" && (
-              <div className="space-y-4">
+              <div className="space-y-3 lg:space-y-4">
                 <div>
-                  <Label htmlFor="description" className="text-base font-medium">
+                  <Label htmlFor="description" className="text-sm lg:text-base font-medium">
                     Additional details (optional)
                   </Label>
-                  <p className="text-sm text-muted-foreground mt-1 mb-3">
+                  <p className="text-xs lg:text-sm text-muted-foreground mt-1 mb-2 lg:mb-3">
                     Help us understand the situation better. This information will be reviewed by our moderation team.
                   </p>
                   <Textarea
@@ -277,9 +277,9 @@ export function UserOptionsMenu({
                     placeholder="Describe what happened, when it occurred, or any other relevant details..."
                     value={reportDescription}
                     onChange={(e) => setReportDescription(e.target.value)}
-                    className="min-h-[120px] resize-none"
+                    className="min-h-[80px] lg:min-h-[120px] resize-none text-sm"
                   />
-                  <p className="text-xs text-muted-foreground mt-2">
+                  <p className="text-xs text-muted-foreground mt-1 lg:mt-2">
                     {reportDescription.length}/500 characters
                   </p>
                 </div>
@@ -288,12 +288,12 @@ export function UserOptionsMenu({
 
             {/* Step 3: Confirmation */}
             {reportStep === "confirm" && (
-              <div className="space-y-4">
+              <div className="space-y-3 lg:space-y-4">
                 <Alert className="border-orange-200 bg-orange-50">
                   <Info className="h-4 w-4 text-orange-600" />
                   <AlertDescription className="text-orange-800">
                     <strong>Before you submit:</strong>
-                    <ul className="mt-2 space-y-1 text-sm">
+                    <ul className="mt-1 lg:mt-2 space-y-0.5 lg:space-y-1 text-xs lg:text-sm">
                       <li>• {username} will be immediately blocked</li>
                       <li>• Our moderation team will review this report</li>
                       <li>• False reports may result in account restrictions</li>
@@ -302,15 +302,15 @@ export function UserOptionsMenu({
                   </AlertDescription>
                 </Alert>
 
-                <div className="bg-gray-50 p-4 rounded-lg space-y-2">
+                <div className="bg-gray-50 p-3 lg:p-4 rounded-lg space-y-1.5 lg:space-y-2">
                   <div className="flex justify-between">
-                    <span className="font-medium">Reason:</span>
-                    <span className="capitalize">{reportReason.replace("_", " ")}</span>
+                    <span className="font-medium text-sm lg:text-base">Reason:</span>
+                    <span className="capitalize text-sm lg:text-base">{reportReason.replace("_", " ")}</span>
                   </div>
                   {reportDescription && (
                     <div>
-                      <span className="font-medium">Details:</span>
-                      <p className="text-sm text-gray-600 mt-1">{reportDescription}</p>
+                      <span className="font-medium text-sm lg:text-base">Details:</span>
+                      <p className="text-xs lg:text-sm text-gray-600 mt-1">{reportDescription}</p>
                     </div>
                   )}
                 </div>

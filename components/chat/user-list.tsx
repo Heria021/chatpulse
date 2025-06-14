@@ -98,10 +98,10 @@ export function UserList() {
   return (
     <div className="flex flex-col h-full bg-card w-full overflow-hidden">
       {/* Header */}
-      <div className="p-3 border-b border-border">
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="text-base font-semibold">Messages</h2>
-          <div className="flex items-center space-x-1">
+      <div className="p-3 lg:p-3 p-2 border-b border-border">
+        <div className="flex items-center justify-between mb-2 lg:mb-3">
+          <h2 className="text-sm lg:text-base font-semibold">Messages</h2>
+          <div className="flex items-center space-x-1 hidden lg:flex">
             <Button variant="ghost" size="icon" className="h-7 w-7">
               <Plus className="h-3 w-3" />
             </Button>
@@ -127,15 +127,16 @@ export function UserList() {
             placeholder="Search..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9 h-8 text-sm"
+            className="pl-9 h-7 lg:h-8 text-sm"
+            autoFocus={false}
           />
         </div>
       </div>
 
       {/* Tabs */}
       <Tabs defaultValue="users" className="flex-1 flex flex-col min-h-0 w-full overflow-hidden">
-        <div className="px-2 mt-2 flex-shrink-0">
-          <TabsList className="grid w-full grid-cols-2 h-9">
+        <div className="px-2 mt-1 lg:mt-2 flex-shrink-0">
+          <TabsList className="grid w-full grid-cols-2 h-8 lg:h-9">
             <TabsTrigger value="users" className="flex items-center justify-center gap-1 text-xs px-1 data-[state=active]:bg-background">
               <Users className="h-3 w-3 flex-shrink-0" />
               <span className="truncate min-w-0">Users</span>
@@ -161,12 +162,12 @@ export function UserList() {
             </div>
           ) : (
             <div className="flex-1 overflow-y-auto scrollbar-hide">
-              <div className="space-y-1 p-1">
+              <div className="space-y-0.5 lg:space-y-1 p-1">
                 {activeUsers.map((user: ActiveUser) => (
                   <div
                     key={user._id}
                     className={`
-                      flex items-center space-x-2 p-2 rounded-lg transition-colors group
+                      flex items-center space-x-2 lg:space-x-2 space-x-1.5 p-1.5 lg:p-2 rounded-lg transition-colors group
                       ${selectedUserId === user._id
                         ? 'bg-secondary text-secondary-foreground'
                         : 'hover:bg-muted/50'
@@ -178,13 +179,13 @@ export function UserList() {
                       className="relative flex-shrink-0 cursor-pointer"
                       onClick={() => handleUserClick(user._id)}
                     >
-                      <Avatar className="h-10 w-10">
-                        <AvatarFallback className="bg-primary text-primary-foreground text-sm">
+                      <Avatar className="h-8 w-8 lg:h-10 lg:w-10">
+                        <AvatarFallback className="bg-primary text-primary-foreground text-xs lg:text-sm">
                           {getAvatarInitials(user.username)}
                         </AvatarFallback>
                       </Avatar>
                       {user.isOnline && (
-                        <div className="absolute -bottom-0.5 -right-0.5 h-3 w-3 bg-green-500 border-2 border-background rounded-full" />
+                        <div className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 lg:h-3 lg:w-3 bg-green-500 border-2 border-background rounded-full" />
                       )}
                     </div>
 
@@ -193,8 +194,8 @@ export function UserList() {
                       className="flex-1 min-w-0 cursor-pointer"
                       onClick={() => handleUserClick(user._id)}
                     >
-                      <p className="font-medium truncate">{user.username}</p>
-                      <p className="text-sm text-muted-foreground truncate">
+                      <p className="font-medium truncate text-sm lg:text-base">{user.username}</p>
+                      <p className="text-xs lg:text-sm text-muted-foreground truncate">
                         {user.bio || `${user.age} years old, ${user.gender}`}
                       </p>
                     </div>
@@ -204,7 +205,7 @@ export function UserList() {
                       <UserOptionsMenu
                         userId={user._id}
                         username={user.username}
-                        triggerClassName="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
+                        triggerClassName="h-7 w-7 lg:h-8 lg:w-8 opacity-0 group-hover:opacity-100 transition-opacity"
                         align="end"
                       />
                     </div>
@@ -229,12 +230,12 @@ export function UserList() {
             </div>
           ) : (
             <div className="flex-1 overflow-y-auto scrollbar-hide">
-              <div className="space-y-1 p-1">
+              <div className="space-y-0.5 lg:space-y-1 p-1">
                 {chatUsers.map((user: ChatUser) => (
                   <div
                     key={user._id}
                     className={`
-                      flex items-center space-x-2 p-2 rounded-lg transition-colors group
+                      flex items-center space-x-2 lg:space-x-2 space-x-1.5 p-1.5 lg:p-2 rounded-lg transition-colors group
                       ${selectedUserId === user._id
                         ? 'bg-secondary text-secondary-foreground'
                         : 'hover:bg-muted/50'
@@ -246,13 +247,13 @@ export function UserList() {
                       className="relative flex-shrink-0 cursor-pointer"
                       onClick={() => handleUserClick(user._id)}
                     >
-                      <Avatar className="h-10 w-10">
-                        <AvatarFallback className="bg-primary text-primary-foreground text-sm">
+                      <Avatar className="h-8 w-8 lg:h-10 lg:w-10">
+                        <AvatarFallback className="bg-primary text-primary-foreground text-xs lg:text-sm">
                           {getAvatarInitials(user.username)}
                         </AvatarFallback>
                       </Avatar>
                       {user.isOnline && (
-                        <div className="absolute -bottom-0.5 -right-0.5 h-3 w-3 bg-green-500 border-2 border-background rounded-full" />
+                        <div className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 lg:h-3 lg:w-3 bg-green-500 border-2 border-background rounded-full" />
                       )}
                     </div>
 
@@ -262,17 +263,17 @@ export function UserList() {
                       onClick={() => handleUserClick(user._id)}
                     >
                       <div className="flex items-center justify-between">
-                        <p className="font-medium truncate">{user.username}</p>
+                        <p className="font-medium truncate text-sm lg:text-base">{user.username}</p>
                         <span className="text-xs text-muted-foreground flex-shrink-0">
                           {formatTimestamp(user.lastMessageAt)}
                         </span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <p className="text-sm text-muted-foreground truncate">
+                        <p className="text-xs lg:text-sm text-muted-foreground truncate">
                           {user.lastMessage?.content || "No messages yet"}
                         </p>
                         {user.unreadCount > 0 && (
-                          <Badge variant="default" className="ml-2 h-5 w-5 p-0 flex items-center justify-center text-xs flex-shrink-0">
+                          <Badge variant="default" className="ml-2 h-4 w-4 lg:h-5 lg:w-5 p-0 flex items-center justify-center text-xs flex-shrink-0">
                             {user.unreadCount}
                           </Badge>
                         )}
@@ -284,7 +285,7 @@ export function UserList() {
                       <UserOptionsMenu
                         userId={user._id}
                         username={user.username}
-                        triggerClassName="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
+                        triggerClassName="h-7 w-7 lg:h-8 lg:w-8 opacity-0 group-hover:opacity-100 transition-opacity"
                         align="end"
                       />
                     </div>
