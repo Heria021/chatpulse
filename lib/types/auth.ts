@@ -36,8 +36,10 @@ export interface AuthState {
 export interface ActiveUser {
   _id: Id<"users">;
   username: string;
-  isOnline: boolean;
+  isOnline: boolean; // Keep for backward compatibility
+  currentStatus: "online" | "recently_active" | "away" | "offline";
   lastSeen: number;
+  lastActivity?: number;
   isGuest: boolean;
   bio?: string;
   age: number;
@@ -93,6 +95,9 @@ export interface ChatConversation {
     username: string;
     isOnline: boolean;
     lastSeen: number;
+    lastActivity?: number;
+    currentStatus?: "online" | "recently_active" | "away" | "offline";
+    showOnlineStatus: boolean;
     isGuest: boolean;
     bio?: string;
     age: number;

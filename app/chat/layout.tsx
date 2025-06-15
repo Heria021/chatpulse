@@ -9,6 +9,9 @@ import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { AppLayout } from "@/components/chat/app-layout";
 import { UserList } from "@/components/chat/user-list";
 import { useUnreadCounts } from "@/lib/hooks/use-unread-counts";
+import { useOnlineStatus } from "@/lib/hooks/use-online-status";
+import { useAuth } from "@/lib/contexts/auth-context";
+import { UserListSkeleton } from "@/components/ui/skeletons";
 
 interface ChatLayoutProps {
   children: React.ReactNode;
@@ -17,30 +20,40 @@ interface ChatLayoutProps {
 export default function ChatLayout({ children }: ChatLayoutProps) {
   const [isMobileUserListOpen, setIsMobileUserListOpen] = useState(false);
   const { totalUnreadCount } = useUnreadCounts();
+  const { isAuthenticated, isLoading } = useAuth();
+
+  // Initialize online status tracking for the entire chat app
+  useOnlineStatus({
+    enabled: true,
+    heartbeatInterval: 30000 // 30 seconds
+  });
 
   return (
     <AppLayout
       sidebar={true}
+      isLoading={isLoading}
       mobileHeaderExtra={
-        <Sheet open={isMobileUserListOpen} onOpenChange={setIsMobileUserListOpen}>
-          <SheetTrigger asChild>
-            <Button variant="outline" size="sm" className="flex items-center gap-2 relative">
-              <Users className="h-4 w-4" />
-              <span>Users</span>
-              {totalUnreadCount > 0 && (
-                <Badge variant="default" className="ml-1 h-4 w-4 p-0 flex items-center justify-center text-xs flex-shrink-0">
-                  {totalUnreadCount > 99 ? '99+' : totalUnreadCount}
-                </Badge>
-              )}
-            </Button>
-          </SheetTrigger>
-        </Sheet>
+        !isLoading ? (
+          <Sheet open={isMobileUserListOpen} onOpenChange={setIsMobileUserListOpen}>
+            <SheetTrigger asChild>
+              <Button variant="outline" size="sm" className="flex items-center gap-2 relative">
+                <Users className="h-4 w-4" />
+                <span>Users</span>
+                {totalUnreadCount > 0 && (
+                  <Badge variant="default" className="ml-1 h-4 w-4 p-0 flex items-center justify-center text-xs flex-shrink-0">
+                    {totalUnreadCount > 99 ? '99+' : totalUnreadCount}
+                  </Badge>
+                )}
+              </Button>
+            </SheetTrigger>
+          </Sheet>
+        ) : undefined
       }
     >
       <div className="flex h-full min-h-0">
         {/* Left Column - User List (Desktop) */}
         <div className="w-80 max-w-80 border-r border-border flex-shrink-0 hidden lg:block h-full overflow-hidden">
-          <UserList />
+          {isLoading ? <UserListSkeleton /> : <UserList skipAuthCheck={true} />}
         </div>
 
         {/* Mobile User List Sheet */}
@@ -54,7 +67,7 @@ export default function ChatLayout({ children }: ChatLayoutProps) {
               <SheetTitle>User List</SheetTitle>
               <SheetDescription>Browse and select users to start conversations</SheetDescription>
             </VisuallyHidden>
-            <UserList onClose={() => setIsMobileUserListOpen(false)} />
+            {isLoading ? <UserListSkeleton /> : <UserList onClose={() => setIsMobileUserListOpen(false)} skipAuthCheck={true} />}
           </SheetContent>
         </Sheet>
 

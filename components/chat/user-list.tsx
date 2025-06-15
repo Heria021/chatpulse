@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useQuery } from "convex/react";
-import { Search, Plus, MoreVertical, MessageCircle, Users, Loader2 } from "lucide-react";
+import { Search, Plus, MoreVertical, MessageCircle, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -16,11 +16,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { UserOptionsMenu } from "@/components/ui/user-options-menu";
+import { AvatarStatusIndicator } from "@/components/ui/status-indicator";
 import { useAuth } from "@/lib/contexts/auth-context";
 import { api } from "@/convex/_generated/api";
 import { ActiveUser, ChatUser } from "@/lib/types/auth";
 import { getSessionToken } from "@/lib/utils/auth";
 import { useUnreadCounts } from "@/lib/hooks/use-unread-counts";
+import { UserListTabSkeleton } from "@/components/ui/skeletons";
 
 
 // Helper function to format timestamp
@@ -52,14 +54,15 @@ function getAvatarInitials(username: string): string {
 
 interface UserListProps {
   onClose?: () => void;
+  skipAuthCheck?: boolean; // Skip the internal auth check when controlled by parent
 }
 
-export function UserList({ onClose }: UserListProps) {
+export function UserList({ onClose, skipAuthCheck = false }: UserListProps) {
   const [searchQuery, setSearchQuery] = useState("");
 
   const router = useRouter();
   const pathname = usePathname();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
 
   // Get current selected user ID from pathname
   const selectedUserId = pathname.split('/')[2] || null;
@@ -86,16 +89,15 @@ export function UserList({ onClose }: UserListProps) {
   // Get unread counts from hook
   const { totalUnreadCount, usersWithNewMessages } = useUnreadCounts();
 
-
-
   const handleUserClick = (userId: string) => {
     router.push(`/chat/${userId}`);
     // Close mobile user list when a user is selected
     onClose?.();
   };
 
-  // Loading state
-  if (!isAuthenticated) {
+  // Loading state - only show "please sign in" if we're not loading and not authenticated
+  // Skip this check if the parent is controlling the auth state
+  if (!skipAuthCheck && !isLoading && !isAuthenticated) {
     return (
       <div className="flex items-center justify-center h-full">
         <div className="text-center">
@@ -166,14 +168,12 @@ export function UserList({ onClose }: UserListProps) {
         {/* Active Users Tab */}
         <TabsContent value="users" className="flex-1 overflow-hidden mt-2 data-[state=active]:flex data-[state=active]:flex-col">
           {activeUsers === undefined ? (
-            <div className="flex items-center justify-center flex-1">
-              <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-            </div>
+            <UserListTabSkeleton />
           ) : activeUsers.length === 0 ? (
             <div className="flex flex-col items-center justify-center flex-1 text-center p-6">
               <Users className="h-12 w-12 text-muted-foreground mb-4" />
               <p className="text-muted-foreground">No active users found</p>
-              <p className="text-sm text-muted-foreground">Users will appear here when they're online</p>
+              <p className="text-sm text-muted-foreground">Users appear here when active within the last 5 minutes</p>
             </div>
           ) : (
             <div className="flex-1 overflow-y-auto scrollbar-hide">
@@ -199,9 +199,10 @@ export function UserList({ onClose }: UserListProps) {
                           {getAvatarInitials(user.username)}
                         </AvatarFallback>
                       </Avatar>
-                      {user.isOnline && (
-                        <div className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 lg:h-3 lg:w-3 bg-green-500 border-2 border-background rounded-full" />
-                      )}
+                      <AvatarStatusIndicator
+                        status={user.currentStatus}
+                        showOnlineStatus={user.showOnlineStatus}
+                      />
                     </div>
 
                     {/* User Info */}
@@ -241,9 +242,7 @@ export function UserList({ onClose }: UserListProps) {
         {/* Chat History Tab */}
         <TabsContent value="chats" className="flex-1 overflow-hidden mt-2 data-[state=active]:flex data-[state=active]:flex-col">
           {chatUsers === undefined ? (
-            <div className="flex items-center justify-center flex-1">
-              <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-            </div>
+            <UserListTabSkeleton />
           ) : chatUsers.length === 0 ? (
             <div className="flex flex-col items-center justify-center flex-1 text-center p-6">
               <MessageCircle className="h-12 w-12 text-muted-foreground mb-4" />
@@ -283,9 +282,10 @@ export function UserList({ onClose }: UserListProps) {
                           {getAvatarInitials(user.username)}
                         </AvatarFallback>
                       </Avatar>
-                      {user.isOnline && (
-                        <div className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 lg:h-3 lg:w-3 bg-green-500 border-2 border-background rounded-full" />
-                      )}
+                      <AvatarStatusIndicator
+                        status={user.currentStatus || (user.isOnline ? "online" : "offline")}
+                        showOnlineStatus={user.showOnlineStatus}
+                      />
                     </div>
 
                     {/* User Info */}

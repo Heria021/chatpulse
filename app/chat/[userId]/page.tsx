@@ -3,8 +3,8 @@
 import { useEffect, use } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/contexts/auth-context";
-import { Loader2 } from "lucide-react";
 import { ChatInterface } from "@/components/chat/chat-interface";
+import { ChatInterfaceSkeleton } from "@/components/ui/skeletons";
 
 interface ChatUserPageProps {
   params: Promise<{
@@ -26,11 +26,7 @@ export default function ChatUserPage({ params }: ChatUserPageProps) {
 
   // Show loading while checking authentication
   if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin" />
-      </div>
-    );
+    return <ChatInterfaceSkeleton />;
   }
 
   // Show nothing if not authenticated (will redirect)

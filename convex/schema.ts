@@ -18,9 +18,16 @@ export default defineSchema({
     
     bio: v.optional(v.string()),
     
-    // Status fields
+    // Enhanced status fields for real-world approach
     isOnline: v.boolean(),
     lastSeen: v.number(), // timestamp
+    lastActivity: v.optional(v.number()), // last meaningful activity (typing, sending, reading)
+    currentStatus: v.optional(v.union(
+      v.literal("online"),      // actively using ChatNow (< 2 minutes)
+      v.literal("recently_active"), // used recently (2-15 minutes)
+      v.literal("away"),        // last seen 15 minutes - 24 hours
+      v.literal("offline")      // last seen 24+ hours or never
+    )),
     
     // Privacy settings
     allowGuestMessages: v.boolean(),
@@ -43,6 +50,8 @@ export default defineSchema({
   .index("by_username", ["username"])
   .index("by_email", ["email"])
   .index("by_online_status", ["isOnline", "isActive"])
+  .index("by_current_status", ["currentStatus", "isActive"])
+  .index("by_last_activity", ["lastActivity"])
   .index("by_guest_session", ["guestSessionId"])
   .index("by_creation", ["createdAt"]),
 

@@ -125,6 +125,10 @@ export function saveSessionToken(token: string) {
 
 export function getSessionToken(): string | null {
   try {
+    // Check if we're in a browser environment
+    if (typeof window === 'undefined') {
+      return null;
+    }
     return localStorage.getItem(SESSION_TOKEN_KEY);
   } catch (error) {
     console.warn("Failed to get session token:", error);

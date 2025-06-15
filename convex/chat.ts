@@ -76,6 +76,19 @@ export const getOrCreateConversation = mutation({
     );
 
     if (existingConversation) {
+      // Calculate current status based on activity
+      const now = Date.now();
+      const timeSinceActivity = now - (otherUser.lastActivity || otherUser.lastSeen);
+      let currentStatus: "online" | "recently_active" | "away" | "offline" = "offline";
+
+      if (timeSinceActivity < 2 * 60 * 1000) { // 2 minutes
+        currentStatus = "online";
+      } else if (timeSinceActivity < 5 * 60 * 1000) { // 5 minutes
+        currentStatus = "recently_active";
+      } else if (timeSinceActivity < 24 * 60 * 60 * 1000) { // 24 hours
+        currentStatus = "away";
+      }
+
       return {
         conversationId: existingConversation._id,
         otherUser: {
@@ -83,6 +96,9 @@ export const getOrCreateConversation = mutation({
           username: otherUser.username,
           isOnline: otherUser.isOnline,
           lastSeen: otherUser.lastSeen,
+          lastActivity: otherUser.lastActivity || otherUser.lastSeen,
+          currentStatus,
+          showOnlineStatus: otherUser.showOnlineStatus ?? true,
           isGuest: otherUser.isGuest,
           bio: otherUser.bio,
           age: otherUser.age,
@@ -92,15 +108,28 @@ export const getOrCreateConversation = mutation({
     }
 
     // Create new conversation
-    const now = Date.now();
+    const conversationNow = Date.now();
     const conversationId = await ctx.db.insert("conversations", {
       participantIds: [currentUser._id, args.otherUserId],
       type: "direct",
-      lastMessageAt: now,
+      lastMessageAt: conversationNow,
       isActive: true,
-      createdAt: now,
-      updatedAt: now
+      createdAt: conversationNow,
+      updatedAt: conversationNow
     });
+
+    // Calculate current status for new conversation
+    const statusNow = Date.now();
+    const timeSinceActivity = statusNow - (otherUser.lastActivity || otherUser.lastSeen);
+    let currentStatus: "online" | "recently_active" | "away" | "offline" = "offline";
+
+    if (timeSinceActivity < 2 * 60 * 1000) { // 2 minutes
+      currentStatus = "online";
+    } else if (timeSinceActivity < 5 * 60 * 1000) { // 5 minutes
+      currentStatus = "recently_active";
+    } else if (timeSinceActivity < 24 * 60 * 60 * 1000) { // 24 hours
+      currentStatus = "away";
+    }
 
     return {
       conversationId,
@@ -109,6 +138,9 @@ export const getOrCreateConversation = mutation({
         username: otherUser.username,
         isOnline: otherUser.isOnline,
         lastSeen: otherUser.lastSeen,
+        lastActivity: otherUser.lastActivity || otherUser.lastSeen,
+        currentStatus,
+        showOnlineStatus: otherUser.showOnlineStatus ?? true,
         isGuest: otherUser.isGuest,
         bio: otherUser.bio,
         age: otherUser.age,

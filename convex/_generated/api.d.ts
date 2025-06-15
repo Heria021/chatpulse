@@ -15,6 +15,7 @@ import type {
 } from "convex/server";
 import type * as auth from "../auth.js";
 import type * as chat from "../chat.js";
+import type * as presence from "../presence.js";
 import type * as users from "../users.js";
 
 /**
@@ -28,6 +29,7 @@ import type * as users from "../users.js";
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   chat: typeof chat;
+  presence: typeof presence;
   users: typeof users;
 }>;
 export declare const api: FilterApi<

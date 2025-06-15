@@ -2,9 +2,6 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
-  // Temporarily disable all middleware logic for debugging
-  return NextResponse.next();
-
   const { pathname } = request.nextUrl;
 
   // Get session token from cookies or headers
@@ -28,11 +25,12 @@ export function middleware(request: NextRequest) {
     pathname.startsWith(route)
   );
 
-  // If accessing protected route without session token, redirect to signin
-  if (isProtectedRoute && (!sessionToken || sessionToken.length < 10)) {
-    const signInUrl = new URL('/auth/signin', request.url);
-    signInUrl.searchParams.set('redirect', pathname);
-    return NextResponse.redirect(signInUrl);
+  // For protected routes, let the client-side handle authentication
+  // This prevents the middleware from causing redirect loops during page reloads
+  // The client-side auth context will handle the redirect after proper loading
+  if (isProtectedRoute) {
+    // Don't redirect here - let client-side handle it
+    return NextResponse.next();
   }
 
   // If accessing auth route with valid session token, redirect to chat

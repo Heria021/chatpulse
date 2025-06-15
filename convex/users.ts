@@ -24,12 +24,24 @@ export const getActiveUsers = query({
       throw new Error("Current user not found or inactive");
     }
 
-    // Query for active users (excluding current user)
-    let usersQuery = ctx.db
+    // Query for active users with real-world online status
+    const allUsers = await ctx.db
       .query("users")
-      .withIndex("by_online_status", (q) => q.eq("isOnline", true).eq("isActive", true));
+      .filter((q) => q.eq(q.field("isActive"), true))
+      .collect();
 
-    const users = await usersQuery.collect();
+    // Calculate real-time status for each user and filter for online/recently active
+    const now = Date.now();
+    const ONLINE_THRESHOLD = 2 * 60 * 1000; // 2 minutes
+    const RECENTLY_ACTIVE_THRESHOLD = 5 * 60 * 1000; // 5 minutes
+
+    const users = allUsers.filter(user => {
+      const lastActivity = user.lastActivity || user.lastSeen;
+      const timeSinceActivity = now - lastActivity;
+
+      // Only show users who are online or recently active
+      return timeSinceActivity < RECENTLY_ACTIVE_THRESHOLD;
+    });
 
     // Get blocked users by current user
     const blockedUsers = await ctx.db
@@ -98,27 +110,54 @@ export const getActiveUsers = query({
           ).length;
         }
 
+        // Calculate real-time status
+        const lastActivity = user.lastActivity || user.lastSeen;
+        const timeSinceActivity = now - lastActivity;
+        let currentStatus: "online" | "recently_active" | "away" | "offline" = "offline";
+
+        if (timeSinceActivity < ONLINE_THRESHOLD) {
+          currentStatus = "online";
+        } else if (timeSinceActivity < RECENTLY_ACTIVE_THRESHOLD) {
+          currentStatus = "recently_active";
+        }
+
         return {
           _id: user._id,
           username: user.username,
-          isOnline: user.isOnline,
+          isOnline: currentStatus === "online", // Keep for backward compatibility
+          currentStatus,
           lastSeen: user.lastSeen,
+          lastActivity: user.lastActivity,
           isGuest: user.isGuest,
           bio: user.bio,
           age: user.age,
           gender: user.gender,
           allowGuestMessages: user.allowGuestMessages,
-          showOnlineStatus: user.showOnlineStatus,
+          showOnlineStatus: user.showOnlineStatus ?? true,
           unreadCount
         };
       })
     );
 
-    // Sort users with unread messages to the top
+    // Sort users: unread messages first, then by online status, then by activity
     return usersWithUnreadCounts.sort((a, b) => {
+      // First priority: unread messages
       if (a.unreadCount > 0 && b.unreadCount === 0) return -1;
       if (a.unreadCount === 0 && b.unreadCount > 0) return 1;
-      return b.unreadCount - a.unreadCount; // Then by unread count descending
+
+      // Second priority: online status (online > recently_active)
+      const statusPriority = { online: 2, recently_active: 1, away: 0, offline: 0 };
+      const aStatusPriority = statusPriority[a.currentStatus];
+      const bStatusPriority = statusPriority[b.currentStatus];
+
+      if (aStatusPriority !== bStatusPriority) {
+        return bStatusPriority - aStatusPriority;
+      }
+
+      // Third priority: last activity (more recent first)
+      const aLastActivity = a.lastActivity || a.lastSeen;
+      const bLastActivity = b.lastActivity || b.lastSeen;
+      return bLastActivity - aLastActivity;
     });
   },
 });
@@ -217,17 +256,36 @@ export const getUsersWithMutualChats = query({
               !msg.readBy.some(read => read.userId === currentUser._id)
             ).length;
 
+            // Calculate real-time status for chat users too
+            const now = Date.now();
+            const ONLINE_THRESHOLD = 2 * 60 * 1000; // 2 minutes
+            const RECENTLY_ACTIVE_THRESHOLD = 5 * 60 * 1000; // 5 minutes
+
+            const lastActivity = otherUser.lastActivity || otherUser.lastSeen;
+            const timeSinceActivity = now - lastActivity;
+            let currentStatus: "online" | "recently_active" | "away" | "offline" = "offline";
+
+            if (timeSinceActivity < ONLINE_THRESHOLD) {
+              currentStatus = "online";
+            } else if (timeSinceActivity < RECENTLY_ACTIVE_THRESHOLD) {
+              currentStatus = "recently_active";
+            } else if (timeSinceActivity < 24 * 60 * 60 * 1000) { // 24 hours
+              currentStatus = "away";
+            }
+
             mutualChatUsers.push({
               _id: otherUser._id,
               username: otherUser.username,
-              isOnline: otherUser.isOnline,
+              isOnline: currentStatus === "online", // Keep for backward compatibility
+              currentStatus,
               lastSeen: otherUser.lastSeen,
+              lastActivity: otherUser.lastActivity,
               isGuest: otherUser.isGuest,
               bio: otherUser.bio,
               age: otherUser.age,
               gender: otherUser.gender,
               allowGuestMessages: otherUser.allowGuestMessages,
-              showOnlineStatus: otherUser.showOnlineStatus,
+              showOnlineStatus: otherUser.showOnlineStatus ?? true,
               conversationId: conversation._id,
               lastMessage: lastMessage ? {
                 content: lastMessage.content,

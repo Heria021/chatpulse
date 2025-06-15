@@ -23,6 +23,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [sessionToken, setSessionTokenState] = useState<string | null>(null);
+  const [minLoadingTime, setMinLoadingTime] = useState(true);
 
   // Convex mutations and queries
   const registerUserMutation = useMutation(api.auth.registerUser);
@@ -43,29 +44,58 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const token = getSessionToken();
     if (token) {
       setSessionTokenState(token);
+      // Keep loading true - we'll wait for the server response
     } else {
+      // No token means definitely not authenticated
       setIsLoading(false);
     }
+  }, []);
+
+  // Minimum loading time to prevent flash
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setMinLoadingTime(false);
+    }, 300); // 300ms minimum loading time
+
+    return () => clearTimeout(timer);
   }, []);
 
   // Update user when session data changes
   useEffect(() => {
     if (sessionToken) {
+      // Only update loading state when we have a definitive answer from the server
       if (userBySession !== undefined) {
         setUser(userBySession);
-        setIsLoading(false);
-        
+
+        // Only set loading to false if minimum time has passed
+        if (!minLoadingTime) {
+          setIsLoading(false);
+        }
+
         // If session is invalid, clear it
         if (!userBySession) {
           clearSessionToken();
           setSessionTokenState(null);
         }
       }
+      // If userBySession is still undefined, keep loading true
     } else {
+      // No session token means definitely not authenticated
       setUser(null);
+      if (!minLoadingTime) {
+        setIsLoading(false);
+      }
+    }
+  }, [userBySession, sessionToken, minLoadingTime]);
+
+  // Set loading to false when minimum time passes and we have user data
+  useEffect(() => {
+    if (!minLoadingTime && sessionToken && userBySession !== undefined) {
+      setIsLoading(false);
+    } else if (!minLoadingTime && !sessionToken) {
       setIsLoading(false);
     }
-  }, [userBySession, sessionToken]);
+  }, [minLoadingTime, sessionToken, userBySession]);
 
   const signIn = async (data: SignInFormData) => {
     try {

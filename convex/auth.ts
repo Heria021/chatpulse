@@ -89,6 +89,8 @@ export const registerUser = mutation({
       isGuest: false,
       isOnline: true,
       lastSeen: now,
+      lastActivity: now,
+      currentStatus: "online" as const,
       allowGuestMessages: true,
       showOnlineStatus: true,
       isActive: true,
@@ -165,11 +167,13 @@ export const signInUser = mutation({
       throw new ConvexError("Invalid credentials");
     }
 
-    // Update user status
+    // Update user status with immediate activity
     const now = Date.now();
     await ctx.db.patch(user._id, {
       isOnline: true,
       lastSeen: now,
+      lastActivity: now, // Mark login as immediate activity
+      currentStatus: "online",
       updatedAt: now,
     });
 
@@ -240,6 +244,8 @@ export const createGuestUser = mutation({
       guestExpiresAt,
       isOnline: true,
       lastSeen: now,
+      lastActivity: now,
+      currentStatus: "online" as const,
       allowGuestMessages: true,
       showOnlineStatus: true,
       isActive: true,

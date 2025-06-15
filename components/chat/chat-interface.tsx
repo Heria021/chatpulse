@@ -15,6 +15,8 @@ import { getSessionToken } from "@/lib/utils/auth";
 import { UserOptionsMenu } from "@/components/ui/user-options-menu";
 import { MessageInput } from "./message-input";
 import { MessageArea } from "./message-area";
+import { useOnlineStatus, ACTIVITY_TYPES } from "@/lib/hooks/use-online-status";
+import { AvatarStatusIndicator } from "@/components/ui/status-indicator";
 
 
 
@@ -51,7 +53,7 @@ function getAvatarInitials(username: string): string {
 }
 
 // Chat header skeleton component
-function ChatHeaderSkeleton() {
+export function ChatHeaderSkeleton() {
   return (
     <div className="flex items-center justify-between p-3 lg:p-4 border-b border-border bg-card">
       <div className="flex items-center space-x-2 lg:space-x-3">
@@ -115,6 +117,12 @@ export function ChatInterface({ userId }: ChatInterfaceProps) {
     fileName?: string;
     fileMimeType?: string;
   } | null>(null);
+
+  // Online status management
+  const { trackActivity } = useOnlineStatus({
+    enabled: true,
+    heartbeatInterval: 30000 // 30 seconds
+  });
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -224,6 +232,8 @@ export function ChatInterface({ userId }: ChatInterfaceProps) {
           }).catch(error => {
             console.error("Failed to mark messages as read:", error);
           });
+          // Track message reading activity (meaningful activity)
+          trackActivity(ACTIVITY_TYPES.MESSAGE_READ);
         }
       }
     };
@@ -237,6 +247,8 @@ export function ChatInterface({ userId }: ChatInterfaceProps) {
   };
 
   const handleSendMessage = () => {
+    // Track message sending activity (this is meaningful activity)
+    trackActivity(ACTIVITY_TYPES.MESSAGE_SENT);
     scrollToBottom();
   };
 
@@ -267,6 +279,8 @@ export function ChatInterface({ userId }: ChatInterfaceProps) {
           sessionToken,
           conversationId: conversation.conversationId
         });
+        // Track typing activity
+        trackActivity(ACTIVITY_TYPES.TYPING_STARTED);
       }
 
       // Clear existing timeout
@@ -368,17 +382,24 @@ export function ChatInterface({ userId }: ChatInterfaceProps) {
                 {getAvatarInitials(conversation.otherUser.username)}
               </AvatarFallback>
             </Avatar>
-            {conversation.otherUser.isOnline && (
-              <div className="absolute -bottom-0.5 -right-0.5 lg:-bottom-1 lg:-right-1 h-2.5 w-2.5 lg:h-3 lg:w-3 bg-green-500 border-2 border-background rounded-full" />
-            )}
+            <AvatarStatusIndicator
+              status={conversation.otherUser.currentStatus || (conversation.otherUser.isOnline ? "online" : "offline")}
+              showOnlineStatus={conversation.otherUser.showOnlineStatus ?? true}
+            />
           </div>
           <div>
             <h3 className="font-semibold text-sm lg:text-base">{conversation.otherUser.username}</h3>
             <p className="text-xs lg:text-sm text-muted-foreground">
-              {conversation.otherUser.isOnline
-                ? "Online"
-                : `Last seen ${formatMessageTime(conversation.otherUser.lastSeen)}`
-              }
+              {(() => {
+                const status = conversation.otherUser.currentStatus || (conversation.otherUser.isOnline ? "online" : "offline");
+                if (status === "online" || status === "recently_active") {
+                  return "Online";
+                } else if (status === "away") {
+                  return "Away";
+                } else {
+                  return `Last seen ${formatMessageTime(conversation.otherUser.lastSeen)}`;
+                }
+              })()}
             </p>
           </div>
         </div>
