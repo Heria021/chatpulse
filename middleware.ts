@@ -9,7 +9,8 @@ export function middleware(request: NextRequest) {
 
   // Get session token from cookies or headers
   const sessionToken = request.cookies.get('chatnow_session_token')?.value ||
-                      request.headers.get('authorization')?.replace('Bearer ', '');
+                      request.headers.get('authorization')?.replace('Bearer ', '') ||
+                      '';
 
   // Define protected routes that require authentication
   const protectedRoutes = ['/chat'];

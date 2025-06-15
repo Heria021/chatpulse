@@ -1,5 +1,7 @@
 import { z } from "zod";
-import { Id } from "convex/_generated/dataModel";
+
+// Simple ID type for build compatibility
+type Id<T extends string> = string & { __tableName: T };
 
 // User types
 export interface User {

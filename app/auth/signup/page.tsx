@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -33,7 +33,7 @@ import { signUpSchema, SignUpFormData } from "@/lib/types/auth";
 import { saveFormData, loadFormData, clearFormData, debounce } from "@/lib/utils/auth";
 import { Eye, EyeOff, Loader2, AlertCircle, CheckCircle, XCircle } from "lucide-react";
 
-export default function SignUpPage() {
+function SignUpForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { signUp, isAuthenticated, isLoading: authLoading, checkUsernameAvailability } = useAuth();
@@ -431,5 +431,19 @@ export default function SignUpPage() {
         </p>
       </div>
     </AuthLayout>
+  );
+}
+
+export default function SignUpPage() {
+  return (
+    <Suspense fallback={
+      <AuthLayout title="Loading..." showBackToHome={false}>
+        <div className="flex items-center justify-center py-8">
+          <Loader2 className="h-8 w-8 animate-spin" />
+        </div>
+      </AuthLayout>
+    }>
+      <SignUpForm />
+    </Suspense>
   );
 }
