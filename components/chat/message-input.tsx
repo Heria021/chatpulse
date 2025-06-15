@@ -6,6 +6,7 @@ import { Send, Paperclip, Smile, Loader2, X, FileText, Image as ImageIcon, Reply
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
 import { ChatConversation } from "@/lib/types/auth";
 import { getSessionToken } from "@/lib/utils/auth";
 import { toast } from "sonner";
@@ -17,7 +18,7 @@ interface MessageInputProps {
   onTyping: () => void;
   isSending: boolean;
   replyToMessage?: {
-    _id: string;
+    _id: Id<"messages">;
     content: string;
     type: "text" | "image" | "file" | "system";
     senderUsername: string;

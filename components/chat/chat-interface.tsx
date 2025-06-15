@@ -9,6 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 import { useAuth } from "@/lib/contexts/auth-context";
 import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
 import { ChatConversation } from "@/lib/types/auth";
 import { getSessionToken } from "@/lib/utils/auth";
 import { UserOptionsMenu } from "@/components/ui/user-options-menu";
@@ -107,7 +108,7 @@ export function ChatInterface({ userId }: ChatInterfaceProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [isTyping, setIsTyping] = useState(false);
   const [replyToMessage, setReplyToMessage] = useState<{
-    _id: string;
+    _id: Id<"messages">;
     content: string;
     type: "text" | "image" | "file" | "system";
     senderUsername: string;

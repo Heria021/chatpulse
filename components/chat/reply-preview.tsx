@@ -1,11 +1,12 @@
 "use client";
 
 import { FileText, Image as ImageIcon, Video, Music, Archive, File } from "lucide-react";
+import { Id } from "@/convex/_generated/dataModel";
 import { cn } from "@/lib/utils";
 
 interface ReplyPreviewProps {
   replyToMessage: {
-    _id: string;
+    _id: Id<"messages">;
     content: string;
     type: "text" | "image" | "file" | "system";
     senderUsername: string;
