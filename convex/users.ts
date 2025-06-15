@@ -202,12 +202,21 @@ export const getUsersWithMutualChats = query({
     );
 
     // Get blocked users by current user
-    const blockedUsers = await ctx.db
+    const blockedByCurrentUser = await ctx.db
       .query("blocks")
       .withIndex("by_blocker", (q) => q.eq("blockerId", currentUser._id))
       .collect();
 
-    const blockedUserIds = new Set(blockedUsers.map(block => block.blockedId));
+    // Get users who have blocked the current user
+    const blockedCurrentUser = await ctx.db
+      .query("blocks")
+      .filter((q) => q.eq(q.field("blockedId"), currentUser._id))
+      .collect();
+
+    const blockedUserIds = new Set([
+      ...blockedByCurrentUser.map(block => block.blockedId),
+      ...blockedCurrentUser.map(block => block.blockerId)
+    ]);
 
     // For each conversation, check if there are mutual messages
     const mutualChatUsers = [];

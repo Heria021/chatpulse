@@ -53,6 +53,7 @@ export default defineSchema({
   .index("by_current_status", ["currentStatus", "isActive"])
   .index("by_last_activity", ["lastActivity"])
   .index("by_guest_session", ["guestSessionId"])
+  .index("by_guest_status", ["isGuest", "lastActivity"])
   .index("by_creation", ["createdAt"]),
 
   // Chat rooms/conversations
@@ -114,7 +115,7 @@ export default defineSchema({
   })
   .index("by_conversation", ["conversationId", "createdAt"])
   .index("by_sender", ["senderId", "createdAt"])
-  .index("by_creation", ["createdAt"]),
+  .index("by_timestamp", ["createdAt"]),
 
   // User sessions (for tracking online status and guest sessions)
   sessions: defineTable({
@@ -148,6 +149,21 @@ export default defineSchema({
   .index("by_user", ["userId", "createdAt"])
   .index("by_action", ["action", "createdAt"])
   .index("by_timestamp", ["createdAt"]),
+
+  // Database cleanup logs
+  cleanupLogs: defineTable({
+    taskType: v.string(), // "expired_sessions", "old_messages", "typing_indicators", etc.
+    itemsProcessed: v.number(),
+    itemsDeleted: v.number(),
+    status: v.union(v.literal("success"), v.literal("error"), v.literal("partial")),
+    errorMessage: v.optional(v.string()),
+    executionTimeMs: v.number(),
+    dryRun: v.boolean(),
+    createdAt: v.number(),
+  })
+  .index("by_task_type", ["taskType", "createdAt"])
+  .index("by_timestamp", ["createdAt"])
+  .index("by_status", ["status", "createdAt"]),
 
   blocks: defineTable({
     blockerId: v.id("users"),

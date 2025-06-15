@@ -175,8 +175,24 @@ export function ChatInterface({ userId }: ChatInterfaceProps) {
         });
         setConversation(result);
       } catch (error) {
-        console.error("Failed to initialize conversation:", error);
-        setError(error instanceof Error ? error.message : "Failed to load conversation");
+        let errorMessage = error instanceof Error ? error.message : "Failed to load conversation";
+
+        // Extract the actual error message from Convex error format
+        if (errorMessage.includes("ConvexError:")) {
+          const match = errorMessage.match(/ConvexError: (.+?)(?:\n|$)/);
+          if (match) {
+            errorMessage = match[1];
+          }
+        }
+
+        const isBlockingError = errorMessage.includes("blocked");
+
+        // Only log non-blocking errors to console (blocking is expected behavior)
+        if (!isBlockingError) {
+          console.error("Failed to initialize conversation:", error);
+        }
+
+        setError(errorMessage);
       } finally {
         setIsLoading(false);
       }
@@ -345,15 +361,27 @@ export function ChatInterface({ userId }: ChatInterfaceProps) {
 
   // Error state
   if (error) {
+    const isBlockedError = error.includes("blocked");
+    const isUserBlockedYou = error.includes("This user has blocked you");
+    const isYouBlockedUser = error.includes("You have blocked this user");
+
     return (
       <div className="flex items-center justify-center h-full">
-        <div className="text-center">
-          <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold mb-2">Unable to load conversation</h3>
-          <p className="text-muted-foreground mb-4">{error}</p>
-          <Button onClick={() => window.location.reload()}>
-            Try Again
-          </Button>
+        <div className="text-center max-w-md px-4">
+          <AlertCircle className={`h-12 w-12 mx-auto mb-4 ${isBlockedError ? 'text-orange-500' : 'text-red-500'}`} />
+          <h3 className="text-lg font-semibold mb-2">
+            {isBlockedError ? 'Chat Unavailable' : 'Unable to load conversation'}
+          </h3>
+          <p className="text-muted-foreground mb-4">
+            {isUserBlockedYou && "This user has blocked you and you cannot send them messages."}
+            {isYouBlockedUser && "You have blocked this user. You can unblock them from their profile to start chatting again."}
+            {!isBlockedError && error}
+          </p>
+          {!isBlockedError && (
+            <Button onClick={() => window.location.reload()}>
+              Try Again
+            </Button>
+          )}
         </div>
       </div>
     );

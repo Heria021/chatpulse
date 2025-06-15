@@ -43,7 +43,7 @@ export const getOrCreateConversation = mutation({
       .first();
 
     if (isBlockedByOther) {
-      throw new ConvexError("You cannot send messages to this user");
+      throw new ConvexError("This user has blocked you");
     }
 
     // Check if other user is blocked by current user
@@ -54,7 +54,7 @@ export const getOrCreateConversation = mutation({
       .first();
 
     if (hasBlockedOther) {
-      throw new ConvexError("You have blocked this user. Unblock them to send messages.");
+      throw new ConvexError("You have blocked this user");
     }
 
     // Check privacy settings for guest users
@@ -305,6 +305,32 @@ export const sendMessage = mutation({
 
     if (!conversation.participantIds.includes(currentUser._id)) {
       throw new ConvexError("You don't have access to this conversation");
+    }
+
+    // Get the other participant to check blocking status
+    const otherUserId = conversation.participantIds.find(id => id !== currentUser._id);
+    if (otherUserId) {
+      // Check if current user is blocked by the other user
+      const isBlockedByOther = await ctx.db
+        .query("blocks")
+        .withIndex("by_blocker", (q) => q.eq("blockerId", otherUserId))
+        .filter((q) => q.eq(q.field("blockedId"), currentUser._id))
+        .first();
+
+      if (isBlockedByOther) {
+        throw new ConvexError("This user has blocked you");
+      }
+
+      // Check if other user is blocked by current user
+      const hasBlockedOther = await ctx.db
+        .query("blocks")
+        .withIndex("by_blocker", (q) => q.eq("blockerId", currentUser._id))
+        .filter((q) => q.eq(q.field("blockedId"), otherUserId))
+        .first();
+
+      if (hasBlockedOther) {
+        throw new ConvexError("You have blocked this user");
+      }
     }
 
     // Validate message content
