@@ -200,8 +200,7 @@ export function StatusBadge({
       className={cn(
         "inline-flex items-center space-x-1 px-2 py-1 rounded-full text-xs font-medium",
         {
-          "bg-green-100 text-green-800": status === "online",
-          "bg-green-100 text-green-800": status === "recently_active", // Same as online
+          "bg-green-100 text-green-800": status === "online" || status === "recently_active",
           "bg-gray-100 text-gray-800": status === "away",
           "bg-gray-50 text-gray-600": status === "offline"
         },
