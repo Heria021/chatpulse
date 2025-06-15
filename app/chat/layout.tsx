@@ -54,7 +54,7 @@ export default function ChatLayout({ children }: ChatLayoutProps) {
               <SheetTitle>User List</SheetTitle>
               <SheetDescription>Browse and select users to start conversations</SheetDescription>
             </VisuallyHidden>
-            <UserList />
+            <UserList onClose={() => setIsMobileUserListOpen(false)} />
           </SheetContent>
         </Sheet>
 

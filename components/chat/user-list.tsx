@@ -50,7 +50,11 @@ function getAvatarInitials(username: string): string {
     .slice(0, 2);
 }
 
-export function UserList() {
+interface UserListProps {
+  onClose?: () => void;
+}
+
+export function UserList({ onClose }: UserListProps) {
   const [searchQuery, setSearchQuery] = useState("");
 
   const router = useRouter();
@@ -86,6 +90,8 @@ export function UserList() {
 
   const handleUserClick = (userId: string) => {
     router.push(`/chat/${userId}`);
+    // Close mobile user list when a user is selected
+    onClose?.();
   };
 
   // Loading state

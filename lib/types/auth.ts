@@ -72,6 +72,14 @@ export interface ChatMessage {
     readAt: number;
   }>;
   replyToMessageId?: Id<"messages">;
+  replyToMessage?: {
+    _id: Id<"messages">;
+    content: string;
+    type: "text" | "image" | "file" | "system";
+    senderUsername: string;
+    fileName?: string;
+    fileMimeType?: string;
+  } | null;
   fileUrl?: string;
   fileName?: string;
   fileSize?: number;

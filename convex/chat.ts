@@ -163,10 +163,28 @@ export const getMessages = query({
     // Reverse to get chronological order (oldest first)
     const chronologicalMessages = messages.reverse();
 
-    // Get sender information for each message
+    // Get sender information and reply details for each message
     const messagesWithSenders = await Promise.all(
       chronologicalMessages.map(async (message) => {
         const sender = await ctx.db.get(message.senderId);
+
+        // Get reply details if this message is a reply
+        let replyToMessage = null;
+        if (message.replyToMessageId) {
+          const originalMessage = await ctx.db.get(message.replyToMessageId);
+          if (originalMessage) {
+            const originalSender = await ctx.db.get(originalMessage.senderId);
+            replyToMessage = {
+              _id: originalMessage._id,
+              content: originalMessage.content,
+              type: originalMessage.type,
+              senderUsername: originalSender?.username || "Unknown User",
+              fileName: originalMessage.fileName,
+              fileMimeType: originalMessage.fileMimeType
+            };
+          }
+        }
+
         return {
           _id: message._id,
           content: message.content,
@@ -177,6 +195,7 @@ export const getMessages = query({
           createdAt: message.createdAt,
           readBy: message.readBy,
           replyToMessageId: message.replyToMessageId,
+          replyToMessage,
           fileUrl: message.fileUrl,
           fileName: message.fileName,
           fileSize: message.fileSize,
@@ -189,6 +208,33 @@ export const getMessages = query({
   }
 });
 
+// Generate upload URL for file attachments
+export const generateUploadUrl = mutation({
+  args: {
+    sessionToken: v.string(),
+  },
+  handler: async (ctx, args) => {
+    // Verify session
+    const session = await ctx.db
+      .query("sessions")
+      .withIndex("by_token", (q) => q.eq("sessionToken", args.sessionToken))
+      .filter((q) => q.eq(q.field("isActive"), true))
+      .first();
+
+    if (!session) {
+      throw new ConvexError("Invalid session");
+    }
+
+    // Check if session is expired
+    if (session.expiresAt < Date.now()) {
+      throw new ConvexError("Session expired");
+    }
+
+    // Generate and return upload URL
+    return await ctx.storage.generateUploadUrl();
+  }
+});
+
 // Send a new message
 export const sendMessage = mutation({
   args: {
@@ -196,7 +242,12 @@ export const sendMessage = mutation({
     conversationId: v.id("conversations"),
     content: v.string(),
     type: v.optional(v.union(v.literal("text"), v.literal("image"), v.literal("file"))),
-    replyToMessageId: v.optional(v.id("messages"))
+    replyToMessageId: v.optional(v.id("messages")),
+    // File attachment fields
+    storageId: v.optional(v.id("_storage")),
+    fileName: v.optional(v.string()),
+    fileSize: v.optional(v.number()),
+    fileMimeType: v.optional(v.string())
   },
   handler: async (ctx, args) => {
     // Verify session and get current user
@@ -225,12 +276,35 @@ export const sendMessage = mutation({
     }
 
     // Validate message content
-    if (!args.content.trim()) {
+    const isFileMessage = args.type === "image" || args.type === "file";
+
+    if (!isFileMessage && !args.content.trim()) {
       throw new ConvexError("Message cannot be empty");
     }
 
-    if (args.content.length > 2000) {
+    if (!isFileMessage && args.content.length > 2000) {
       throw new ConvexError("Message is too long (max 2000 characters)");
+    }
+
+    // Validate file attachment
+    if (isFileMessage) {
+      if (!args.storageId) {
+        throw new ConvexError("File attachment is required for file messages");
+      }
+      if (!args.fileName) {
+        throw new ConvexError("File name is required for file messages");
+      }
+      if (!args.fileSize) {
+        throw new ConvexError("File size is required for file messages");
+      }
+      if (!args.fileMimeType) {
+        throw new ConvexError("File MIME type is required for file messages");
+      }
+
+      // Validate file size (50MB limit)
+      if (args.fileSize > 50 * 1024 * 1024) {
+        throw new ConvexError("File size too large (max 50MB)");
+      }
     }
 
     // Check if replying to a valid message
@@ -244,10 +318,10 @@ export const sendMessage = mutation({
     const now = Date.now();
 
     // Create the message
-    const messageId = await ctx.db.insert("messages", {
+    const messageData: any = {
       conversationId: args.conversationId,
       senderId: currentUser._id,
-      content: args.content.trim(),
+      content: args.content?.trim() || "",
       type: args.type || "text",
       isDeleted: false,
       readBy: [{
@@ -257,7 +331,17 @@ export const sendMessage = mutation({
       replyToMessageId: args.replyToMessageId,
       createdAt: now,
       updatedAt: now
-    });
+    };
+
+    // Add file fields if it's a file message
+    if (isFileMessage && args.storageId) {
+      messageData.fileUrl = await ctx.storage.getUrl(args.storageId);
+      messageData.fileName = args.fileName;
+      messageData.fileSize = args.fileSize;
+      messageData.fileMimeType = args.fileMimeType;
+    }
+
+    const messageId = await ctx.db.insert("messages", messageData);
 
     // Update conversation's last message info
     await ctx.db.patch(args.conversationId, {

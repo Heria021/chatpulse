@@ -80,34 +80,43 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
   return (
     <TooltipProvider>
       <div className={cn(
-        "fixed lg:relative inset-y-0 left-0 z-50 w-16",
+        "fixed lg:relative inset-y-0 left-0 z-50 w-64 lg:w-16",
         "bg-background border-r",
         "flex flex-col",
         "transition-transform duration-300 ease-in-out",
         isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
       )}>
         {/* Header */}
-        <div className="flex h-16 items-center justify-center px-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
-            <MessageCircle className="h-5 w-5 text-primary-foreground" />
+        <div className="flex h-16 items-center justify-center lg:justify-center px-3">
+          <div className="flex items-center space-x-3 lg:space-x-0">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
+              <MessageCircle className="h-5 w-5 text-primary-foreground" />
+            </div>
+            <h1 className="font-bold text-lg lg:hidden">ChatNow</h1>
           </div>
         </div>
 
         <Separator />
 
         {/* User Avatar */}
-        <div className="flex h-16 items-center justify-center px-3">
+        <div className="flex h-16 items-center justify-center lg:justify-center px-3">
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-12 w-12 rounded-full">
-                <Avatar className="h-10 w-10">
+              <Button variant="ghost" className="h-12 w-full lg:w-12 rounded-full lg:rounded-full justify-start lg:justify-center px-3 lg:px-0">
+                <Avatar className="h-10 w-10 flex-shrink-0">
                   <AvatarFallback>
                     {user.username.charAt(0).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
+                <div className="ml-3 lg:hidden text-left">
+                  <p className="font-medium text-sm">{user.username}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {user.isGuest ? 'Guest User' : 'Registered User'}
+                  </p>
+                </div>
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="right">
+            <TooltipContent side="right" className="lg:block hidden">
               <div className="text-center">
                 <p className="font-medium">{user.username}</p>
                 <p className="text-xs text-muted-foreground">
@@ -125,21 +134,21 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
           {navigationItems.map((item) => {
             const Icon = item.icon;
             const isActive = activeSection === item.id;
-            
+
             return (
-              <div key={item.id} className="flex justify-center">
+              <div key={item.id} className="flex justify-center lg:justify-center">
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button
                       variant={isActive ? "secondary" : "ghost"}
-                      size="icon"
-                      className="h-12 w-12"
+                      className="h-12 w-full lg:w-12 justify-start lg:justify-center px-3 lg:px-0"
                       onClick={() => navigateToSection(item.route)}
                     >
-                      <Icon className="h-5 w-5" />
+                      <Icon className="h-5 w-5 flex-shrink-0" />
+                      <span className="ml-3 lg:hidden font-medium">{item.label}</span>
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent side="right">
+                  <TooltipContent side="right" className="lg:block hidden">
                     <div>
                       <p className="font-medium">{item.label}</p>
                       <p className="text-xs text-muted-foreground">{item.description}</p>
@@ -166,14 +175,14 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
             <TooltipTrigger asChild>
               <Button
                 variant="ghost"
-                size="icon"
-                className="h-12 w-12 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                className="h-12 w-full lg:w-12 text-destructive hover:bg-destructive/10 hover:text-destructive justify-start lg:justify-center px-3 lg:px-0"
                 onClick={handleSignOut}
               >
-                <LogOut className="h-5 w-5" />
+                <LogOut className="h-5 w-5 flex-shrink-0" />
+                <span className="ml-3 lg:hidden font-medium">Sign Out</span>
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="right">
+            <TooltipContent side="right" className="lg:block hidden">
               <div>
                 <p className="font-medium">Sign Out</p>
                 <p className="text-xs text-muted-foreground">Leave ChatNow</p>
