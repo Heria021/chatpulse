@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "convex/react";
 import { useAuth } from "@/lib/contexts/auth-context";
-import { Loader2, User, Edit, Save, X, Calendar, Mail, Shield, Eye, Clock, Crown, ArrowUp } from "lucide-react";
+import { Loader2, User, Edit, Save, X, Calendar, Mail, Shield, Eye, Clock, Crown, ArrowUp, MapPin } from "lucide-react";
 import { AppLayout } from "@/components/chat/app-layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -36,6 +36,7 @@ import { updateProfileSchema, UpdateProfileFormData } from "@/lib/types/auth";
 import { api } from "@/convex/_generated/api";
 import { getSessionToken } from "@/lib/utils/auth";
 import { toast } from "sonner";
+import { COUNTRIES, STATES, getStatesByCountry } from "@/lib/data/locations";
 
 // Helper function to generate avatar initials
 function getAvatarInitials(username: string): string {
@@ -53,6 +54,8 @@ export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showUpgradeForm, setShowUpgradeForm] = useState(false);
+  const [selectedCountry, setSelectedCountry] = useState<string>("");
+  const [availableStates, setAvailableStates] = useState(STATES.filter(state => state.countryCode === ""));
 
   // Get session token for API calls
   const sessionToken = getSessionToken();
@@ -77,6 +80,10 @@ export default function ProfilePage() {
       gender: user?.gender || "other",
       allowGuestMessages: user?.allowGuestMessages ?? true,
       showOnlineStatus: user?.showOnlineStatus ?? true,
+      countryCode: user?.countryCode || "",
+      countryName: user?.countryName || "",
+      stateCode: user?.stateCode || "",
+      stateName: user?.stateName || "",
     },
   });
 
@@ -90,7 +97,20 @@ export default function ProfilePage() {
         gender: user.gender,
         allowGuestMessages: user.allowGuestMessages,
         showOnlineStatus: user.showOnlineStatus,
+        countryCode: user.countryCode || "",
+        countryName: user.countryName || "",
+        stateCode: user.stateCode || "",
+        stateName: user.stateName || "",
       });
+
+      // Update location state
+      if (user.countryCode) {
+        setSelectedCountry(user.countryCode);
+        setAvailableStates(getStatesByCountry(user.countryCode));
+      } else {
+        setSelectedCountry("");
+        setAvailableStates([]);
+      }
     }
   }, [user, form]);
 
@@ -107,6 +127,10 @@ export default function ProfilePage() {
         gender: data.gender,
         allowGuestMessages: data.allowGuestMessages,
         showOnlineStatus: data.showOnlineStatus,
+        countryCode: data.countryCode || undefined,
+        countryName: data.countryName || undefined,
+        stateCode: data.stateCode || undefined,
+        stateName: data.stateName || undefined,
       });
       toast.success("Profile updated successfully!");
       setIsEditing(false);
@@ -120,6 +144,45 @@ export default function ProfilePage() {
   const handleCancelEdit = () => {
     form.reset();
     setIsEditing(false);
+  };
+
+  // Handle country selection change
+  const handleCountryChange = (countryCode: string) => {
+    if (countryCode === "none") {
+      // Clear country selection
+      setSelectedCountry("");
+      setAvailableStates([]);
+      form.setValue("countryCode", "");
+      form.setValue("countryName", "");
+      form.setValue("stateCode", "");
+      form.setValue("stateName", "");
+    } else {
+      setSelectedCountry(countryCode);
+      const country = COUNTRIES.find(c => c.code === countryCode);
+      const states = getStatesByCountry(countryCode);
+      setAvailableStates(states);
+
+      // Update form values
+      form.setValue("countryCode", countryCode);
+      form.setValue("countryName", country?.name || "");
+
+      // Clear state selection when country changes
+      form.setValue("stateCode", "");
+      form.setValue("stateName", "");
+    }
+  };
+
+  // Handle state selection change
+  const handleStateChange = (stateCode: string) => {
+    if (stateCode === "none") {
+      // Clear state selection
+      form.setValue("stateCode", "");
+      form.setValue("stateName", "");
+    } else {
+      const state = availableStates.find(s => s.code === stateCode);
+      form.setValue("stateCode", stateCode);
+      form.setValue("stateName", state?.name || "");
+    }
   };
 
   // Show loading while checking authentication
@@ -215,6 +278,17 @@ export default function ProfilePage() {
                           <User className="h-3 w-3" />
                           <span>{user.gender}</span>
                         </div>
+                        {(user.countryName || user.stateName) && (
+                          <div className="flex items-center gap-1">
+                            <MapPin className="h-3 w-3" />
+                            <span className="truncate max-w-[150px] lg:max-w-[200px]">
+                              {user.stateName && user.countryName
+                                ? `${user.stateName}, ${user.countryName}`
+                                : user.countryName || user.stateName
+                              }
+                            </span>
+                          </div>
+                        )}
                         {!user.isGuest && user.email && (
                           <div className="flex items-center gap-1">
                             <Mail className="h-3 w-3" />
@@ -302,6 +376,20 @@ export default function ProfilePage() {
                                 <span className="text-xs lg:text-sm font-medium">Email</span>
                               </div>
                               <span className="text-xs lg:text-sm font-semibold truncate max-w-[120px] lg:max-w-[200px]">{user.email}</span>
+                            </div>
+                          )}
+                          {(user.countryName || user.stateName) && (
+                            <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
+                              <div className="flex items-center gap-2">
+                                <MapPin className="h-4 w-4 text-muted-foreground" />
+                                <span className="text-xs lg:text-sm font-medium">Location</span>
+                              </div>
+                              <span className="text-xs lg:text-sm font-semibold truncate max-w-[120px] lg:max-w-[200px]">
+                                {user.stateName && user.countryName
+                                  ? `${user.stateName}, ${user.countryName}`
+                                  : user.countryName || user.stateName
+                                }
+                              </span>
                             </div>
                           )}
                         </div>
@@ -442,6 +530,86 @@ export default function ProfilePage() {
                             </FormItem>
                           )}
                           />
+                        </div>
+
+                        {/* Location Section */}
+                        <div className="space-y-3">
+                          <div className="flex items-center gap-2">
+                            <MapPin className="h-4 w-4 text-primary" />
+                            <h3 className="text-sm lg:text-base font-semibold">Location</h3>
+                          </div>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 lg:gap-4">
+                            <FormField
+                              control={form.control}
+                              name="countryCode"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-xs lg:text-sm">Country</FormLabel>
+                                  <Select
+                                    onValueChange={handleCountryChange}
+                                    value={field.value || "none"}
+                                  >
+                                    <FormControl>
+                                      <SelectTrigger className="text-sm">
+                                        <SelectValue placeholder="Select country" />
+                                      </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                      <SelectItem value="none">No country selected</SelectItem>
+                                      {COUNTRIES.map((country) => (
+                                        <SelectItem key={country.code} value={country.code}>
+                                          {country.name}
+                                        </SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                  <FormDescription className="text-xs">
+                                    Optional. Select your country.
+                                  </FormDescription>
+                                  <FormMessage className="text-xs" />
+                                </FormItem>
+                              )}
+                            />
+
+                            <FormField
+                              control={form.control}
+                              name="stateCode"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-xs lg:text-sm">State/Region</FormLabel>
+                                  <Select
+                                    onValueChange={handleStateChange}
+                                    value={field.value || "none"}
+                                    disabled={!selectedCountry || availableStates.length === 0}
+                                  >
+                                    <FormControl>
+                                      <SelectTrigger className="text-sm">
+                                        <SelectValue placeholder={
+                                          !selectedCountry
+                                            ? "Select country first"
+                                            : availableStates.length === 0
+                                              ? "No states available"
+                                              : "Select state/region"
+                                        } />
+                                      </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                      <SelectItem value="none">No state selected</SelectItem>
+                                      {availableStates.map((state) => (
+                                        <SelectItem key={state.code} value={state.code}>
+                                          {state.name}
+                                        </SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                  <FormDescription className="text-xs">
+                                    Optional. Select your state or region.
+                                  </FormDescription>
+                                  <FormMessage className="text-xs" />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
                         </div>
 
                         <div className="space-y-3 lg:space-y-4 pt-4 border-t">

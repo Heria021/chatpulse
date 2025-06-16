@@ -12,6 +12,11 @@ export interface User {
   isGuest: boolean;
   email?: string;
   bio?: string;
+  // Location fields
+  countryCode?: string;
+  countryName?: string;
+  stateCode?: string;
+  stateName?: string;
   isOnline: boolean;
   lastSeen: number;
   allowGuestMessages: boolean;
@@ -44,9 +49,16 @@ export interface ActiveUser {
   bio?: string;
   age: number;
   gender: "male" | "female" | "other";
+  // Location fields
+  countryCode?: string;
+  countryName?: string;
+  stateCode?: string;
+  stateName?: string;
   allowGuestMessages: boolean;
   showOnlineStatus: boolean;
   unreadCount: number;
+  // Section for UI grouping
+  section?: string;
 }
 
 export interface ChatUser extends ActiveUser {
@@ -102,6 +114,11 @@ export interface ChatConversation {
     bio?: string;
     age: number;
     gender: "male" | "female" | "other";
+    // Location fields
+    countryCode?: string;
+    countryName?: string;
+    stateCode?: string;
+    stateName?: string;
   };
 }
 
@@ -201,6 +218,24 @@ export const updateProfileSchema = z.object({
   }),
   allowGuestMessages: z.boolean(),
   showOnlineStatus: z.boolean(),
+  // Location fields (optional)
+  countryCode: z.string().optional(),
+  countryName: z.string().optional(),
+  stateCode: z.string().optional(),
+  stateName: z.string().optional(),
+}).refine((data) => {
+  // If country is selected, countryName must also be provided
+  if (data.countryCode && !data.countryName) return false;
+  if (data.countryName && !data.countryCode) return false;
+
+  // If state is selected, stateName and country must also be provided
+  if (data.stateCode && (!data.stateName || !data.countryCode)) return false;
+  if (data.stateName && (!data.stateCode || !data.countryCode)) return false;
+
+  return true;
+}, {
+  message: "Invalid location data",
+  path: ["countryCode"],
 });
 
 export const forgotPasswordSchema = z.object({

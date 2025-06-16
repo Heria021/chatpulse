@@ -2,11 +2,20 @@ import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
 import { ConvexError } from "convex/values";
 
-// Get all active users (for Users tab)
+// Get all active users (for Users tab) with hybrid smart algorithm
 export const getActiveUsers = query({
-  args: { 
+  args: {
     sessionToken: v.string(),
-    searchQuery: v.optional(v.string())
+    searchQuery: v.optional(v.string()),
+    genderFilter: v.optional(v.union(v.literal("all"), v.literal("male"), v.literal("female"))),
+    ageRangeFilter: v.optional(v.union(
+      v.literal("all"),
+      v.literal("18-25"),
+      v.literal("26-35"),
+      v.literal("36-45"),
+      v.literal("46-55"),
+      v.literal("56+")
+    ))
   },
   handler: async (ctx, args) => {
     // First, verify the session and get current user
@@ -24,22 +33,48 @@ export const getActiveUsers = query({
       throw new Error("Current user not found or inactive");
     }
 
-    // Query for active users with real-world online status
+    // Set default filter values
+    const genderFilter = args.genderFilter || "all";
+    const ageRangeFilter = args.ageRangeFilter || "all";
+
+    // Helper function to check if user matches age range filter
+    const matchesAgeRange = (userAge: number): boolean => {
+      if (ageRangeFilter === "all") return true;
+
+      switch (ageRangeFilter) {
+        case "18-25": return userAge >= 18 && userAge <= 25;
+        case "26-35": return userAge >= 26 && userAge <= 35;
+        case "36-45": return userAge >= 36 && userAge <= 45;
+        case "46-55": return userAge >= 46 && userAge <= 55;
+        case "56+": return userAge >= 56;
+        default: return true;
+      }
+    };
+
+    // Query for active users
     const allUsers = await ctx.db
       .query("users")
       .filter((q) => q.eq(q.field("isActive"), true))
       .collect();
 
-    // Calculate real-time status for each user and filter for online/recently active
+    // Calculate real-time status and apply filters
     const now = Date.now();
     const ONLINE_THRESHOLD = 2 * 60 * 1000; // 2 minutes
     const RECENTLY_ACTIVE_THRESHOLD = 5 * 60 * 1000; // 5 minutes
 
     const users = allUsers.filter(user => {
-      const lastActivity = user.lastActivity || user.lastSeen;
-      const timeSinceActivity = now - lastActivity;
+      // Exclude current user
+      if (user._id === currentUser._id) return false;
+
+      // Apply gender filter
+      if (genderFilter !== "all" && user.gender !== genderFilter) return false;
+
+      // Apply age range filter
+      if (!matchesAgeRange(user.age)) return false;
 
       // Only show users who are online or recently active
+      const lastActivity = user.lastActivity || user.lastSeen;
+      const timeSinceActivity = now - lastActivity;
       return timeSinceActivity < RECENTLY_ACTIVE_THRESHOLD;
     });
 
@@ -132,33 +167,133 @@ export const getActiveUsers = query({
           bio: user.bio,
           age: user.age,
           gender: user.gender,
+          // Location fields
+          countryCode: user.countryCode,
+          countryName: user.countryName,
+          stateCode: user.stateCode,
+          stateName: user.stateName,
           allowGuestMessages: user.allowGuestMessages,
           showOnlineStatus: user.showOnlineStatus ?? true,
-          unreadCount
+          unreadCount,
+          // Add section info for UI grouping
+          section: undefined as string | undefined
         };
       })
     );
 
-    // Sort users: unread messages first, then by online status, then by activity
-    return usersWithUnreadCounts.sort((a, b) => {
-      // First priority: unread messages
-      if (a.unreadCount > 0 && b.unreadCount === 0) return -1;
-      if (a.unreadCount === 0 && b.unreadCount > 0) return 1;
+    // Implement hybrid smart algorithm
+    const categorizeUsers = (users: typeof usersWithUnreadCounts) => {
+      const categories = {
+        recentlyActiveSameState: [] as typeof users,
+        recentlyActiveSameCountry: [] as typeof users,
+        recentlyActiveOthers: [] as typeof users,
+        sameState: [] as typeof users,
+        sameCountry: [] as typeof users,
+        others: [] as typeof users
+      };
 
-      // Second priority: online status (online > recently_active)
-      const statusPriority = { online: 2, recently_active: 1, away: 0, offline: 0 };
-      const aStatusPriority = statusPriority[a.currentStatus];
-      const bStatusPriority = statusPriority[b.currentStatus];
+      const currentUserState = currentUser.stateCode;
+      const currentUserCountry = currentUser.countryCode;
+      const RECENT_ACTIVITY_THRESHOLD = 15 * 60 * 1000; // 15 minutes for "recently active"
 
-      if (aStatusPriority !== bStatusPriority) {
-        return bStatusPriority - aStatusPriority;
-      }
+      users.forEach(user => {
+        const lastActivity = user.lastActivity || user.lastSeen;
+        const timeSinceActivity = now - lastActivity;
+        const isRecentlyActive = timeSinceActivity < RECENT_ACTIVITY_THRESHOLD;
 
-      // Third priority: last activity (more recent first)
-      const aLastActivity = a.lastActivity || a.lastSeen;
-      const bLastActivity = b.lastActivity || b.lastSeen;
-      return bLastActivity - aLastActivity;
-    });
+        // Determine location category
+        const isSameState = currentUserState && user.stateCode === currentUserState;
+        const isSameCountry = currentUserCountry && user.countryCode === currentUserCountry;
+
+        if (isRecentlyActive) {
+          if (isSameState) {
+            categories.recentlyActiveSameState.push(user);
+          } else if (isSameCountry) {
+            categories.recentlyActiveSameCountry.push(user);
+          } else {
+            categories.recentlyActiveOthers.push(user);
+          }
+        } else {
+          if (isSameState) {
+            categories.sameState.push(user);
+          } else if (isSameCountry) {
+            categories.sameCountry.push(user);
+          } else {
+            categories.others.push(user);
+          }
+        }
+      });
+
+      return categories;
+    };
+
+    const categories = categorizeUsers(usersWithUnreadCounts);
+
+    // Sort each category by priority: unread messages > online status > activity
+    const sortCategory = (users: typeof usersWithUnreadCounts) => {
+      return users.sort((a, b) => {
+        // First priority: unread messages
+        if (a.unreadCount > 0 && b.unreadCount === 0) return -1;
+        if (a.unreadCount === 0 && b.unreadCount > 0) return 1;
+
+        // Second priority: online status (online > recently_active)
+        const statusPriority = { online: 2, recently_active: 1, away: 0, offline: 0 };
+        const aStatusPriority = statusPriority[a.currentStatus];
+        const bStatusPriority = statusPriority[b.currentStatus];
+
+        if (aStatusPriority !== bStatusPriority) {
+          return bStatusPriority - aStatusPriority;
+        }
+
+        // Third priority: last activity (more recent first)
+        const aLastActivity = a.lastActivity || a.lastSeen;
+        const bLastActivity = b.lastActivity || b.lastSeen;
+        return bLastActivity - aLastActivity;
+      });
+    };
+
+    // Apply hybrid algorithm: only show categories if they have minimum users
+    const result: typeof usersWithUnreadCounts = [];
+
+    // Helper to add section labels
+    const addSection = (users: typeof usersWithUnreadCounts, sectionName: string) => {
+      users.forEach(user => user.section = sectionName);
+      result.push(...users);
+    };
+
+    // 1. Recently Active + Same State (if ≥5 users)
+    if (categories.recentlyActiveSameState.length >= 5) {
+      const stateName = currentUser.stateName || "your state";
+      addSection(sortCategory(categories.recentlyActiveSameState), `Active in ${stateName}`);
+    }
+
+    // 2. Recently Active + Same Country (if ≥10 users)
+    if (categories.recentlyActiveSameCountry.length >= 10) {
+      const countryName = currentUser.countryName || "your country";
+      addSection(sortCategory(categories.recentlyActiveSameCountry), `Active in ${countryName}`);
+    }
+
+    // 3. Recently Active + All Locations (always show)
+    addSection(sortCategory(categories.recentlyActiveOthers), "Recently Active");
+
+    // 4. Same State (less active) - only if not already shown in recently active
+    if (categories.recentlyActiveSameState.length < 5 && categories.sameState.length > 0) {
+      const stateName = currentUser.stateName || "your state";
+      addSection(sortCategory(categories.sameState), `From ${stateName}`);
+    }
+
+    // 5. Same Country (less active) - only if not already shown in recently active
+    if (categories.recentlyActiveSameCountry.length < 10 && categories.sameCountry.length > 0) {
+      const countryName = currentUser.countryName || "your country";
+      addSection(sortCategory(categories.sameCountry), `From ${countryName}`);
+    }
+
+    // 6. All Others
+    if (categories.others.length > 0) {
+      addSection(sortCategory(categories.others), "Other Users");
+    }
+
+    return result;
   },
 });
 
@@ -293,6 +428,11 @@ export const getUsersWithMutualChats = query({
               bio: otherUser.bio,
               age: otherUser.age,
               gender: otherUser.gender,
+              // Location fields
+              countryCode: otherUser.countryCode,
+              countryName: otherUser.countryName,
+              stateCode: otherUser.stateCode,
+              stateName: otherUser.stateName,
               allowGuestMessages: otherUser.allowGuestMessages,
               showOnlineStatus: otherUser.showOnlineStatus ?? true,
               conversationId: conversation._id,
@@ -602,6 +742,11 @@ export const updateProfile = mutation({
     gender: v.union(v.literal("male"), v.literal("female"), v.literal("other")),
     allowGuestMessages: v.boolean(),
     showOnlineStatus: v.boolean(),
+    // Location fields (optional)
+    countryCode: v.optional(v.string()),
+    countryName: v.optional(v.string()),
+    stateCode: v.optional(v.string()),
+    stateName: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     // Verify session and get current user
@@ -631,6 +776,22 @@ export const updateProfile = mutation({
       }
     }
 
+    // Validate location data consistency
+    if (args.countryCode || args.countryName || args.stateCode || args.stateName) {
+      // If any location field is provided, validate consistency
+      if ((args.countryCode && !args.countryName) || (args.countryName && !args.countryCode)) {
+        throw new ConvexError("Both country code and name must be provided together");
+      }
+
+      if ((args.stateCode && !args.stateName) || (args.stateName && !args.stateCode)) {
+        throw new ConvexError("Both state code and name must be provided together");
+      }
+
+      if ((args.stateCode || args.stateName) && (!args.countryCode || !args.countryName)) {
+        throw new ConvexError("Country must be selected when providing state information");
+      }
+    }
+
     try {
       const now = Date.now();
 
@@ -642,6 +803,11 @@ export const updateProfile = mutation({
         gender: args.gender,
         allowGuestMessages: args.allowGuestMessages,
         showOnlineStatus: args.showOnlineStatus,
+        // Location fields
+        countryCode: args.countryCode || undefined,
+        countryName: args.countryName || undefined,
+        stateCode: args.stateCode || undefined,
+        stateName: args.stateName || undefined,
         updatedAt: now,
       });
 
@@ -657,6 +823,10 @@ export const updateProfile = mutation({
             gender: args.gender !== currentUser.gender,
             allowGuestMessages: args.allowGuestMessages !== currentUser.allowGuestMessages,
             showOnlineStatus: args.showOnlineStatus !== currentUser.showOnlineStatus,
+            countryCode: args.countryCode !== currentUser.countryCode,
+            countryName: args.countryName !== currentUser.countryName,
+            stateCode: args.stateCode !== currentUser.stateCode,
+            stateName: args.stateName !== currentUser.stateName,
           }
         }),
         createdAt: now

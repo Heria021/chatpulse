@@ -144,7 +144,12 @@ export const getOrCreateConversation = mutation({
         isGuest: otherUser.isGuest,
         bio: otherUser.bio,
         age: otherUser.age,
-        gender: otherUser.gender
+        gender: otherUser.gender,
+        // Location fields
+        countryCode: otherUser.countryCode,
+        countryName: otherUser.countryName,
+        stateCode: otherUser.stateCode,
+        stateName: otherUser.stateName,
       }
     };
   }

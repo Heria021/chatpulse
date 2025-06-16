@@ -17,7 +17,13 @@ export default defineSchema({
   
     
     bio: v.optional(v.string()),
-    
+
+    // Location fields
+    countryCode: v.optional(v.string()), // ISO country code (e.g., "US", "IN")
+    countryName: v.optional(v.string()), // Full country name (e.g., "United States", "India")
+    stateCode: v.optional(v.string()),   // State/region code (e.g., "CA", "MH")
+    stateName: v.optional(v.string()),   // Full state/region name (e.g., "California", "Maharashtra")
+
     // Enhanced status fields for real-world approach
     isOnline: v.boolean(),
     lastSeen: v.number(), // timestamp
