@@ -26,23 +26,20 @@ export default function Home() {
       <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-3">
+            <Link href="/" className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
               <div className="p-2 bg-primary/10 rounded-lg">
                 <MessageCircle className="h-6 w-6 text-primary" />
               </div>
               <span className="font-bold text-xl bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
                 ChatNow
               </span>
-            </div>
+            </Link>
             <div className="flex items-center space-x-4">
               <TooltipProvider>
                 <ThemeToggle />
               </TooltipProvider>
-              <Button variant="ghost" asChild>
-                <Link href="/auth/signin">Sign In</Link>
-              </Button>
               <Button asChild>
-                <Link href="/auth/signup">Get Started</Link>
+                <Link href="/auth/signin">Sign In</Link>
               </Button>
             </div>
           </div>
@@ -390,26 +387,26 @@ export default function Home() {
                 <li><Link href="/auth/signin" className="hover:text-foreground transition-colors">Sign In</Link></li>
                 <li><Link href="/auth/guest" className="hover:text-foreground transition-colors">Guest Mode</Link></li>
                 <li><Link href="/chat" className="hover:text-foreground transition-colors">Chat</Link></li>
+                <li><Link href="/blog" className="hover:text-foreground transition-colors">Blog</Link></li>
               </ul>
             </div>
 
             <div>
               <h3 className="font-semibold mb-4">Company</h3>
               <ul className="space-y-2 text-muted-foreground">
-                <li><a href="#" className="hover:text-foreground transition-colors">About</a></li>
-                <li><a href="#" className="hover:text-foreground transition-colors">Privacy</a></li>
-                <li><a href="#" className="hover:text-foreground transition-colors">Terms</a></li>
-                <li><a href="#" className="hover:text-foreground transition-colors">Support</a></li>
+                <li><Link href="/about" className="hover:text-foreground transition-colors">About</Link></li>
+                <li><Link href="/privacy" className="hover:text-foreground transition-colors">Privacy</Link></li>
+                <li><Link href="/terms" className="hover:text-foreground transition-colors">Terms</Link></li>
+                <li><Link href="/support" className="hover:text-foreground transition-colors">Support</Link></li>
               </ul>
             </div>
 
             <div>
               <h3 className="font-semibold mb-4">Connect</h3>
               <ul className="space-y-2 text-muted-foreground">
-                <li><a href="#" className="hover:text-foreground transition-colors">Twitter</a></li>
-                <li><a href="#" className="hover:text-foreground transition-colors">GitHub</a></li>
-                <li><a href="#" className="hover:text-foreground transition-colors">Discord</a></li>
-                <li><a href="#" className="hover:text-foreground transition-colors">Email</a></li>
+                <li><a href="https://instagram.com/chatnow" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">Instagram</a></li>
+                <li><a href="mailto:support@chatnow.com" className="hover:text-foreground transition-colors">Support</a></li>
+                <li><a href="mailto:hariomsuthar7143@gmail.com" className="hover:text-foreground transition-colors">Developer</a></li>
               </ul>
             </div>
           </div>
@@ -417,9 +414,14 @@ export default function Home() {
           <Separator className="my-8" />
 
           <div className="flex flex-col sm:flex-row justify-between items-center">
-            <p className="text-muted-foreground text-sm">
-              © 2024 ChatNow. All rights reserved.
-            </p>
+            <div className="text-center sm:text-left">
+              <p className="text-muted-foreground text-sm">
+                © 2024 ChatNow. All rights reserved.
+              </p>
+              <p className="text-muted-foreground text-xs mt-1">
+                Open for collaboration & partnership opportunities
+              </p>
+            </div>
             <div className="flex items-center space-x-4 mt-4 sm:mt-0">
               <Globe className="h-4 w-4 text-muted-foreground" />
               <span className="text-sm text-muted-foreground">Made with ❤️ for seamless communication</span>

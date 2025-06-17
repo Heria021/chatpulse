@@ -232,4 +232,58 @@ export default defineSchema({
   .index("by_conversation_user", ["conversationId", "userId"])
   .index("by_expiry", ["expiresAt"]),
 
+  // Contact form submissions
+  contactSubmissions: defineTable({
+    name: v.string(),
+    email: v.string(),
+    subject: v.string(),
+    message: v.string(),
+
+    // Metadata
+    ipAddress: v.optional(v.string()),
+    userAgent: v.optional(v.string()),
+
+    // Timestamps
+    createdAt: v.number(),
+  })
+  .index("by_email", ["email"])
+  .index("by_creation", ["createdAt"]),
+
+  // Blog posts
+  blogPosts: defineTable({
+    title: v.string(),
+    slug: v.string(), // URL-friendly version of title
+    excerpt: v.string(), // Short description
+    content: v.string(), // Full blog content (markdown)
+    coverImage: v.optional(v.string()), // Cover image URL
+
+    // Author info
+    author: v.string(),
+    authorImage: v.optional(v.string()),
+
+    // Categories and tags
+    category: v.string(),
+    tags: v.array(v.string()),
+
+    // Publishing
+    isPublished: v.boolean(),
+    publishedAt: v.optional(v.number()),
+
+    // SEO
+    metaDescription: v.optional(v.string()),
+
+    // Engagement
+    readTime: v.number(), // estimated read time in minutes
+    views: v.number(),
+
+    // Timestamps
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+  .index("by_slug", ["slug"])
+  .index("by_published", ["isPublished", "publishedAt"])
+  .index("by_category", ["category", "isPublished"])
+  .index("by_author", ["author", "publishedAt"])
+  .index("by_creation", ["createdAt"]),
+
 });
