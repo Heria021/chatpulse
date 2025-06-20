@@ -27,6 +27,8 @@ export interface User {
   banExpiresAt?: number;
   guestSessionId?: string;
   guestExpiresAt?: number;
+  hasCreatedGroup?: boolean;
+  createdGroupId?: Id<"groups">;
   createdAt: number;
   updatedAt: number;
 }
@@ -256,6 +258,81 @@ export interface PasswordStrengthResult {
   score: number;
   strength: PasswordStrength;
   feedback: string[];
+}
+
+// Group types
+export interface Group {
+  _id: Id<"groups">;
+  name: string;
+  description?: string;
+  type: "permanent" | "user_created";
+  creatorId?: Id<"users">;
+  maxMembers: number;
+  isPublic: boolean;
+  requiresApproval: boolean;
+  avatarUrl?: string;
+  lastActivity: number;
+  memberCount: number;
+  isActive: boolean;
+  isArchived: boolean;
+  archivedReason?: string;
+  inactivityThresholdDays?: number;
+  markedForDeletion: boolean;
+  deletionScheduledAt?: number;
+  createdAt: number;
+  updatedAt: number;
+}
+
+export interface GroupMembership {
+  _id: Id<"groupMemberships">;
+  groupId: Id<"groups">;
+  userId: Id<"users">;
+  role: "creator" | "admin" | "moderator" | "member";
+  status: "active" | "pending" | "banned" | "left";
+  joinedAt: number;
+  invitedBy?: Id<"users">;
+  lastReadMessageId?: Id<"messages">;
+  lastSeenAt: number;
+  mutedUntil?: number;
+  createdAt: number;
+  updatedAt: number;
+}
+
+export interface GroupInvitation {
+  _id: Id<"groupInvitations">;
+  groupId: Id<"groups">;
+  inviterUserId: Id<"users">;
+  invitedUserId?: Id<"users">;
+  invitedUsername?: string;
+  invitedEmail?: string;
+  inviteCode?: string;
+  message?: string;
+  status: "pending" | "accepted" | "declined" | "expired" | "cancelled";
+  expiresAt: number;
+  respondedAt?: number;
+  createdAt: number;
+  updatedAt: number;
+}
+
+export interface GroupWithMembership extends Group {
+  membership?: GroupMembership;
+  unreadCount: number;
+  lastMessage?: ChatMessage;
+  lastMessageAt?: number;
+}
+
+export interface GroupConversation {
+  conversationId: Id<"conversations">;
+  group: {
+    _id: Id<"groups">;
+    name: string;
+    description?: string;
+    type: "permanent" | "user_created";
+    memberCount: number;
+    isPublic: boolean;
+    avatarUrl?: string;
+  };
+  membership: GroupMembership;
 }
 
 // Auth context types

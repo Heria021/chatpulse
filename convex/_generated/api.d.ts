@@ -18,6 +18,7 @@ import type * as blog from "../blog.js";
 import type * as chat from "../chat.js";
 import type * as cleanup from "../cleanup.js";
 import type * as contact from "../contact.js";
+import type * as groups from "../groups.js";
 import type * as presence from "../presence.js";
 import type * as scheduler from "../scheduler.js";
 import type * as users from "../users.js";
@@ -36,6 +37,7 @@ declare const fullApi: ApiFromModules<{
   chat: typeof chat;
   cleanup: typeof cleanup;
   contact: typeof contact;
+  groups: typeof groups;
   presence: typeof presence;
   scheduler: typeof scheduler;
   users: typeof users;

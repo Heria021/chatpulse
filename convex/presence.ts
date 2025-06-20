@@ -191,13 +191,13 @@ export const getOnlineUsersInConversation = query({
     }
 
     // Check if user is participant
-    if (!conversation.participantIds.includes(session.userId)) {
+    if (!conversation.participantIds || !conversation.participantIds.includes(session.userId)) {
       throw new ConvexError("Not a participant in this conversation");
     }
 
     // Get all participants with their status
     const participants = await Promise.all(
-      conversation.participantIds.map(async (userId) => {
+      conversation.participantIds!.map(async (userId) => {
         const user = await ctx.db.get(userId);
         if (!user || !user.isActive) return null;
 

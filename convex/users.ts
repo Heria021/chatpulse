@@ -331,6 +331,7 @@ export const getUsersWithMutualChats = query({
       .collect();
 
     const userConversations = allConversations.filter(conv =>
+      conv.participantIds &&
       conv.participantIds.includes(currentUser._id) &&
       conv.isActive &&
       conv.type === "direct" // Only direct conversations for now
@@ -358,7 +359,7 @@ export const getUsersWithMutualChats = query({
     
     for (const conversation of userConversations) {
       // Get other participant(s)
-      const otherParticipantIds = conversation.participantIds.filter(id => id !== currentUser._id);
+      const otherParticipantIds = conversation.participantIds!.filter(id => id !== currentUser._id);
       
       for (const otherUserId of otherParticipantIds) {
         // Check if both users have sent messages in this conversation

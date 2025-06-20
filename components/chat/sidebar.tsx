@@ -2,15 +2,18 @@
 
 import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/lib/contexts/auth-context";
+import { useGroupInvitations } from "@/lib/hooks/use-group-invitations";
 import {
   MessageCircle,
-  Users,
+  Search,
   Settings,
   LogOut,
-  User
+  UserCircle,
+  Users
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import {
   Tooltip,
   TooltipContent,
@@ -30,6 +33,7 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
   const { user, signOut } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
+  const { invitationCount } = useGroupInvitations();
 
   // Get current active section from pathname
   const activeSection = pathname.split('/')[1] || 'chat';
@@ -53,16 +57,23 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
       route: '/chat'
     },
     {
+      id: 'groups',
+      label: 'Groups',
+      icon: Users,
+      description: 'Join and manage groups',
+      route: '/groups'
+    },
+    {
       id: 'users',
       label: 'Users',
-      icon: Users,
+      icon: Search,
       description: 'Browse online users',
       route: '/users'
     },
     {
       id: 'profile',
       label: 'Profile',
-      icon: User,
+      icon: UserCircle,
       description: 'Edit your profile',
       route: '/profile'
     },
@@ -141,11 +152,19 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
                   <TooltipTrigger asChild>
                     <Button
                       variant={isActive ? "secondary" : "ghost"}
-                      className="h-12 w-full lg:w-12 justify-start lg:justify-center px-3 lg:px-0"
+                      className="h-12 w-full lg:w-12 justify-start lg:justify-center px-3 lg:px-0 relative"
                       onClick={() => navigateToSection(item.route)}
                     >
                       <Icon className="h-5 w-5 flex-shrink-0" />
                       <span className="ml-3 lg:hidden font-medium">{item.label}</span>
+                      {item.id === 'groups' && invitationCount > 0 && (
+                        <Badge
+                          variant="destructive"
+                          className="absolute -top-1 -right-1 lg:-top-1 lg:-right-1 h-5 w-5 p-0 flex items-center justify-center text-xs"
+                        >
+                          {invitationCount > 9 ? '9+' : invitationCount}
+                        </Badge>
+                      )}
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent side="right" className="lg:block hidden">

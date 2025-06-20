@@ -67,9 +67,10 @@ export const getOrCreateConversation = mutation({
       .query("conversations")
       .collect();
 
-    const existingConversation = allConversations.find(conv => 
+    const existingConversation = allConversations.find(conv =>
       conv.type === "direct" &&
       conv.isActive &&
+      conv.participantIds &&
       conv.participantIds.includes(currentUser._id) &&
       conv.participantIds.includes(args.otherUserId) &&
       conv.participantIds.length === 2
@@ -184,8 +185,24 @@ export const getMessages = query({
       throw new ConvexError("Conversation not found");
     }
 
-    if (!conversation.participantIds.includes(currentUser._id)) {
-      throw new ConvexError("You don't have access to this conversation");
+    // Check access based on conversation type
+    if (conversation.type === "direct") {
+      if (!conversation.participantIds || !conversation.participantIds.includes(currentUser._id)) {
+        throw new ConvexError("You don't have access to this conversation");
+      }
+    } else if (conversation.type === "group") {
+      if (!conversation.groupId) {
+        throw new ConvexError("Invalid group conversation");
+      }
+
+      const membership = await ctx.db
+        .query("groupMemberships")
+        .withIndex("by_group_user", (q) => q.eq("groupId", conversation.groupId!).eq("userId", currentUser._id))
+        .first();
+
+      if (!membership || membership.status !== "active") {
+        throw new ConvexError("You are not a member of this group");
+      }
     }
 
     // Get messages
@@ -308,34 +325,58 @@ export const sendMessage = mutation({
       throw new ConvexError("Conversation not found");
     }
 
-    if (!conversation.participantIds.includes(currentUser._id)) {
-      throw new ConvexError("You don't have access to this conversation");
-    }
-
-    // Get the other participant to check blocking status
-    const otherUserId = conversation.participantIds.find(id => id !== currentUser._id);
-    if (otherUserId) {
-      // Check if current user is blocked by the other user
-      const isBlockedByOther = await ctx.db
-        .query("blocks")
-        .withIndex("by_blocker", (q) => q.eq("blockerId", otherUserId))
-        .filter((q) => q.eq(q.field("blockedId"), currentUser._id))
-        .first();
-
-      if (isBlockedByOther) {
-        throw new ConvexError("This user has blocked you");
+    // Handle different conversation types
+    if (conversation.type === "direct") {
+      // Direct conversation - check participant list
+      if (!conversation.participantIds || !conversation.participantIds.includes(currentUser._id)) {
+        throw new ConvexError("You don't have access to this conversation");
       }
 
-      // Check if other user is blocked by current user
-      const hasBlockedOther = await ctx.db
-        .query("blocks")
-        .withIndex("by_blocker", (q) => q.eq("blockerId", currentUser._id))
-        .filter((q) => q.eq(q.field("blockedId"), otherUserId))
+      // Get the other participant to check blocking status
+      const otherUserId = conversation.participantIds.find(id => id !== currentUser._id);
+      if (otherUserId) {
+        // Check if current user is blocked by the other user
+        const isBlockedByOther = await ctx.db
+          .query("blocks")
+          .withIndex("by_blocker", (q) => q.eq("blockerId", otherUserId))
+          .filter((q) => q.eq(q.field("blockedId"), currentUser._id))
+          .first();
+
+        if (isBlockedByOther) {
+          throw new ConvexError("This user has blocked you");
+        }
+
+        // Check if other user is blocked by current user
+        const hasBlockedOther = await ctx.db
+          .query("blocks")
+          .withIndex("by_blocker", (q) => q.eq("blockerId", currentUser._id))
+          .filter((q) => q.eq(q.field("blockedId"), otherUserId))
+          .first();
+
+        if (hasBlockedOther) {
+          throw new ConvexError("You have blocked this user");
+        }
+      }
+    } else if (conversation.type === "group") {
+      // Group conversation - check membership
+      if (!conversation.groupId) {
+        throw new ConvexError("Invalid group conversation");
+      }
+
+      const membership = await ctx.db
+        .query("groupMemberships")
+        .withIndex("by_group_user", (q) => q.eq("groupId", conversation.groupId!).eq("userId", currentUser._id))
         .first();
 
-      if (hasBlockedOther) {
-        throw new ConvexError("You have blocked this user");
+      if (!membership || membership.status !== "active") {
+        throw new ConvexError("You are not a member of this group");
       }
+
+      // Update group activity
+      await ctx.db.patch(conversation.groupId, {
+        lastActivity: Date.now(),
+        updatedAt: Date.now(),
+      });
     }
 
     // Validate message content
@@ -385,6 +426,7 @@ export const sendMessage = mutation({
       conversationId: args.conversationId,
       senderId: currentUser._id,
       content: args.content?.trim() || "",
+      groupId: conversation.groupId, // Add group context for group messages
       type: args.type || "text",
       isDeleted: false,
       readBy: [{
@@ -458,8 +500,30 @@ export const markMessagesAsRead = mutation({
       throw new ConvexError("Conversation not found");
     }
 
-    if (!conversation.participantIds.includes(currentUser._id)) {
-      throw new ConvexError("You don't have access to this conversation");
+    // Check access based on conversation type
+    if (conversation.type === "direct") {
+      if (!conversation.participantIds || !conversation.participantIds.includes(currentUser._id)) {
+        throw new ConvexError("You don't have access to this conversation");
+      }
+    } else if (conversation.type === "group") {
+      if (!conversation.groupId) {
+        throw new ConvexError("Invalid group conversation");
+      }
+
+      const membership = await ctx.db
+        .query("groupMemberships")
+        .withIndex("by_group_user", (q) => q.eq("groupId", conversation.groupId!).eq("userId", currentUser._id))
+        .first();
+
+      if (!membership || membership.status !== "active") {
+        throw new ConvexError("You are not a member of this group");
+      }
+
+      // Update membership last seen time
+      await ctx.db.patch(membership._id, {
+        lastSeenAt: Date.now(),
+        updatedAt: Date.now(),
+      });
     }
 
     // Get unread messages in this conversation
@@ -552,8 +616,24 @@ export const startTyping = mutation({
       throw new ConvexError("Conversation not found");
     }
 
-    if (!conversation.participantIds.includes(currentUser._id)) {
-      throw new ConvexError("You don't have access to this conversation");
+    // Check access based on conversation type
+    if (conversation.type === "direct") {
+      if (!conversation.participantIds || !conversation.participantIds.includes(currentUser._id)) {
+        throw new ConvexError("You don't have access to this conversation");
+      }
+    } else if (conversation.type === "group") {
+      if (!conversation.groupId) {
+        throw new ConvexError("Invalid group conversation");
+      }
+
+      const membership = await ctx.db
+        .query("groupMemberships")
+        .withIndex("by_group_user", (q) => q.eq("groupId", conversation.groupId!).eq("userId", currentUser._id))
+        .first();
+
+      if (!membership || membership.status !== "active") {
+        throw new ConvexError("You are not a member of this group");
+      }
     }
 
     const now = Date.now();
@@ -579,6 +659,7 @@ export const startTyping = mutation({
         conversationId: args.conversationId,
         userId: currentUser._id,
         username: currentUser.username,
+        groupId: conversation.groupId, // Add group context for group typing
         createdAt: now,
         expiresAt,
         updatedAt: now
@@ -655,8 +736,24 @@ export const getTypingIndicators = query({
       throw new ConvexError("Conversation not found");
     }
 
-    if (!conversation.participantIds.includes(currentUser._id)) {
-      throw new ConvexError("You don't have access to this conversation");
+    // Check access based on conversation type
+    if (conversation.type === "direct") {
+      if (!conversation.participantIds || !conversation.participantIds.includes(currentUser._id)) {
+        throw new ConvexError("You don't have access to this conversation");
+      }
+    } else if (conversation.type === "group") {
+      if (!conversation.groupId) {
+        throw new ConvexError("Invalid group conversation");
+      }
+
+      const membership = await ctx.db
+        .query("groupMemberships")
+        .withIndex("by_group_user", (q) => q.eq("groupId", conversation.groupId!).eq("userId", currentUser._id))
+        .first();
+
+      if (!membership || membership.status !== "active") {
+        throw new ConvexError("You are not a member of this group");
+      }
     }
 
     const now = Date.now();

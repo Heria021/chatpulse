@@ -95,6 +95,7 @@ export const registerUser = mutation({
       showOnlineStatus: true,
       isActive: true,
       isBanned: false,
+      hasCreatedGroup: false,
       createdAt: now,
       updatedAt: now,
     });
@@ -250,6 +251,7 @@ export const createGuestUser = mutation({
       showOnlineStatus: true,
       isActive: true,
       isBanned: false,
+      hasCreatedGroup: false,
       createdAt: now,
       updatedAt: now,
     });
