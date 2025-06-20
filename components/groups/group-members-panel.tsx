@@ -126,7 +126,6 @@ export function GroupMembersPanel({ groupId, groupName, members, currentUserMemb
                 <AvatarStatusIndicator
                   status={member.currentStatus}
                   showOnlineStatus={member.showOnlineStatus}
-                  size="sm"
                 />
               </div>
 
