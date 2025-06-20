@@ -65,10 +65,10 @@ export function GroupInterface({ groupId }: GroupInterfaceProps) {
   );
 
   // Handle the new response format
-  const members = Array.isArray(membersResult) ? membersResult : membersResult?.members || [];
-  const isNonMember = membersResult?.isNonMember || false;
-  const canJoin = membersResult?.canJoin || false;
-  const isPrivateGroup = membersResult?.isPrivateGroup || false;
+  const members = Array.isArray(membersResult) ? membersResult : (membersResult as any)?.members || [];
+  const isNonMember = (membersResult as any)?.isNonMember || false;
+  const canJoin = (membersResult as any)?.canJoin || false;
+  const isPrivateGroup = (membersResult as any)?.isPrivateGroup || false;
 
   // Reset hasJustJoined when we get fresh data
   useEffect(() => {
