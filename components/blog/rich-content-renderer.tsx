@@ -37,7 +37,7 @@ export function RichContentRenderer({ sections, className }: RichContentRenderer
 
   const renderHeading = (section: BlogContentSection) => {
     const level = section.level || 1
-    const HeadingTag = `h${Math.min(Math.max(level, 1), 6)}` as keyof JSX.IntrinsicElements
+    const HeadingTag = `h${Math.min(Math.max(level, 1), 6)}` as keyof React.JSX.IntrinsicElements
     
     const headingClasses = {
       1: "text-4xl font-bold mb-6 mt-8 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent",
