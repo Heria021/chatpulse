@@ -47,7 +47,7 @@ import { Id } from "@/convex/_generated/dataModel";
 import { useAuth } from "@/lib/contexts/auth-context";
 import { getSessionToken } from "@/lib/utils/auth";
 import { getAvatarInitials, formatTimestamp } from "@/lib/utils/chat";
-import { AvatarStatusIndicator } from "@/components/ui/status-indicator";
+import { AvatarStatusIndicator, UserStatus } from "@/components/ui/status-indicator";
 import { toast } from "sonner";
 
 interface GroupRequestsSheetProps {
@@ -234,8 +234,8 @@ export function GroupRequestsSheet({
                           </Avatar>
                           {request.showOnlineStatus && (
                             <AvatarStatusIndicator
-                              isOnline={request.isOnline}
-                              size="sm"
+                              status={(request.currentStatus as UserStatus) || (request.isOnline ? "online" : "offline")}
+                              showOnlineStatus={request.showOnlineStatus}
                               className="absolute -bottom-0.5 -right-0.5"
                             />
                           )}
