@@ -23,6 +23,7 @@ import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { useAuth } from "@/lib/contexts/auth-context";
+import { GroupMembership } from "@/lib/types/auth";
 import { getSessionToken } from "@/lib/utils/auth";
 import { getAvatarInitials } from "@/lib/utils/chat";
 import { MessageArea } from "@/components/chat/message-area";
@@ -354,7 +355,7 @@ export function GroupInterface({ groupId }: GroupInterfaceProps) {
                 groupId={groupId as Id<"groups">}
                 groupName={group?.name || "Group"}
                 members={(members || []).filter(Boolean) as any[]}
-                currentUserMembership={membership}
+                currentUserMembership={membership as GroupMembership}
               />
             </SheetContent>
           </Sheet>

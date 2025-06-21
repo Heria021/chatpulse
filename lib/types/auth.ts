@@ -294,12 +294,25 @@ export interface GroupMembership {
   groupId: Id<"groups">;
   userId: Id<"users">;
   role: "creator" | "admin" | "moderator" | "member";
-  status: "active" | "pending" | "banned" | "left";
+  status: "active" | "pending" | "banned" | "left" | "removed" | "denied";
   joinedAt: number;
   invitedBy?: Id<"users">;
+  requestMessage?: string;
   lastReadMessageId?: Id<"messages">;
   lastSeenAt: number;
   mutedUntil?: number;
+  // Removal/Ban metadata
+  removedAt?: number;
+  removedBy?: Id<"users">;
+  removalReason?: string;
+  bannedAt?: number;
+  bannedBy?: Id<"users">;
+  banReason?: string;
+  banExpiresAt?: number;
+  // Denial metadata
+  deniedAt?: number;
+  deniedBy?: Id<"users">;
+  denialReason?: string;
   createdAt: number;
   updatedAt: number;
 }
