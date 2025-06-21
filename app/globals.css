@@ -154,4 +154,42 @@
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
   }
+
+  .line-clamp-3 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+  }
+}
+
+/* Enhanced Blog Styles */
+@layer components {
+  /* Grid pattern for code blocks */
+  .bg-grid-white\/\[0\.02\] {
+    background-image: radial-gradient(circle, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+
+  .bg-grid-black\/\[0\.02\] {
+    background-image: radial-gradient(circle, rgba(0, 0, 0, 0.02) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+
+  /* Smooth scrolling for anchor links */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Blog card hover effects */
+  .blog-card {
+    @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+  }
+
+  /* Enhanced focus styles for accessibility */
+  .focus-visible\:ring-ring\/50:focus-visible {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 3px hsl(var(--ring) / 0.5);
+  }
 }

@@ -130,12 +130,15 @@ export default defineSchema({
       v.literal("active"),
       v.literal("pending"), // waiting for approval
       v.literal("banned"),
-      v.literal("left")
+      v.literal("left"),
+      v.literal("removed"), // kicked by moderator/admin
+      v.literal("denied") // request denied by admin
     ),
 
     // Join metadata
     joinedAt: v.number(),
     invitedBy: v.optional(v.id("users")),
+    requestMessage: v.optional(v.string()), // Message when requesting to join private group
 
     // Activity in group
     lastReadMessageId: v.optional(v.id("messages")),
@@ -143,6 +146,21 @@ export default defineSchema({
 
     // Notifications
     mutedUntil: v.optional(v.number()), // mute notifications until timestamp
+
+    // Removal/Ban metadata
+    removedAt: v.optional(v.number()),
+    removedBy: v.optional(v.id("users")),
+    removalReason: v.optional(v.string()),
+
+    bannedAt: v.optional(v.number()),
+    bannedBy: v.optional(v.id("users")),
+    banReason: v.optional(v.string()),
+    banExpiresAt: v.optional(v.number()), // undefined for permanent ban
+
+    // Denial metadata
+    deniedAt: v.optional(v.number()),
+    deniedBy: v.optional(v.id("users")),
+    denialReason: v.optional(v.string()),
 
     // Timestamps
     createdAt: v.number(),
@@ -220,6 +238,15 @@ export default defineSchema({
     })),
 
     replyToMessageId: v.optional(v.id("messages")),
+
+    // Mentions system
+    mentions: v.optional(v.array(v.object({
+      userId: v.id("users"),
+      username: v.string(),
+      startIndex: v.number(), // Position in content where mention starts
+      endIndex: v.number(),   // Position in content where mention ends
+    }))),
+
     createdAt: v.number(),
     updatedAt: v.number(),
   })
@@ -286,12 +313,12 @@ export default defineSchema({
       v.literal("created"),
       v.literal("deleted"),
       v.literal("updated"),
+      v.literal("settings_updated"),
       v.literal("member_joined"),
       v.literal("member_left"),
       v.literal("member_removed"),
-      v.literal("member_promoted"),
-      v.literal("member_demoted"),
       v.literal("member_banned"),
+      v.literal("role_updated"),
       v.literal("archived"),
       v.literal("unarchived"),
       v.literal("scheduled_for_deletion")
@@ -444,7 +471,36 @@ export default defineSchema({
     title: v.string(),
     slug: v.string(), // URL-friendly version of title
     excerpt: v.string(), // Short description
-    content: v.string(), // Full blog content (markdown)
+    content: v.string(), // Legacy content field (markdown)
+
+    // Rich content structure
+    richContent: v.optional(v.array(v.object({
+      id: v.string(),
+      type: v.union(
+        v.literal("heading"),
+        v.literal("subheading"),
+        v.literal("paragraph"),
+        v.literal("code"),
+        v.literal("image"),
+        v.literal("quote"),
+        v.literal("list")
+      ),
+      content: v.string(),
+      level: v.optional(v.number()), // For headings (1-6)
+      codeBlock: v.optional(v.object({
+        language: v.string(),
+        code: v.string(),
+        title: v.optional(v.string()),
+        showLineNumbers: v.optional(v.boolean()),
+        highlightLines: v.optional(v.array(v.number())),
+      })),
+      imageUrl: v.optional(v.string()), // For image sections
+      imageAlt: v.optional(v.string()), // For image sections
+      listItems: v.optional(v.array(v.string())), // For list sections
+      listType: v.optional(v.union(v.literal("ordered"), v.literal("unordered"))), // For list sections
+      order: v.number(), // For ordering sections
+    }))),
+
     coverImage: v.optional(v.string()), // Cover image URL
 
     // Author info
@@ -471,8 +527,8 @@ export default defineSchema({
     updatedAt: v.number(),
   })
   .index("by_slug", ["slug"])
-  .index("by_published", ["isPublished", "publishedAt"])
   .index("by_category", ["category", "isPublished"])
+  .index("by_published", ["isPublished", "publishedAt"])
   .index("by_author", ["author", "publishedAt"])
   .index("by_creation", ["createdAt"]),
 

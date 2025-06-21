@@ -4,6 +4,8 @@ import Link from "next/link"
 import { useState } from "react"
 import { useQuery } from "convex/react"
 import { api } from "@/convex/_generated/api"
+import { BlogListSkeleton } from "@/components/blog/blog-skeletons"
+import { formatBlogDate } from "@/lib/blog-utils"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -33,18 +35,50 @@ export default function BlogPage() {
   const featuredPosts = useQuery(api.blog.getFeaturedPosts)
   const categories = useQuery(api.blog.getBlogCategories)
 
-  const formatDate = (timestamp: number) => {
-    return new Date(timestamp).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    })
-  }
+
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
     // Search functionality can be implemented here
     console.log("Searching for:", searchTerm)
+  }
+
+  // Loading state
+  if (posts === undefined) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
+        <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between items-center h-16">
+              <Link href="/" className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
+                <div className="p-2 bg-primary/10 rounded-lg">
+                  <MessageCircle className="h-6 w-6 text-primary" />
+                </div>
+                <span className="font-bold text-xl bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+                  ChatNow
+                </span>
+              </Link>
+              <div className="flex items-center space-x-4">
+                <TooltipProvider>
+                  <ThemeToggle />
+                </TooltipProvider>
+                <Button asChild>
+                  <Link href="/auth/signin">Sign In</Link>
+                </Button>
+              </div>
+            </div>
+          </div>
+        </nav>
+
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="text-center mb-12">
+            <h1 className="text-4xl font-bold mb-4">Blog</h1>
+            <p className="text-xl text-muted-foreground">Loading articles...</p>
+          </div>
+          <BlogListSkeleton />
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -135,7 +169,7 @@ export default function BlogPage() {
             </div>
             <div className="grid md:grid-cols-3 gap-6">
               {featuredPosts.map((post) => (
-                <Card key={post._id} className="hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                <Card key={post._id} className="blog-card">
                   <CardHeader className="pb-4">
                     {post.coverImage && (
                       <div className="aspect-video bg-muted rounded-lg mb-4 overflow-hidden">
@@ -163,7 +197,7 @@ export default function BlogPage() {
                       <div className="flex items-center space-x-4">
                         <div className="flex items-center space-x-1">
                           <Calendar className="h-3 w-3" />
-                          <span>{formatDate(post.publishedAt || post.createdAt)}</span>
+                          <span>{formatBlogDate(post.publishedAt || post.createdAt)}</span>
                         </div>
                         <div className="flex items-center space-x-1">
                           <Clock className="h-3 w-3" />
@@ -231,7 +265,7 @@ export default function BlogPage() {
                         <span>{post.author}</span>
                         <span>•</span>
                         <Calendar className="h-3 w-3" />
-                        <span>{formatDate(post.publishedAt || post.createdAt)}</span>
+                        <span>{formatBlogDate(post.publishedAt || post.createdAt)}</span>
                         <span>•</span>
                         <Clock className="h-3 w-3" />
                         <span>{post.readTime} min</span>

@@ -250,6 +250,7 @@ export const getMessages = query({
           readBy: message.readBy,
           replyToMessageId: message.replyToMessageId,
           replyToMessage,
+          mentions: message.mentions || [], // Include mentions
           fileUrl: message.fileUrl,
           fileName: message.fileName,
           fileSize: message.fileSize,
@@ -297,6 +298,13 @@ export const sendMessage = mutation({
     content: v.string(),
     type: v.optional(v.union(v.literal("text"), v.literal("image"), v.literal("file"))),
     replyToMessageId: v.optional(v.id("messages")),
+    // Mentions array
+    mentions: v.optional(v.array(v.object({
+      userId: v.id("users"),
+      username: v.string(),
+      startIndex: v.number(),
+      endIndex: v.number(),
+    }))),
     // File attachment fields
     storageId: v.optional(v.id("_storage")),
     fileName: v.optional(v.string()),
@@ -434,6 +442,7 @@ export const sendMessage = mutation({
         readAt: now
       }],
       replyToMessageId: args.replyToMessageId,
+      mentions: args.mentions || [], // Add mentions support
       createdAt: now,
       updatedAt: now
     };

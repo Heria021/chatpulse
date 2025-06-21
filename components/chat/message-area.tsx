@@ -8,6 +8,7 @@ import { ChatMessage, ChatConversation } from "@/lib/types/auth";
 import { User } from "@/lib/types/auth";
 import { FileAttachment } from "./file-attachment";
 import { ReplyPreview } from "./reply-preview";
+import { MessageContent } from "./message-content";
 
 // Helper function to format timestamp
 function formatMessageTime(timestamp: number): string {
@@ -218,7 +219,12 @@ export const MessageArea = forwardRef<HTMLDivElement, MessageAreaProps>(
                       (msg.type === 'image' || msg.type === 'file') &&
                       msg.content === `Sent ${msg.fileName}`
                     ) && (
-                      <p className="text-sm whitespace-pre-wrap break-words">{msg.content}</p>
+                      <MessageContent
+                        content={msg.content}
+                        mentions={(msg as any).mentions}
+                        isOwn={msg.isOwn}
+                        className="text-sm whitespace-pre-wrap break-words"
+                      />
                     )}
                     
                     <div className="flex items-center justify-between mt-1">

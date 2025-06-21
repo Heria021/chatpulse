@@ -10,11 +10,17 @@ import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
 import { TooltipProvider } from "@/components/ui/tooltip"
-import { 
-  MessageCircle, 
-  Calendar, 
-  Clock, 
-  Eye, 
+import { RichContentRenderer, TableOfContents } from "@/components/blog/rich-content-renderer"
+import { parseLegacyContent } from "@/lib/blog-parser"
+import { generateBlogSEO, generateBlogStructuredData } from "@/lib/seo-utils"
+import { formatBlogDate } from "@/lib/blog-utils"
+import { BlogPostSkeleton } from "@/components/blog/blog-skeletons"
+
+import {
+  MessageCircle,
+  Calendar,
+  Clock,
+  Eye,
   User,
   ArrowLeft,
   Share2,
@@ -44,24 +50,22 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
     }
   }, [post?._id, incrementViews])
 
-  const formatDate = (timestamp: number) => {
-    return new Date(timestamp).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    })
+  // SEO and structured data
+  const seoData = post ? generateBlogSEO(post) : null
+  const structuredData = post ? generateBlogStructuredData(post) : null
+
+  const getContentSections = () => {
+    if (!post) return []
+
+    // Use rich content if available, otherwise parse legacy content
+    if (post.richContent && post.richContent.length > 0) {
+      return post.richContent
+    } else {
+      return parseLegacyContent(post.content)
+    }
   }
 
-  const formatContent = (content: string) => {
-    // Simple markdown-like formatting
-    return content
-      .split('\n\n')
-      .map((paragraph, index) => (
-        <p key={index} className="mb-4 leading-relaxed">
-          {paragraph}
-        </p>
-      ))
-  }
+  const contentSections = getContentSections()
 
   // Loading state
   if (post === undefined) {
@@ -92,12 +96,8 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
         </nav>
 
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="text-center">
-            <div className="animate-pulse">
-              <div className="h-8 bg-muted rounded w-3/4 mx-auto mb-4"></div>
-              <div className="h-4 bg-muted rounded w-1/2 mx-auto mb-8"></div>
-              <div className="h-64 bg-muted rounded mb-8"></div>
-            </div>
+          <div className="max-w-4xl mx-auto">
+            <BlogPostSkeleton />
           </div>
         </div>
       </div>
@@ -161,7 +161,7 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
-      {/* Navigation */}
+        {/* Navigation */}
       <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
@@ -235,7 +235,7 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
                   <span>•</span>
                   <div className="flex items-center space-x-1">
                     <Calendar className="h-3 w-3" />
-                    <span>{formatDate(post.publishedAt || post.createdAt)}</span>
+                    <span>{formatBlogDate(post.publishedAt || post.createdAt)}</span>
                   </div>
                   <span>•</span>
                   <div className="flex items-center space-x-1">
@@ -262,9 +262,24 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
               </div>
             )}
 
+            {/* Table of Contents */}
+            {contentSections.length > 0 && (
+              <TableOfContents sections={contentSections} />
+            )}
+
             {/* Article Content */}
-            <div className="prose prose-lg max-w-none">
-              {formatContent(post.content)}
+            <div className="max-w-none">
+              {contentSections.length > 0 ? (
+                <RichContentRenderer sections={contentSections} />
+              ) : (
+                <div className="prose prose-lg max-w-none">
+                  {post.content.split('\n\n').map((paragraph, index) => (
+                    <p key={index} className="mb-4 leading-relaxed">
+                      {paragraph}
+                    </p>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Tags */}

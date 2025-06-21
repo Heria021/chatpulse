@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Crown, Shield, UserCheck, User, MoreVertical } from "lucide-react";
+import { useMutation } from "convex/react";
+import { Crown, Shield, UserCheck, User, MoreVertical, ChevronUp, ChevronDown } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -13,11 +14,16 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { GroupMembership } from "@/lib/types/auth";
 import { getAvatarInitials, formatTimestamp } from "@/lib/utils/chat";
 import { AvatarStatusIndicator } from "@/components/ui/status-indicator";
 import { InviteMembersDialog } from "./invite-members-dialog";
+import { MemberRemovalDialog } from "./member-removal-dialog";
+import { useAuth } from "@/lib/contexts/auth-context";
+import { getSessionToken } from "@/lib/utils/auth";
+import { toast } from "sonner";
 
 interface GroupMember {
   _id: Id<"users">;
@@ -47,7 +53,65 @@ interface GroupMembersPanelProps {
 }
 
 export function GroupMembersPanel({ groupId, groupName, members, currentUserMembership }: GroupMembersPanelProps) {
+  const { user } = useAuth();
   const [showInviteDialog, setShowInviteDialog] = useState(false);
+  const [showRemovalDialog, setShowRemovalDialog] = useState(false);
+  const [selectedMember, setSelectedMember] = useState<GroupMember | null>(null);
+  const [isUpdatingRole, setIsUpdatingRole] = useState<string | null>(null);
+
+  const sessionToken = getSessionToken();
+  const updateMemberRole = useMutation(api.groups.updateMemberRole);
+
+  const handleRoleUpdate = async (userId: Id<"users">, newRole: "member" | "moderator" | "admin") => {
+    if (!sessionToken) {
+      toast.error("Authentication required");
+      return;
+    }
+
+    setIsUpdatingRole(userId);
+
+    try {
+      const result = await updateMemberRole({
+        sessionToken,
+        groupId,
+        userId,
+        newRole,
+      });
+
+      toast.success(result.message);
+    } catch (error: any) {
+      toast.error(error.message || "Failed to update member role");
+    } finally {
+      setIsUpdatingRole(null);
+    }
+  };
+
+  const handleRemoveMember = (member: GroupMember) => {
+    setSelectedMember(member);
+    setShowRemovalDialog(true);
+  };
+
+  const canRemoveMember = (memberRole: string) => {
+    const currentRole = currentUserMembership.role;
+
+    // Creator can remove everyone except other creators
+    if (currentRole === "creator") {
+      return memberRole !== "creator";
+    }
+
+    // Admin can remove moderators and members
+    if (currentRole === "admin") {
+      return memberRole === "moderator" || memberRole === "member";
+    }
+
+    // Moderator can remove members
+    if (currentRole === "moderator") {
+      return memberRole === "member";
+    }
+
+    return false;
+  };
+
   const getRoleIcon = (role: string) => {
     switch (role) {
       case "creator":
@@ -157,47 +221,112 @@ export function GroupMembersPanel({ groupId, groupName, members, currentUserMemb
                 {canManageMember(member.membership.role) && (
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-6 w-6 p-0"
+                        disabled={isUpdatingRole === member._id}
+                      >
                         <MoreVertical className="h-3 w-3" />
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem>
+                      <DropdownMenuItem disabled>
                         View Profile
                       </DropdownMenuItem>
-                      <DropdownMenuItem>
+                      <DropdownMenuItem disabled>
                         Send Message
                       </DropdownMenuItem>
                       <Separator />
+
+                      {/* Role Management */}
                       {currentUserMembership.role === "creator" && member.membership.role === "member" && (
                         <>
-                          <DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => handleRoleUpdate(member._id, "moderator")}
+                            disabled={isUpdatingRole === member._id}
+                          >
+                            <ChevronUp className="h-3 w-3 mr-2" />
                             Promote to Moderator
                           </DropdownMenuItem>
-                          <DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => handleRoleUpdate(member._id, "admin")}
+                            disabled={isUpdatingRole === member._id}
+                          >
+                            <ChevronUp className="h-3 w-3 mr-2" />
                             Promote to Admin
                           </DropdownMenuItem>
                         </>
                       )}
+
                       {currentUserMembership.role === "creator" && member.membership.role === "moderator" && (
                         <>
-                          <DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => handleRoleUpdate(member._id, "admin")}
+                            disabled={isUpdatingRole === member._id}
+                          >
+                            <ChevronUp className="h-3 w-3 mr-2" />
                             Promote to Admin
                           </DropdownMenuItem>
-                          <DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => handleRoleUpdate(member._id, "member")}
+                            disabled={isUpdatingRole === member._id}
+                          >
+                            <ChevronDown className="h-3 w-3 mr-2" />
                             Demote to Member
                           </DropdownMenuItem>
                         </>
                       )}
+
                       {currentUserMembership.role === "creator" && member.membership.role === "admin" && (
-                        <DropdownMenuItem>
-                          Demote to Moderator
+                        <>
+                          <DropdownMenuItem
+                            onClick={() => handleRoleUpdate(member._id, "moderator")}
+                            disabled={isUpdatingRole === member._id}
+                          >
+                            <ChevronDown className="h-3 w-3 mr-2" />
+                            Demote to Moderator
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => handleRoleUpdate(member._id, "member")}
+                            disabled={isUpdatingRole === member._id}
+                          >
+                            <ChevronDown className="h-3 w-3 mr-2" />
+                            Demote to Member
+                          </DropdownMenuItem>
+                        </>
+                      )}
+
+                      {/* Admin role management for other admins */}
+                      {currentUserMembership.role === "admin" && member.membership.role === "member" && (
+                        <DropdownMenuItem
+                          onClick={() => handleRoleUpdate(member._id, "moderator")}
+                          disabled={isUpdatingRole === member._id}
+                        >
+                          <ChevronUp className="h-3 w-3 mr-2" />
+                          Promote to Moderator
                         </DropdownMenuItem>
                       )}
+
+                      {currentUserMembership.role === "admin" && member.membership.role === "moderator" && (
+                        <DropdownMenuItem
+                          onClick={() => handleRoleUpdate(member._id, "member")}
+                          disabled={isUpdatingRole === member._id}
+                        >
+                          <ChevronDown className="h-3 w-3 mr-2" />
+                          Demote to Member
+                        </DropdownMenuItem>
+                      )}
+
                       <Separator />
-                      <DropdownMenuItem className="text-destructive">
-                        Remove from Group
-                      </DropdownMenuItem>
+                      {canRemoveMember(member.membership.role) && (
+                        <DropdownMenuItem
+                          className="text-destructive"
+                          onClick={() => handleRemoveMember(member)}
+                        >
+                          Remove from Group
+                        </DropdownMenuItem>
+                      )}
                     </DropdownMenuContent>
                   </DropdownMenu>
                 )}
@@ -262,6 +391,21 @@ export function GroupMembersPanel({ groupId, groupName, members, currentUserMemb
         groupId={groupId}
         groupName={groupName}
       />
+
+      {/* Member Removal Dialog */}
+      {selectedMember && (
+        <MemberRemovalDialog
+          open={showRemovalDialog}
+          onOpenChange={setShowRemovalDialog}
+          groupId={groupId}
+          member={{
+            _id: selectedMember._id,
+            username: selectedMember.username,
+            role: selectedMember.membership.role,
+          }}
+          currentUserRole={currentUserMembership.role}
+        />
+      )}
     </div>
   );
 }

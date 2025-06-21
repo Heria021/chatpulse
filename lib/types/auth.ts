@@ -96,6 +96,12 @@ export interface ChatMessage {
     fileName?: string;
     fileMimeType?: string;
   } | null;
+  mentions?: Array<{
+    userId: Id<"users">;
+    username: string;
+    startIndex: number;
+    endIndex: number;
+  }>;
   fileUrl?: string;
   fileName?: string;
   fileSize?: number;

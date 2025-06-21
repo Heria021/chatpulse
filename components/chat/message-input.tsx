@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useMutation } from "convex/react";
 import { Send, Paperclip, Smile, Loader2, X, FileText, Image as ImageIcon, Reply } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,12 @@ import { ChatConversation } from "@/lib/types/auth";
 import { getSessionToken } from "@/lib/utils/auth";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+
+interface GroupMember {
+  _id: Id<"users">;
+  username: string;
+  role: string;
+}
 
 interface MessageInputProps {
   conversation: ChatConversation;
@@ -27,6 +33,7 @@ interface MessageInputProps {
   } | null;
   onCancelReply?: () => void;
   className?: string;
+  groupMembers?: GroupMember[]; // For mention functionality in groups
 }
 
 interface FilePreview {
@@ -56,18 +63,143 @@ export function MessageInput({
   isSending,
   replyToMessage,
   onCancelReply,
-  className
+  className,
+  groupMembers
 }: MessageInputProps) {
   const [message, setMessage] = useState("");
   const [filePreview, setFilePreview] = useState<FilePreview | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [showMentions, setShowMentions] = useState(false);
+  const [mentionQuery, setMentionQuery] = useState("");
+  const [mentionPosition, setMentionPosition] = useState(0);
+  const [filteredMembers, setFilteredMembers] = useState<GroupMember[]>([]);
+  const [selectedMentionIndex, setSelectedMentionIndex] = useState(0);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const mentionListRef = useRef<HTMLDivElement>(null);
   const sessionToken = getSessionToken();
 
   // Mutations
   const generateUploadUrl = useMutation(api.chat.generateUploadUrl);
   const sendMessageMutation = useMutation(api.chat.sendMessage);
+
+  // Mention detection and processing
+  const detectMentions = (text: string, cursorPosition: number) => {
+    if (!groupMembers || groupMembers.length === 0) return;
+
+    const beforeCursor = text.substring(0, cursorPosition);
+    const mentionMatch = beforeCursor.match(/@(\w*)$/);
+
+    if (mentionMatch) {
+      const query = mentionMatch[1].toLowerCase();
+      const filtered = groupMembers.filter(member =>
+        member.username.toLowerCase().includes(query)
+      ).slice(0, 8); // Limit to 8 suggestions for better scrolling
+
+      setMentionQuery(query);
+      setMentionPosition(mentionMatch.index || 0);
+      setFilteredMembers(filtered);
+      setSelectedMentionIndex(0); // Reset selection to first item
+      setShowMentions(filtered.length > 0);
+    } else {
+      setShowMentions(false);
+      setFilteredMembers([]);
+      setSelectedMentionIndex(0);
+    }
+  };
+
+  const insertMention = (member: GroupMember) => {
+    const beforeMention = message.substring(0, mentionPosition);
+    const afterMention = message.substring(mentionPosition + mentionQuery.length + 1); // +1 for @
+    const newMessage = `${beforeMention}@${member.username} ${afterMention}`;
+
+    setMessage(newMessage);
+    setShowMentions(false);
+    setFilteredMembers([]);
+    setSelectedMentionIndex(0);
+
+    // Focus back to input
+    setTimeout(() => {
+      inputRef.current?.focus();
+      const newPosition = beforeMention.length + member.username.length + 2; // +2 for @ and space
+      inputRef.current?.setSelectionRange(newPosition, newPosition);
+    }, 0);
+  };
+
+  const handleMentionNavigation = (e: React.KeyboardEvent) => {
+    if (!showMentions || filteredMembers.length === 0) return false;
+
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault();
+        setSelectedMentionIndex(prev =>
+          prev < filteredMembers.length - 1 ? prev + 1 : 0
+        );
+        return true;
+
+      case 'ArrowUp':
+        e.preventDefault();
+        setSelectedMentionIndex(prev =>
+          prev > 0 ? prev - 1 : filteredMembers.length - 1
+        );
+        return true;
+
+      case 'Enter':
+        e.preventDefault();
+        if (filteredMembers[selectedMentionIndex]) {
+          insertMention(filteredMembers[selectedMentionIndex]);
+        }
+        return true;
+
+      case 'Escape':
+        e.preventDefault();
+        setShowMentions(false);
+        setFilteredMembers([]);
+        setSelectedMentionIndex(0);
+        return true;
+
+      default:
+        return false;
+    }
+  };
+
+  const extractMentions = (text: string) => {
+    if (!groupMembers) return [];
+
+    const mentionRegex = /@(\w+)/g;
+    const mentions = [];
+    let match;
+
+    while ((match = mentionRegex.exec(text)) !== null) {
+      const username = match[1];
+      const member = groupMembers.find(m => m.username === username);
+
+      if (member) {
+        mentions.push({
+          userId: member._id,
+          username: member.username,
+          startIndex: match.index,
+          endIndex: match.index + match[0].length
+        });
+      }
+    }
+
+    return mentions;
+  };
+
+  // Scroll selected mention into view
+  useEffect(() => {
+    if (showMentions && mentionListRef.current) {
+      const selectedElement = mentionListRef.current.children[selectedMentionIndex] as HTMLElement;
+      if (selectedElement) {
+        selectedElement.scrollIntoView({
+          block: 'nearest',
+          behavior: 'smooth'
+        });
+      }
+    }
+  }, [selectedMentionIndex, showMentions]);
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -144,13 +276,16 @@ export function MessageInput({
         };
       }
       
-      // Step 3: Send message
+      // Step 3: Extract mentions and send message
+      const mentions = extractMentions(message);
+
       await sendMessageMutation({
         sessionToken,
         conversationId: conversation.conversationId,
         content: hasText ? message.trim() : (hasFile ? `Sent ${hasFile.file.name}` : ""),
         type: hasFile ? (hasFile.type === 'image' ? 'image' : 'file') : 'text',
         replyToMessageId: replyToMessage?._id,
+        mentions: mentions.length > 0 ? mentions : undefined,
         ...fileData
       });
 
@@ -274,6 +409,7 @@ export function MessageInput({
 
         <div className="flex-1 relative">
           <Input
+            ref={inputRef}
             placeholder={`Message ${conversation.otherUser.username}...`}
             value={message}
             onChange={(e) => {
@@ -281,12 +417,84 @@ export function MessageInput({
               if (e.target.value.trim()) {
                 onTyping();
               }
+              // Detect mentions
+              if (groupMembers) {
+                detectMentions(e.target.value, e.target.selectionStart || 0);
+              }
             }}
-            onKeyDown={handleKeyDown}
+            onKeyDown={(e) => {
+              // Handle mention navigation first
+              if (handleMentionNavigation(e)) {
+                return;
+              }
+              // Then handle normal key events
+              handleKeyDown(e);
+            }}
+            onBlur={(e) => {
+              // Only hide mentions if not clicking on mention list
+              if (!e.relatedTarget?.closest('[data-mention-list]')) {
+                setTimeout(() => setShowMentions(false), 150);
+              }
+            }}
             className="pr-10 h-9 lg:h-10"
             disabled={isDisabled}
             maxLength={2000}
           />
+
+          {/* Mention Suggestions */}
+          {showMentions && filteredMembers.length > 0 && (
+            <div
+              ref={mentionListRef}
+              data-mention-list
+              className="absolute bottom-full left-0 right-0 mb-1 bg-popover border rounded-md shadow-lg max-h-48 overflow-y-auto z-50"
+              style={{
+                scrollbarWidth: 'thin',
+                scrollbarColor: 'hsl(var(--muted)) transparent'
+              }}
+            >
+              {filteredMembers.map((member, index) => (
+                <button
+                  key={member._id}
+                  className={`w-full px-3 py-2 text-left transition-colors duration-150 flex items-center gap-2 first:rounded-t-md last:rounded-b-md ${
+                    index === selectedMentionIndex
+                      ? 'bg-primary text-primary-foreground'
+                      : 'hover:bg-accent hover:text-accent-foreground'
+                  }`}
+                  onMouseDown={(e) => {
+                    e.preventDefault(); // Prevent input blur
+                    insertMention(member);
+                  }}
+                  onMouseEnter={() => setSelectedMentionIndex(index)}
+                >
+                  <div className={`w-6 h-6 rounded-full flex items-center justify-center ${
+                    index === selectedMentionIndex
+                      ? 'bg-primary-foreground/20'
+                      : 'bg-primary/10'
+                  }`}>
+                    <span className={`text-xs font-medium ${
+                      index === selectedMentionIndex
+                        ? 'text-primary-foreground'
+                        : 'text-primary'
+                    }`}>
+                      {member.username.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium truncate">@{member.username}</span>
+                      <span className={`text-xs capitalize px-1.5 py-0.5 rounded text-xs ${
+                        index === selectedMentionIndex
+                          ? 'bg-primary-foreground/20 text-primary-foreground/80'
+                          : 'bg-muted text-muted-foreground'
+                      }`}>
+                        {member.role}
+                      </span>
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
           <Button
             variant="ghost"
             size="icon"

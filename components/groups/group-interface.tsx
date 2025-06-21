@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { useRouter } from "next/navigation";
 import {
@@ -10,7 +10,9 @@ import {
   Shield,
   UserCheck,
   Globe,
-  Lock
+  Lock,
+  Settings,
+  UserPlus
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -27,6 +29,8 @@ import { MessageArea } from "@/components/chat/message-area";
 import { MessageInput } from "@/components/chat/message-input";
 import { GroupMembersPanel } from "./group-members-panel";
 import { GroupAccessHandler } from "./group-access-handler";
+import { GroupSettingsDialog } from "./group-settings-dialog";
+import { GroupRequestsSheet } from "./group-requests-sheet";
 import { toast } from "sonner";
 
 interface GroupInterfaceProps {
@@ -37,10 +41,21 @@ export function GroupInterface({ groupId }: GroupInterfaceProps) {
   const { user } = useAuth();
   const router = useRouter();
   const [isMembersPanelOpen, setIsMembersPanelOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isRequestsSheetOpen, setIsRequestsSheetOpen] = useState(false);
   const [accessError, setAccessError] = useState<string | null>(null);
   const [groupInfo, setGroupInfo] = useState<any>(null);
   const [hasJustJoined, setHasJustJoined] = useState(false);
+  const [replyToMessage, setReplyToMessage] = useState<{
+    _id: Id<"messages">;
+    content: string;
+    type: "text" | "image" | "file" | "system";
+    senderUsername: string;
+    fileName?: string;
+    fileMimeType?: string;
+  } | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const lastSeenUpdateRef = useRef<number>(0);
 
   const sessionToken = getSessionToken();
 
@@ -62,6 +77,14 @@ export function GroupInterface({ groupId }: GroupInterfaceProps) {
   const membersResult = useQuery(
     api.groups.getGroupMembers,
     sessionToken && user ? { sessionToken, groupId: groupId as Id<"groups"> } : "skip"
+  );
+
+  // Get pending requests count for admins/creators of private groups
+  const requestsCount = useQuery(
+    api.groups.getGroupRequestsCount,
+    sessionToken && user && groupInfo && !groupInfo.isPublic && groupInfo.type !== "permanent"
+      ? { sessionToken, groupId: groupId as Id<"groups"> }
+      : "skip"
   );
 
   // Handle the new response format
@@ -88,17 +111,54 @@ export function GroupInterface({ groupId }: GroupInterfaceProps) {
     }
   }, [membersResult]);
 
-  // Update last seen when user enters the group
-  useEffect(() => {
+  // Throttled function to update last seen
+  const throttledUpdateLastSeen = useCallback(() => {
+    const now = Date.now();
+    const THROTTLE_INTERVAL = 30 * 1000; // 30 seconds
+
+    // Check if enough time has passed since last update
+    if (now - lastSeenUpdateRef.current < THROTTLE_INTERVAL) {
+      return;
+    }
+
     if (sessionToken && groupConversation?.membership && groupConversation.membership.status === "active") {
+      lastSeenUpdateRef.current = now;
       updateGroupLastSeen({
         sessionToken,
         groupId: groupId as Id<"groups">,
       }).catch((error) => {
         console.error("Failed to update group last seen:", error);
+        // Reset the timestamp on error so we can retry
+        lastSeenUpdateRef.current = 0;
       });
     }
-  }, [sessionToken, groupConversation, groupId, updateGroupLastSeen]);
+  }, [sessionToken, groupConversation?.membership, groupId, updateGroupLastSeen]);
+
+  // Update last seen when user enters the group (throttled)
+  useEffect(() => {
+    throttledUpdateLastSeen();
+  }, [throttledUpdateLastSeen]);
+
+  // Update last seen when user becomes active (focus/visibility change)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        throttledUpdateLastSeen();
+      }
+    };
+
+    const handleFocus = () => {
+      throttledUpdateLastSeen();
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('focus', handleFocus);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, [throttledUpdateLastSeen]);
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -129,6 +189,21 @@ export function GroupInterface({ groupId }: GroupInterfaceProps) {
     } catch (error: any) {
       toast.error(error.message || "Failed to leave group");
     }
+  };
+
+  const handleReplyToMessage = (message: any) => {
+    setReplyToMessage({
+      _id: message._id,
+      content: message.content,
+      type: message.type,
+      senderUsername: message.senderUsername,
+      fileName: message.fileName,
+      fileMimeType: message.fileMimeType
+    });
+  };
+
+  const handleCancelReply = () => {
+    setReplyToMessage(null);
   };
 
   const getRoleIcon = (role: string) => {
@@ -213,6 +288,55 @@ export function GroupInterface({ groupId }: GroupInterfaceProps) {
 
         {/* Actions */}
         <div className="flex items-center space-x-2">
+          {/* Requests Button - Only for creators and admins of private groups */}
+          {membership && (membership.role === "creator" || membership.role === "admin") && !group.isPublic && group.type !== "permanent" && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsRequestsSheetOpen(true)}
+              className="relative"
+            >
+              <UserPlus className="h-4 w-4" />
+              <span className="hidden sm:inline ml-2">
+                Requests
+                {requestsCount && requestsCount > 0 && (
+                  <span className="ml-1">
+                    ({requestsCount >= 50 ? "50+" :
+                      requestsCount >= 30 ? "30+" :
+                      requestsCount >= 20 ? "20+" :
+                      requestsCount >= 10 ? "10+" :
+                      requestsCount})
+                  </span>
+                )}
+              </span>
+              {/* Badge for mobile when text is hidden */}
+              {requestsCount && requestsCount > 0 && (
+                <Badge
+                  variant="destructive"
+                  className="sm:hidden absolute -top-2 -right-2 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs font-medium"
+                >
+                  {requestsCount >= 50 ? "50+" :
+                   requestsCount >= 30 ? "30+" :
+                   requestsCount >= 20 ? "20+" :
+                   requestsCount >= 10 ? "10+" :
+                   requestsCount}
+                </Badge>
+              )}
+            </Button>
+          )}
+
+          {/* Settings Button - Only for creators and admins */}
+          {membership && (membership.role === "creator" || membership.role === "admin") && group.type !== "permanent" && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsSettingsOpen(true)}
+            >
+              <Settings className="h-4 w-4" />
+              <span className="hidden sm:inline ml-2">Settings</span>
+            </Button>
+          )}
+
           {/* Members Panel */}
           <Sheet open={isMembersPanelOpen} onOpenChange={setIsMembersPanelOpen}>
             <SheetTrigger asChild>
@@ -266,6 +390,7 @@ export function GroupInterface({ groupId }: GroupInterfaceProps) {
           }
         }}
         user={user}
+        onReplyToMessage={handleReplyToMessage}
         ref={messagesEndRef}
       />
 
@@ -288,6 +413,25 @@ export function GroupInterface({ groupId }: GroupInterfaceProps) {
         onSendMessage={() => {}}
         onTyping={() => {}}
         isSending={false}
+        replyToMessage={replyToMessage}
+        onCancelReply={handleCancelReply}
+        groupMembers={members} // Pass group members for mentions
+      />
+
+      {/* Group Settings Dialog */}
+      <GroupSettingsDialog
+        open={isSettingsOpen}
+        onOpenChange={setIsSettingsOpen}
+        groupId={groupId as Id<"groups">}
+        userRole={membership?.role}
+      />
+
+      {/* Group Requests Sheet */}
+      <GroupRequestsSheet
+        open={isRequestsSheetOpen}
+        onOpenChange={setIsRequestsSheetOpen}
+        groupId={groupId as Id<"groups">}
+        groupName={group.name}
       />
     </div>
   );
