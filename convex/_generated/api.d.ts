@@ -15,6 +15,7 @@ import type {
 } from "convex/server";
 import type * as auth from "../auth.js";
 import type * as blog from "../blog.js";
+import type * as blogContentTemplates from "../blogContentTemplates.js";
 import type * as chat from "../chat.js";
 import type * as cleanup from "../cleanup.js";
 import type * as contact from "../contact.js";
@@ -34,6 +35,7 @@ import type * as users from "../users.js";
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   blog: typeof blog;
+  blogContentTemplates: typeof blogContentTemplates;
   chat: typeof chat;
   cleanup: typeof cleanup;
   contact: typeof contact;

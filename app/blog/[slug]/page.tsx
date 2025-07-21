@@ -15,6 +15,10 @@ import { generateNextMetadata, generateBlogStructuredData, generateBreadcrumbStr
 import { extractTableOfContents } from "@/lib/blog-content-utils"
 import { trackBlogView, trackBlogShare } from "@/lib/blog-analytics"
 import { toast } from "sonner"
+import { ReadingProgress, ReadingProgressIndicator } from "@/components/blog/reading-progress"
+import { RelatedPosts } from "@/components/blog/related-posts"
+import { AuthorCard, AuthorBio } from "@/components/blog/author-profile"
+import { SocialSharing, NewsletterSignup, Comments } from "@/components/blog/social-sharing"
 import { formatBlogDate } from "@/lib/blog-utils"
 import { BlogPostSkeleton } from "@/components/blog/blog-skeletons"
 
@@ -34,18 +38,6 @@ interface BlogPostPageProps {
   params: Promise<{
     slug: string
   }>
-}
-
-// Generate metadata for SEO
-export async function generateMetadata({ params }: BlogPostPageProps) {
-  const resolvedParams = await params
-
-  // In a real app, you'd fetch the post data here
-  // For now, we'll return basic metadata
-  return {
-    title: "Blog Post | ChatNow",
-    description: "Read our latest blog post on ChatNow",
-  }
 }
 
 export default function BlogPostPage({ params }: BlogPostPageProps) {
@@ -169,6 +161,12 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
+      {/* Reading Progress Bar */}
+      <ReadingProgress target="article" />
+
+      {/* Reading Progress Indicator */}
+      {post && <ReadingProgressIndicator content={contentSections} />}
+
       {/* Structured Data for SEO */}
       {structuredData && (
         <script
@@ -245,58 +243,23 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
               </p>
               
               <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-                  <div className="flex items-center space-x-2">
-                    {post.authorImage ? (
-                      <img 
-                        src={post.authorImage} 
-                        alt={post.author}
-                        className="w-8 h-8 rounded-full"
-                      />
-                    ) : (
-                      <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
-                        <User className="h-4 w-4 text-primary" />
-                      </div>
-                    )}
-                    <span className="font-medium">{post.author}</span>
-                  </div>
-                  <span>•</span>
-                  <div className="flex items-center space-x-1">
-                    <Calendar className="h-3 w-3" />
-                    <span>{formatBlogDate(post.publishedAt || post.createdAt)}</span>
-                  </div>
-                  <span>•</span>
-                  <div className="flex items-center space-x-1">
-                    <Clock className="h-3 w-3" />
-                    <span>{post.readTime} min read</span>
-                  </div>
-                </div>
-                
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    const shareData = {
-                      title: post.title,
-                      text: post.metaDescription,
-                      url: `${window.location.origin}/blog/${post.slug}`
-                    }
-
-                    if (navigator.share) {
-                      navigator.share(shareData).then(() => {
-                        trackBlogShare(post._id, post.slug, 'native')
-                      }).catch(console.error)
-                    } else {
-                      navigator.clipboard.writeText(shareData.url).then(() => {
-                        trackBlogShare(post._id, post.slug, 'clipboard')
-                        toast.success("Link copied to clipboard!")
-                      }).catch(console.error)
-                    }
+                <AuthorCard
+                  author={{
+                    name: post.author,
+                    bio: post.authorBio,
+                    image: post.authorImage
                   }}
-                >
-                  <Share2 className="h-4 w-4 mr-2" />
-                  Share
-                </Button>
+                  publishedAt={post.publishedAt || post.createdAt}
+                  readTime={post.readTime}
+                />
+
+                <SocialSharing
+                  title={post.title}
+                  url={`${window.location.origin}/blog/${post.slug}`}
+                  description={post.metaDescription}
+                  postId={post._id}
+                  postSlug={post.slug}
+                />
               </div>
             </header>
 
@@ -366,6 +329,36 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
                 </div>
               </div>
             )}
+
+            {/* Newsletter Signup - Inline */}
+            <NewsletterSignup variant="inline" className="my-12" />
+
+            {/* Author Bio */}
+            <AuthorBio
+              author={{
+                name: post.author,
+                bio: post.authorBio || `${post.author} is a passionate writer and expert in real-time communication technologies.`,
+                image: post.authorImage,
+                website: "https://chatnow.com",
+                twitter: "chatnow",
+                linkedin: "https://linkedin.com/company/chatnow"
+              }}
+              className="my-12"
+            />
+
+            {/* Social Sharing - Extended */}
+            <div className="my-12 p-6 bg-muted/30 rounded-lg">
+              <SocialSharing
+                title={post.title}
+                url={`${window.location.origin}/blog/${post.slug}`}
+                description={post.metaDescription}
+                postId={post._id}
+                postSlug={post.slug}
+              />
+            </div>
+
+            {/* Comments Section */}
+            <Comments postId={post._id} className="my-12" />
           </article>
 
           {/* Related Posts */}
