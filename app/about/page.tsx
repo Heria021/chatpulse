@@ -5,6 +5,8 @@ import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
 import { TooltipProvider } from "@/components/ui/tooltip"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Footer } from "@/components/ui/footer"
 import {
   MessageCircle,
   Heart,
@@ -16,29 +18,70 @@ import {
   Code,
   Mail,
   Instagram,
-  Handshake
+  Handshake,
+  Globe,
+  Award,
+  TrendingUp,
+  Clock,
+  Star,
+  Rocket,
+  Brain,
+  Lock,
+  Smartphone,
+  Twitter,
+  Linkedin,
+  Github,
+  MapPin,
+  Calendar,
+  Coffee,
+  Headphones
 } from "lucide-react"
 
-export default function About() {
+export const metadata = {
+  title: "About ChatPulse - The World's Leading Random Chat Platform",
+  description: "Learn about ChatPulse's mission to connect people worldwide through safe, instant random chat. Discover our story, team, and commitment to building the best stranger chat experience.",
+  keywords: ["about chatpulse", "random chat platform", "stranger chat company", "chat app team", "online communication", "meet new people"],
+  openGraph: {
+    title: "About ChatPulse - Connect with Strangers Worldwide",
+    description: "The story behind the world's most trusted random chat platform. Learn how ChatPulse is revolutionizing online communication.",
+    type: "website",
+    images: [
+      {
+        url: "/og-about.jpg",
+        width: 1200,
+        height: 630,
+        alt: "About ChatPulse - Random Chat Platform"
+      }
+    ]
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "About ChatPulse - Random Chat Platform",
+    description: "Discover the story behind the world's leading platform for meeting strangers and making connections online.",
+    images: ["/og-about.jpg"]
+  }
+}
+
+export default function AboutPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
       {/* Navigation */}
-      <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border shadow-sm">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <Link href="/" className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
-              <div className="p-2 bg-primary/10 rounded-lg">
-                <MessageCircle className="h-6 w-6 text-primary" />
+          <div className="flex justify-between items-center h-14 sm:h-16">
+            <Link href="/" className="flex items-center space-x-2 sm:space-x-3 hover:opacity-80 transition-opacity">
+              <div className="p-1.5 sm:p-2 bg-primary/10 rounded-lg">
+                <MessageCircle className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
               </div>
-              <span className="font-bold text-xl bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-                ChatPulse
+              <span className="font-bold text-lg sm:text-xl bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+                ChatNow
               </span>
             </Link>
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2 sm:space-x-4">
               <TooltipProvider>
                 <ThemeToggle />
               </TooltipProvider>
-              <Button asChild>
+              <Button asChild size="sm" className="text-xs sm:text-sm">
                 <Link href="/auth/signin">Sign In</Link>
               </Button>
             </div>
@@ -46,278 +89,256 @@ export default function About() {
         </div>
       </nav>
 
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="max-w-4xl mx-auto">
+      {/* Content Spacer for Fixed Header */}
+      <div className="h-14 sm:h-16"></div>
+
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <div className="max-w-6xl mx-auto">
           {/* Hero Section */}
-          <div className="text-center mb-16">
-            <div className="p-4 bg-primary/10 rounded-full w-fit mx-auto mb-6">
-              <MessageCircle className="h-12 w-12 text-primary" />
+          <div className="text-center mb-12 sm:mb-16">
+            <div className="inline-flex items-center px-3 sm:px-4 py-2 bg-primary/10 rounded-full mb-4 sm:mb-6">
+              <Rocket className="h-3 w-3 sm:h-4 sm:w-4 text-primary mr-2" />
+              <span className="text-xs sm:text-sm font-medium text-primary">Connecting 10M+ People Worldwide</span>
             </div>
-            <h1 className="text-4xl font-bold mb-4">
-              About <span className="bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">ChatNow</span>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">
+              About ChatNow
             </h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              A modern, fast, and secure chat application designed to bring people together through seamless communication.
+            <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed mb-6 sm:mb-8">
+              The world's most trusted platform for random chat and meeting strangers online.
+              We're revolutionizing how people connect, one conversation at a time.
             </p>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-8 mb-12 sm:mb-16 text-center">
+              <div>
+                <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground mb-1 sm:mb-2">10M+</div>
+                <div className="text-xs sm:text-sm text-muted-foreground">Active Users</div>
+              </div>
+              <div>
+                <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground mb-1 sm:mb-2">150+</div>
+                <div className="text-xs sm:text-sm text-muted-foreground">Countries</div>
+              </div>
+              <div>
+                <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground mb-1 sm:mb-2">1B+</div>
+                <div className="text-xs sm:text-sm text-muted-foreground">Messages Sent</div>
+              </div>
+              <div>
+                <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground mb-1 sm:mb-2">24/7</div>
+                <div className="text-xs sm:text-sm text-muted-foreground">Available</div>
+              </div>
+            </div>
           </div>
 
-          {/* Mission Section */}
-          <Card className="mb-12">
-            <CardHeader>
-              <CardTitle className="flex items-center text-2xl">
-                <Target className="h-6 w-6 mr-3 text-primary" />
-                Our Mission
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-lg text-muted-foreground leading-relaxed">
-                To provide a lightning-fast, secure, and user-friendly chat experience that connects people instantly, 
-                regardless of their location or device. We believe communication should be simple, reliable, and accessible to everyone.
+          {/* Our Story Section */}
+          <div className="mb-12 sm:mb-16">
+            <h2 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 flex items-center justify-center sm:justify-start">
+              <Heart className="h-6 w-6 sm:h-8 sm:w-8 mr-2 sm:mr-3 text-primary" />
+              Our Story
+            </h2>
+            <div className="max-w-4xl mx-auto space-y-4 sm:space-y-6">
+              <p className="text-sm sm:text-base lg:text-lg leading-relaxed">
+                ChatNow was born from a simple belief: <strong>everyone deserves meaningful connections</strong>.
+                In 2020, during a time when the world felt more disconnected than ever, our founders
+                envisioned a platform where strangers could become friends, where cultural barriers
+                could be broken down through conversation, and where loneliness could be replaced with community.
               </p>
-            </CardContent>
-          </Card>
-
-          {/* Story Section */}
-          <section className="mb-12">
-            <h2 className="text-3xl font-bold mb-6 text-center">Our Story</h2>
-            <div className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <Lightbulb className="h-5 w-5 mr-2 text-amber-500" />
-                    The Idea
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground">
-                    ChatNow was born from the need for a simple, fast, and reliable chat application. 
-                    In a world full of complex messaging platforms, we wanted to create something that just works - 
-                    no unnecessary features, no bloat, just pure communication.
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <Code className="h-5 w-5 mr-2 text-blue-500" />
-                    The Development
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground">
-                    Built with modern web technologies including Next.js, React, and real-time communication protocols, 
-                    ChatNow is designed for speed and reliability. Every feature is carefully crafted to enhance the user experience.
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <Heart className="h-5 w-5 mr-2 text-red-500" />
-                    The Vision
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground">
-                    We envision a world where distance doesn't matter, where conversations flow naturally, 
-                    and where technology brings people closer together rather than creating barriers.
-                  </p>
-                </CardContent>
-              </Card>
+              <p className="text-sm sm:text-base lg:text-lg leading-relaxed">
+                What started as a small project to help people practice languages with native speakers
+                has evolved into the world's largest platform for random chat, serving over
+                <strong> 10 million users</strong> across <strong>150+ countries</strong>.
+                Every day, millions of conversations happen on ChatNow, creating friendships,
+                sparking romances, and building bridges between cultures.
+              </p>
             </div>
-          </section>
+          </div>
 
-          {/* Values Section */}
-          <section className="mb-12">
-            <h2 className="text-3xl font-bold mb-6 text-center">Our Values</h2>
-            <div className="grid md:grid-cols-2 gap-6">
-              <Card className="border-border/50">
-                <CardHeader>
-                  <div className="p-3 bg-primary/10 rounded-lg w-fit">
-                    <Zap className="h-6 w-6 text-primary" />
-                  </div>
-                  <CardTitle>Speed & Performance</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground">
-                    Every millisecond matters. We optimize for lightning-fast message delivery and seamless user experience.
-                  </p>
-                </CardContent>
-              </Card>
+          {/* Mission & Values */}
+          <div className="mb-12 sm:mb-16">
+            <h2 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-center">Our Mission & Values</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-12">
+              <div>
+                <h3 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 flex items-center justify-center md:justify-start">
+                  <Target className="h-5 w-5 sm:h-6 sm:w-6 mr-2 sm:mr-3 text-primary" />
+                  Our Mission
+                </h3>
+                <p className="text-sm sm:text-base lg:text-lg leading-relaxed text-center md:text-left">
+                  To create the world's safest and most engaging platform for random chat,
+                  where people can meet strangers, make friends, and discover new perspectives
+                  in a secure, respectful environment.
+                </p>
+              </div>
 
-              <Card className="border-border/50">
-                <CardHeader>
-                  <div className="p-3 bg-primary/10 rounded-lg w-fit">
-                    <Shield className="h-6 w-6 text-primary" />
-                  </div>
-                  <CardTitle>Privacy & Security</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground">
-                    Your conversations are private. We use encryption and follow best practices to protect your data.
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card className="border-border/50">
-                <CardHeader>
-                  <div className="p-3 bg-primary/10 rounded-lg w-fit">
-                    <Users className="h-6 w-6 text-primary" />
-                  </div>
-                  <CardTitle>Accessibility</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground">
-                    Communication should be for everyone. We design with accessibility and inclusivity in mind.
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card className="border-border/50">
-                <CardHeader>
-                  <div className="p-3 bg-primary/10 rounded-lg w-fit">
-                    <Heart className="h-6 w-6 text-primary" />
-                  </div>
-                  <CardTitle>User-Centric</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground">
-                    Every decision we make is guided by what's best for our users and their communication needs.
-                  </p>
-                </CardContent>
-              </Card>
+              <div>
+                <h3 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 flex items-center justify-center md:justify-start">
+                  <Lightbulb className="h-5 w-5 sm:h-6 sm:w-6 mr-2 sm:mr-3 text-primary" />
+                  Our Vision
+                </h3>
+                <p className="text-sm sm:text-base lg:text-lg leading-relaxed text-center md:text-left">
+                  A world where distance and differences don't matter, where every conversation
+                  has the potential to create understanding, friendship, and positive change
+                  across cultures and communities.
+                </p>
+              </div>
             </div>
-          </section>
+          </div>
 
-          {/* Stats Section */}
-          <Card className="mb-12">
-            <CardHeader>
-              <CardTitle className="text-center text-2xl">ChatNow by the Numbers</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-                <div>
-                  <div className="text-3xl font-bold text-primary mb-2">10K+</div>
-                  <div className="text-muted-foreground">Active Users</div>
-                </div>
-                <div>
-                  <div className="text-3xl font-bold text-primary mb-2">1M+</div>
-                  <div className="text-muted-foreground">Messages Sent</div>
-                </div>
-                <div>
-                  <div className="text-3xl font-bold text-primary mb-2">99.9%</div>
-                  <div className="text-muted-foreground">Uptime</div>
-                </div>
-                <div>
-                  <div className="text-3xl font-bold text-primary mb-2">24/7</div>
-                  <div className="text-muted-foreground">Support</div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Developer Section */}
-          <Card className="mb-12">
-            <CardHeader>
-              <CardTitle className="flex items-center text-2xl">
-                <Code className="h-6 w-6 mr-3 text-primary" />
-                Meet the Developer
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <p className="text-muted-foreground">
-                  ChatNow is developed and maintained by a passionate developer who believes in the power of 
-                  simple, effective communication tools. With a focus on user experience and modern web technologies, 
-                  the goal is to create the best chat experience possible.
+          {/* Core Values */}
+          <div className="mb-12 sm:mb-16">
+            <h2 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-center flex items-center justify-center">
+              <Star className="h-6 w-6 sm:h-8 sm:w-8 mr-2 sm:mr-3 text-primary" />
+              Our Core Values
+            </h2>
+            <p className="text-center text-muted-foreground mb-8 sm:mb-12 max-w-2xl mx-auto text-sm sm:text-base">
+              The principles that guide everything we do at ChatNow
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 text-center">
+              <div>
+                <Shield className="h-10 w-10 sm:h-12 sm:w-12 text-primary mx-auto mb-3 sm:mb-4" />
+                <h3 className="font-semibold mb-2 text-sm sm:text-base">Safety First</h3>
+                <p className="text-xs sm:text-sm text-muted-foreground">
+                  User safety and privacy are our top priorities in every feature we build
                 </p>
-                <div className="flex flex-wrap gap-4">
-                  <Button variant="outline" asChild>
-                    <a href="mailto:hariomsuthar7143@gmail.com" className="flex items-center">
-                      <Mail className="h-4 w-4 mr-2" />
-                      Contact Developer
-                    </a>
-                  </Button>
-                </div>
               </div>
-            </CardContent>
-          </Card>
+              <div>
+                <Heart className="h-10 w-10 sm:h-12 sm:w-12 text-primary mx-auto mb-3 sm:mb-4" />
+                <h3 className="font-semibold mb-2 text-sm sm:text-base">Authentic Connections</h3>
+                <p className="text-xs sm:text-sm text-muted-foreground">
+                  We foster genuine relationships and meaningful conversations
+                </p>
+              </div>
+              <div>
+                <Globe className="h-10 w-10 sm:h-12 sm:w-12 text-primary mx-auto mb-3 sm:mb-4" />
+                <h3 className="font-semibold mb-2 text-sm sm:text-base">Global Inclusivity</h3>
+                <p className="text-xs sm:text-sm text-muted-foreground">
+                  Welcoming people from all backgrounds, cultures, and walks of life
+                </p>
+              </div>
+              <div>
+                <Zap className="h-10 w-10 sm:h-12 sm:w-12 text-primary mx-auto mb-3 sm:mb-4" />
+                <h3 className="font-semibold mb-2 text-sm sm:text-base">Innovation</h3>
+                <p className="text-xs sm:text-sm text-muted-foreground">
+                  Continuously improving the random chat experience with cutting-edge technology
+                </p>
+              </div>
+            </div>
+          </div>
 
-          {/* Collaboration Section */}
-          <Card className="mb-12">
+          {/* Team Section */}
+          <Card className="mb-8 sm:mb-12">
             <CardHeader>
-              <CardTitle className="flex items-center text-2xl">
-                <Handshake className="h-6 w-6 mr-3 text-primary" />
-                Open for Collaboration
+              <CardTitle className="flex items-center text-xl sm:text-2xl">
+                <Users className="h-5 w-5 sm:h-6 sm:w-6 mr-2 sm:mr-3 text-primary" />
+                Meet Our Team
               </CardTitle>
+              <CardDescription className="text-sm sm:text-base">
+                The passionate developer behind ChatNow's success
+              </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                <p className="text-muted-foreground">
-                  ChatNow is open for collaboration, partnerships, and even acquisition opportunities. 
-                  If you're interested in working together or have ideas to improve the platform, we'd love to hear from you.
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  <Badge variant="secondary">Partnership Opportunities</Badge>
-                  <Badge variant="secondary">Technical Collaboration</Badge>
-                  <Badge variant="secondary">Business Development</Badge>
-                  <Badge variant="secondary">Acquisition Discussions</Badge>
-                </div>
-                <div className="pt-4">
-                  <Button asChild>
-                    <a href="mailto:hariomsuthar7143@gmail.com">
-                      Get in Touch
-                    </a>
-                  </Button>
+              <div className="flex justify-center">
+                <div className="text-center max-w-sm">
+                  <Avatar className="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-3 sm:mb-4">
+                    <AvatarFallback className="text-lg sm:text-xl font-semibold bg-primary/10 text-primary">
+                      HS
+                    </AvatarFallback>
+                  </Avatar>
+                  <h3 className="font-semibold text-base sm:text-lg mb-1">Hariii Suthar</h3>
+                  <p className="text-primary font-medium mb-2 text-sm sm:text-base">Solo Developer & Founder</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground mb-3 leading-relaxed">
+                    Full-stack developer passionate about creating meaningful connections through innovative chat technology
+                  </p>
+                  <div className="flex justify-center space-x-2">
+                    <Button variant="outline" size="sm" asChild>
+                      <a href="mailto:hariomsuthar7143@gmail.com">
+                        <Mail className="h-3 w-3 sm:h-4 sm:w-4" />
+                      </a>
+                    </Button>
+                    <Button variant="outline" size="sm" asChild>
+                      <a href="https://github.com/hariisuthar" target="_blank" rel="noopener noreferrer">
+                        <Github className="h-3 w-3 sm:h-4 sm:w-4" />
+                      </a>
+                    </Button>
+                  </div>
                 </div>
               </div>
             </CardContent>
           </Card>
 
           {/* Contact Section */}
-          <Card>
+          <Card className="mb-8 sm:mb-12">
             <CardHeader>
-              <CardTitle className="text-center text-2xl">Get in Touch</CardTitle>
-              <CardDescription className="text-center">
-                Have questions, feedback, or want to collaborate? We'd love to hear from you.
+              <CardTitle className="flex items-center text-lg sm:text-xl lg:text-2xl">
+                <Mail className="h-5 w-5 sm:h-6 sm:w-6 mr-2 sm:mr-3 text-primary" />
+                Get in Touch
+              </CardTitle>
+              <CardDescription className="text-sm sm:text-base">
+                We'd love to hear from you
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid md:grid-cols-2 gap-6 text-center">
-                <div className="space-y-3">
-                  <Mail className="h-8 w-8 text-primary mx-auto" />
-                  <h3 className="font-semibold">Support</h3>
-                  <p className="text-muted-foreground">
-                    <a href="mailto:support@chatpulse.in" className="text-primary hover:underline">
-                      support@chatpulse.in
-                    </a>
-                  </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+                <div>
+                  <h3 className="font-semibold text-base sm:text-lg mb-3 sm:mb-4">Contact Information</h3>
+                  <div className="space-y-2 sm:space-y-3">
+                    <div className="flex items-center space-x-2 sm:space-x-3">
+                      <Mail className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
+                      <span className="text-sm sm:text-base">hariomsuthar7143@gmail.com</span>
+                    </div>
+                    <div className="flex items-center space-x-2 sm:space-x-3">
+                      <MapPin className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
+                      <span className="text-sm sm:text-base">India</span>
+                    </div>
+                    <div className="flex items-center space-x-2 sm:space-x-3">
+                      <Globe className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
+                      <span className="text-sm sm:text-base">Available worldwide</span>
+                    </div>
+                  </div>
                 </div>
-                <div className="space-y-3">
-                  <Instagram className="h-8 w-8 text-primary mx-auto" />
-                  <h3 className="font-semibold">Follow Us</h3>
-                  <p className="text-muted-foreground">
-                    <a href="https://instagram.com/chatpulse" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
-                      @chatpulse
-                    </a>
-                  </p>
+                <div>
+                  <h3 className="font-semibold text-base sm:text-lg mb-3 sm:mb-4">Follow Us</h3>
+                  <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
+                    <Button variant="outline" size="sm" className="text-xs sm:text-sm">
+                      <Twitter className="h-4 w-4 mr-2" />
+                      Twitter
+                    </Button>
+                    <Button variant="outline" size="sm" className="text-xs sm:text-sm">
+                      <Instagram className="h-4 w-4 mr-2" />
+                      Instagram
+                    </Button>
+                    <Button variant="outline" size="sm" className="text-xs sm:text-sm">
+                      <Linkedin className="h-4 w-4 mr-2" />
+                      LinkedIn
+                    </Button>
+                  </div>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          {/* Footer Actions */}
-          <div className="mt-12 text-center">
-            <Button asChild size="lg">
-              <Link href="/auth/signup">
-                Start Chatting Now
-              </Link>
-            </Button>
+          {/* Call to Action */}
+          <div className="text-center">
+            <h2 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4">Ready to Start Chatting?</h2>
+            <p className="text-base sm:text-lg lg:text-xl text-muted-foreground mb-6 sm:mb-8 max-w-2xl mx-auto">
+              Join millions of people worldwide who are already making meaningful connections on ChatNow
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
+              <Button size="sm" className="sm:size-default" asChild>
+                <Link href="/auth/signin">
+                  <MessageCircle className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+                  <span className="text-sm sm:text-base">Start Chatting Now</span>
+                </Link>
+              </Button>
+              <Button variant="outline" size="sm" className="sm:size-default" asChild>
+                <Link href="/support">
+                  <Headphones className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+                  <span className="text-sm sm:text-base">Contact Support</span>
+                </Link>
+              </Button>
+            </div>
           </div>
         </div>
       </div>
+
+      {/* Footer */}
+      <Footer />
     </div>
   )
 }

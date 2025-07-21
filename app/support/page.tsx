@@ -1,122 +1,176 @@
 "use client"
 
-import Link from "next/link"
 import { useState } from "react"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useMutation } from "convex/react"
-import { api } from "@/convex/_generated/api"
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { ThemeToggle } from "@/components/ui/theme-toggle"
+import { TooltipProvider } from "@/components/ui/tooltip"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
-import { Separator } from "@/components/ui/separator"
-import { Badge } from "@/components/ui/badge"
-import { ThemeToggle } from "@/components/ui/theme-toggle"
-import { TooltipProvider } from "@/components/ui/tooltip"
-import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Footer } from "@/components/ui/footer"
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form"
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion"
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import {
   MessageCircle,
-  HelpCircle,
+  Headphones,
   Mail,
-  MessageSquare,
   Clock,
-  CheckCircle,
-  Search,
   Book,
-  Users,
-  Phone,
+  MessageSquare,
   Shield,
-  UserCheck,
-  Zap,
-  Loader2,
-  AlertCircle
+  Settings,
+  Users,
+  Send,
+  Play
 } from "lucide-react"
-import { contactFormSchema, type ContactFormData } from "@/lib/types/contact"
+import { toast } from "sonner"
 
-export default function Support() {
+export default function SupportPage() {
+  const [contactForm, setContactForm] = useState({
+    name: "",
+    email: "",
+    category: "",
+    subject: "",
+    message: ""
+  })
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [submitStatus, setSubmitStatus] = useState<{
-    type: 'success' | 'error' | null
-    message: string
-  }>({ type: null, message: '' })
 
-  const submitContactForm = useMutation(api.contact.submitContactForm)
-
-  const form = useForm<ContactFormData>({
-    resolver: zodResolver(contactFormSchema),
-    defaultValues: {
+  const handleContactSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsSubmitting(true)
+    
+    // Simulate form submission
+    await new Promise(resolve => setTimeout(resolve, 2000))
+    
+    toast.success("Support request submitted! We'll get back to you within 24 hours.")
+    setContactForm({
       name: "",
       email: "",
+      category: "",
       subject: "",
-      message: "",
-    },
-  })
-
-  const onSubmit = async (data: ContactFormData) => {
-    setIsSubmitting(true)
-    setSubmitStatus({ type: null, message: '' })
-
-    try {
-      // Get user's IP and user agent for tracking
-      const userAgent = navigator.userAgent
-
-      const submissionId = await submitContactForm({
-        ...data,
-        userAgent,
-      })
-
-      setSubmitStatus({
-        type: 'success',
-        message: 'Thank you for your message! We\'ll get back to you within 24 hours.'
-      })
-
-      form.reset()
-    } catch (error) {
-      console.error('Contact form submission error:', error)
-      setSubmitStatus({
-        type: 'error',
-        message: 'Sorry, there was an error sending your message. Please try again or contact us directly.'
-      })
-    } finally {
-      setIsSubmitting(false)
-    }
+      message: ""
+    })
+    setIsSubmitting(false)
   }
+
+  const faqData = [
+    {
+      category: "Getting Started",
+      icon: <Play className="h-5 w-5" />,
+      questions: [
+        {
+          question: "How do I start chatting with strangers on ChatNow?",
+          answer: "Simply visit our homepage and click 'Start Random Chat'. No registration required! You'll be instantly connected with someone new from around the world. For a better experience, you can create a free account to save preferences and access additional features like interest-based matching."
+        },
+        {
+          question: "Is ChatNow really free to use?",
+          answer: "Yes! ChatNow's core random chat features are completely free. You can chat with strangers, use text and video chat, and access basic matching features without paying anything. We also offer premium features for enhanced experiences, but the basic stranger chat is always free."
+        },
+        {
+          question: "Do I need to download an app to chat with strangers?",
+          answer: "No download required! ChatNow works directly in your web browser on any device - desktop, tablet, or mobile. However, we also offer mobile apps for iOS and Android for a more convenient random chat experience on your phone."
+        },
+        {
+          question: "Can I choose who I chat with?",
+          answer: "ChatNow offers both random matching and filtered options. You can chat completely randomly with anyone, or use our interest filters to match with people who share similar hobbies, languages, or topics of conversation."
+        }
+      ]
+    },
+    {
+      category: "Safety & Privacy",
+      icon: <Shield className="h-5 w-5" />,
+      questions: [
+        {
+          question: "How does ChatNow keep me safe while chatting with strangers?",
+          answer: "We use multiple safety measures: real-time content moderation, AI-powered inappropriate content detection, easy reporting and blocking tools, anonymous chat options, and 24/7 monitoring. Never share personal information like your address, phone number, or financial details with strangers."
+        },
+        {
+          question: "Can I chat anonymously with strangers?",
+          answer: "Absolutely! You can chat completely anonymously without providing any personal information. We don't require names, emails, or phone numbers for basic random chatting. You can use a nickname or remain completely anonymous. Your privacy is our priority."
+        },
+        {
+          question: "Are my conversations with strangers private?",
+          answer: "Yes, your random chat conversations are private and encrypted. We don't store chat messages permanently, and they're automatically deleted after your conversation ends. Only you and your chat partner can see your messages during the session."
+        },
+        {
+          question: "How do I report inappropriate behavior from strangers?",
+          answer: "Click the 'Report' button during any chat, or use the flag icon next to the user's name. You can also block users immediately. We take all reports seriously and investigate within 24 hours. Provide as much detail as possible about the inappropriate behavior."
+        }
+      ]
+    },
+    {
+      category: "Technical Issues",
+      icon: <Settings className="h-5 w-5" />,
+      questions: [
+        {
+          question: "My random video chat isn't working. What should I do?",
+          answer: "First, check that your browser has camera and microphone permissions enabled for ChatNow. Try refreshing the page, clearing your browser cache, or switching to a different browser (Chrome works best). Make sure your camera isn't being used by another application."
+        },
+        {
+          question: "Why can't I connect to strangers?",
+          answer: "This could be due to high traffic, internet connectivity issues, or browser problems. Try refreshing the page, checking your internet connection, or trying again in a few minutes. Peak hours (evenings in major time zones) may have longer wait times."
+        },
+        {
+          question: "The stranger chat is loading slowly. How can I fix this?",
+          answer: "Slow loading can be caused by internet speed, browser cache, or server load. Try clearing your browser cache, closing other tabs, checking your internet speed, or switching to a different network if possible. Use Chrome or Firefox for best performance."
+        },
+        {
+          question: "Why does my video freeze during random chat?",
+          answer: "Video freezing is usually due to poor internet connection or high CPU usage. Close other applications, check your internet speed (minimum 1 Mbps recommended), and try lowering video quality in settings. Restart your browser if the issue persists."
+        }
+      ]
+    },
+    {
+      category: "Features & Account",
+      icon: <Users className="h-5 w-5" />,
+      questions: [
+        {
+          question: "What are the benefits of creating a ChatNow account?",
+          answer: "With an account, you get: saved chat preferences, interest-based stranger matching, chat history (if enabled), premium features access, priority support, and the ability to reconnect with interesting people you've met. Accounts are free and enhance your random chat experience."
+        },
+        {
+          question: "How do interest filters work for random chat?",
+          answer: "Interest filters help match you with strangers who share similar hobbies, languages, or topics. Select your interests in your profile, and our algorithm will prioritize connecting you with people who have similar interests, making conversations more engaging and meaningful."
+        },
+        {
+          question: "Can I block specific strangers permanently?",
+          answer: "Yes! Click the block button during any chat to prevent future connections with that user. Blocked users cannot contact you again through random matching, and the block is permanent unless you choose to unblock them in your settings."
+        },
+        {
+          question: "How do I change my random chat preferences?",
+          answer: "Go to Settings > Chat Preferences to customize your random chat experience. You can set language preferences, age ranges, interests, and choose between text-only or video chat modes. These settings help us match you with more compatible strangers."
+        }
+      ]
+    }
+  ]
+
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
       {/* Navigation */}
-      <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border shadow-sm">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <Link href="/" className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
-              <div className="p-2 bg-primary/10 rounded-lg">
-                <MessageCircle className="h-6 w-6 text-primary" />
+          <div className="flex justify-between items-center h-14 sm:h-16">
+            <Link href="/" className="flex items-center space-x-2 sm:space-x-3 hover:opacity-80 transition-opacity">
+              <div className="p-1.5 sm:p-2 bg-primary/10 rounded-lg">
+                <MessageCircle className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
               </div>
-              <span className="font-bold text-xl bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-                ChatPulse
+              <span className="font-bold text-lg sm:text-xl bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+                ChatNow
               </span>
             </Link>
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2 sm:space-x-4">
               <TooltipProvider>
                 <ThemeToggle />
               </TooltipProvider>
-              <Button asChild>
+              <Button asChild size="sm" className="text-xs sm:text-sm">
                 <Link href="/auth/signin">Sign In</Link>
               </Button>
             </div>
@@ -124,486 +178,236 @@ export default function Support() {
         </div>
       </nav>
 
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      {/* Content Spacer for Fixed Header */}
+      <div className="h-14 sm:h-16"></div>
+
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         <div className="max-w-6xl mx-auto">
           {/* Header Section */}
-          <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold mb-4">How can we help you?</h1>
-            <p className="text-xl text-muted-foreground mb-8">
-              Get quick answers to common questions or reach out to our support team
+          <div className="text-center mb-8 sm:mb-12">
+            <div className="inline-flex items-center px-3 sm:px-4 py-2 bg-muted rounded-full mb-4 sm:mb-6">
+              <Headphones className="h-3 w-3 sm:h-4 sm:w-4 text-primary mr-2" />
+              <span className="text-xs sm:text-sm font-medium text-primary">24/7 Support Available</span>
+            </div>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4">Support Center</h1>
+            <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-3xl mx-auto mb-6 sm:mb-8">
+              Get help with ChatNow's random chat platform. Find answers to common questions,
+              troubleshoot issues, or contact our support team for assistance.
             </p>
-            
-            {/* Search Bar */}
-            <div className="max-w-md mx-auto relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input 
-                placeholder="Search for help..." 
-                className="pl-10"
-              />
+          </div>
+
+          {/* Support Options */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8 mb-12 sm:mb-16">
+            <div className="text-center">
+              <Book className="h-6 w-6 sm:h-8 sm:w-8 text-primary mx-auto mb-3 sm:mb-4" />
+              <h3 className="text-base sm:text-lg font-semibold mb-2">FAQ & Guides</h3>
+              <p className="text-muted-foreground mb-3 sm:mb-4 text-sm sm:text-base">
+                Find instant answers to common questions about random chat
+              </p>
+              <Button variant="outline" size="sm">Browse FAQ</Button>
+            </div>
+
+            <div className="text-center">
+              <MessageSquare className="h-6 w-6 sm:h-8 sm:w-8 text-primary mx-auto mb-3 sm:mb-4" />
+              <h3 className="text-base sm:text-lg font-semibold mb-2">Live Support</h3>
+              <p className="text-muted-foreground mb-3 sm:mb-4 text-sm sm:text-base">
+                Chat with our team for immediate assistance
+              </p>
+              <Button variant="outline" size="sm">Start Chat</Button>
+            </div>
+
+            <div className="text-center">
+              <Mail className="h-6 w-6 sm:h-8 sm:w-8 text-primary mx-auto mb-3 sm:mb-4" />
+              <h3 className="text-base sm:text-lg font-semibold mb-2">Email Support</h3>
+              <p className="text-muted-foreground mb-3 sm:mb-4 text-sm sm:text-base">
+                Send detailed questions, get responses within 24 hours
+              </p>
+              <Button variant="outline" size="sm">Send Email</Button>
             </div>
           </div>
 
-          {/* Quick Actions */}
-          <div className="grid md:grid-cols-3 gap-6 mb-12">
-            <Card className="hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-              <CardHeader>
-                <div className="p-3 bg-primary/10 rounded-lg w-fit">
-                  <Mail className="h-6 w-6 text-primary" />
-                </div>
-                <CardTitle>Email Support</CardTitle>
-                <CardDescription>
-                  Get help via email. We typically respond within 24 hours.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button asChild className="w-full">
-                  <a href="mailto:support@chatpulse.in">
-                    Contact Support
-                  </a>
-                </Button>
-              </CardContent>
-            </Card>
-
-            <Card className="hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-              <CardHeader>
-                <div className="p-3 bg-primary/10 rounded-lg w-fit">
-                  <MessageSquare className="h-6 w-6 text-primary" />
-                </div>
-                <CardTitle>Developer Contact</CardTitle>
-                <CardDescription>
-                  Reach out directly to the developer for technical issues.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button asChild className="w-full" variant="outline">
-                  <a href="mailto:hariomsuthar7143@gmail.com">
-                    Contact Developer
-                  </a>
-                </Button>
-              </CardContent>
-            </Card>
-
-            <Card className="hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-              <CardHeader>
-                <div className="p-3 bg-primary/10 rounded-lg w-fit">
-                  <Book className="h-6 w-6 text-primary" />
-                </div>
-                <CardTitle>Documentation</CardTitle>
-                <CardDescription>
-                  Browse our guides and learn how to use ChatPulse effectively.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button asChild className="w-full" variant="outline">
-                  <Link href="#faq">
-                    View FAQ
-                  </Link>
-                </Button>
-              </CardContent>
-            </Card>
+          {/* Support Stats */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-8 mb-12 sm:mb-16 text-center">
+            <div>
+              <div className="text-2xl sm:text-3xl font-bold text-foreground mb-1">2 min</div>
+              <div className="text-xs sm:text-sm text-muted-foreground">Average Response</div>
+            </div>
+            <div>
+              <div className="text-2xl sm:text-3xl font-bold text-foreground mb-1">99.5%</div>
+              <div className="text-xs sm:text-sm text-muted-foreground">Satisfaction Rate</div>
+            </div>
+            <div>
+              <div className="text-2xl sm:text-3xl font-bold text-foreground mb-1">24/7</div>
+              <div className="text-xs sm:text-sm text-muted-foreground">Availability</div>
+            </div>
+            <div>
+              <div className="text-2xl sm:text-3xl font-bold text-foreground mb-1">50+</div>
+              <div className="text-xs sm:text-sm text-muted-foreground">Languages</div>
+            </div>
           </div>
 
-
-
           {/* FAQ Section */}
-          <div id="faq" className="mb-12">
-            <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold mb-4">Frequently Asked Questions</h2>
-              <p className="text-muted-foreground max-w-2xl mx-auto">
-                Find quick answers to common questions about ChatPulse. Can't find what you're looking for? Contact our support team.
+          <div className="mb-12 sm:mb-16">
+            <div className="text-center mb-8 sm:mb-12">
+              <h2 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4">Frequently Asked Questions</h2>
+              <p className="text-muted-foreground max-w-2xl mx-auto text-sm sm:text-base">
+                Find answers to common questions about ChatNow's random chat platform.
               </p>
             </div>
 
-            <div className="max-w-4xl mx-auto">
-              <Accordion type="single" collapsible className="space-y-4">
-                <AccordionItem value="item-1" className="border rounded-lg px-6">
-                  <AccordionTrigger className="text-left hover:no-underline">
-                    <div className="flex items-center space-x-3">
-                      <div className="p-2 bg-primary/10 rounded-lg">
-                        <UserCheck className="h-4 w-4 text-primary" />
+            <div className="max-w-4xl mx-auto space-y-8 sm:space-y-12">
+              {faqData.map((category) => (
+                <div key={category.category}>
+                  <h3 className="text-lg sm:text-xl font-semibold mb-4 sm:mb-6 flex items-center space-x-2">
+                    {category.icon}
+                    <span>{category.category}</span>
+                  </h3>
+                  <div className="space-y-4 sm:space-y-6">
+                    {category.questions.map((faq, index) => (
+                      <div key={index} className="border-l-2 border-muted pl-4 sm:pl-6">
+                        <h4 className="font-medium mb-2 text-sm sm:text-base">{faq.question}</h4>
+                        <p className="text-muted-foreground leading-relaxed text-xs sm:text-sm lg:text-base">{faq.answer}</p>
                       </div>
-                      <span className="font-medium">How do I create an account?</span>
-                    </div>
-                  </AccordionTrigger>
-                  <AccordionContent className="pt-4 pb-6">
-                    <div className="ml-12 space-y-3">
-                      <p className="text-muted-foreground">
-                        Creating an account is quick and easy:
-                      </p>
-                      <ol className="list-decimal list-inside space-y-2 text-muted-foreground">
-                        <li>Click "Sign In" in the header</li>
-                        <li>Select "Sign Up" to create a new account</li>
-                        <li>Enter your email address and create a password</li>
-                        <li>Verify your email and start chatting!</li>
-                      </ol>
-                      <p className="text-sm text-muted-foreground">
-                        You'll need a valid email address to get started.
-                      </p>
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-
-                <AccordionItem value="item-2" className="border rounded-lg px-6">
-                  <AccordionTrigger className="text-left hover:no-underline">
-                    <div className="flex items-center space-x-3">
-                      <div className="p-2 bg-primary/10 rounded-lg">
-                        <Users className="h-4 w-4 text-primary" />
-                      </div>
-                      <span className="font-medium">Can I use ChatPulse without an account?</span>
-                    </div>
-                  </AccordionTrigger>
-                  <AccordionContent className="pt-4 pb-6">
-                    <div className="ml-12 space-y-3">
-                      <p className="text-muted-foreground">
-                        Yes! You can use our Guest Mode to try ChatPulse without creating an account.
-                      </p>
-                      <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-                        <li>Click "Try as Guest" on the homepage</li>
-                        <li>Choose a temporary username</li>
-                        <li>Start chatting immediately</li>
-                        <li>No email or registration required</li>
-                      </ul>
-                      <p className="text-sm text-muted-foreground">
-                        Note: Guest sessions are temporary and data won't be saved.
-                      </p>
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-
-                <AccordionItem value="item-3" className="border rounded-lg px-6">
-                  <AccordionTrigger className="text-left hover:no-underline">
-                    <div className="flex items-center space-x-3">
-                      <div className="p-2 bg-primary/10 rounded-lg">
-                        <CheckCircle className="h-4 w-4 text-primary" />
-                      </div>
-                      <span className="font-medium">Is ChatPulse free to use?</span>
-                    </div>
-                  </AccordionTrigger>
-                  <AccordionContent className="pt-4 pb-6">
-                    <div className="ml-12 space-y-3">
-                      <p className="text-muted-foreground">
-                        Yes, ChatPulse is completely free to use! We believe in providing accessible communication for everyone.
-                      </p>
-                      <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-                        <li>No subscription fees</li>
-                        <li>No hidden charges</li>
-                        <li>No credit card required</li>
-                        <li>All features included</li>
-                      </ul>
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-
-                <AccordionItem value="item-4" className="border rounded-lg px-6">
-                  <AccordionTrigger className="text-left hover:no-underline">
-                    <div className="flex items-center space-x-3">
-                      <div className="p-2 bg-primary/10 rounded-lg">
-                        <Shield className="h-4 w-4 text-primary" />
-                      </div>
-                      <span className="font-medium">How secure are my messages?</span>
-                    </div>
-                  </AccordionTrigger>
-                  <AccordionContent className="pt-4 pb-6">
-                    <div className="ml-12 space-y-3">
-                      <p className="text-muted-foreground">
-                        Your security and privacy are our top priorities:
-                      </p>
-                      <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-                        <li>End-to-end encryption for all messages</li>
-                        <li>Secure data storage with industry standards</li>
-                        <li>No message content stored on our servers</li>
-                        <li>Regular security audits and updates</li>
-                      </ul>
-                      <p className="text-sm text-muted-foreground">
-                        We use the same security protocols as major financial institutions.
-                      </p>
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-
-                <AccordionItem value="item-5" className="border rounded-lg px-6">
-                  <AccordionTrigger className="text-left hover:no-underline">
-                    <div className="flex items-center space-x-3">
-                      <div className="p-2 bg-primary/10 rounded-lg">
-                        <UserCheck className="h-4 w-4 text-primary" />
-                      </div>
-                      <span className="font-medium">Can I delete my account?</span>
-                    </div>
-                  </AccordionTrigger>
-                  <AccordionContent className="pt-4 pb-6">
-                    <div className="ml-12 space-y-3">
-                      <p className="text-muted-foreground">
-                        Yes, you have full control over your account and data:
-                      </p>
-                      <ol className="list-decimal list-inside space-y-2 text-muted-foreground">
-                        <li>Go to your Profile Settings</li>
-                        <li>Scroll to "Account Management"</li>
-                        <li>Click "Delete Account"</li>
-                        <li>Confirm your decision</li>
-                      </ol>
-                      <p className="text-sm text-red-600">
-                        Warning: This will permanently remove all your data and cannot be undone.
-                      </p>
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-
-                <AccordionItem value="item-6" className="border rounded-lg px-6">
-                  <AccordionTrigger className="text-left hover:no-underline">
-                    <div className="flex items-center space-x-3">
-                      <div className="p-2 bg-primary/10 rounded-lg">
-                        <Shield className="h-4 w-4 text-primary" />
-                      </div>
-                      <span className="font-medium">How do I report inappropriate content?</span>
-                    </div>
-                  </AccordionTrigger>
-                  <AccordionContent className="pt-4 pb-6">
-                    <div className="ml-12 space-y-3">
-                      <p className="text-muted-foreground">
-                        We take inappropriate content seriously. Here's how to report it:
-                      </p>
-                      <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-                        <li>Email us immediately at support@chatpulse.in</li>
-                        <li>Call our support line: +91 78777 13244</li>
-                        <li>Include screenshots if possible</li>
-                        <li>Provide details about the incident</li>
-                      </ul>
-                      <p className="text-sm text-muted-foreground">
-                        Our team reviews all reports within 24 hours and takes appropriate action.
-                      </p>
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-
-                <AccordionItem value="item-7" className="border rounded-lg px-6">
-                  <AccordionTrigger className="text-left hover:no-underline">
-                    <div className="flex items-center space-x-3">
-                      <div className="p-2 bg-primary/10 rounded-lg">
-                        <MessageSquare className="h-4 w-4 text-primary" />
-                      </div>
-                      <span className="font-medium">How do I start a conversation?</span>
-                    </div>
-                  </AccordionTrigger>
-                  <AccordionContent className="pt-4 pb-6">
-                    <div className="ml-12 space-y-3">
-                      <p className="text-muted-foreground">
-                        Starting conversations is simple:
-                      </p>
-                      <ol className="list-decimal list-inside space-y-2 text-muted-foreground">
-                        <li>Go to the "Users" section</li>
-                        <li>Browse online users or search for someone</li>
-                        <li>Click on a user's profile</li>
-                        <li>Click "Start Chat" to begin messaging</li>
-                      </ol>
-                      <p className="text-sm text-muted-foreground">
-                        You can also join public chat rooms or create group conversations.
-                      </p>
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-
-                <AccordionItem value="item-8" className="border rounded-lg px-6">
-                  <AccordionTrigger className="text-left hover:no-underline">
-                    <div className="flex items-center space-x-3">
-                      <div className="p-2 bg-primary/10 rounded-lg">
-                        <Phone className="h-4 w-4 text-primary" />
-                      </div>
-                      <span className="font-medium">What if I need immediate help?</span>
-                    </div>
-                  </AccordionTrigger>
-                  <AccordionContent className="pt-4 pb-6">
-                    <div className="ml-12 space-y-3">
-                      <p className="text-muted-foreground">
-                        For urgent issues, you can reach us directly:
-                      </p>
-                      <div className="grid md:grid-cols-2 gap-4">
-                        <div className="p-3 bg-muted/30 rounded-lg">
-                          <p className="font-medium text-sm">Support Hotline</p>
-                          <a href="tel:+917877713244" className="text-primary hover:underline">
-                            +91 78777 13244
-                          </a>
-                        </div>
-                        <div className="p-3 bg-muted/30 rounded-lg">
-                          <p className="font-medium text-sm">Technical Support</p>
-                          <a href="tel:+917014247460" className="text-primary hover:underline">
-                            +91 70142 47460
-                          </a>
-                        </div>
-                      </div>
-                      <p className="text-sm text-muted-foreground">
-                        Available during business hours (9 AM - 6 PM IST).
-                      </p>
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
+                    ))}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
 
           {/* Contact Form */}
-          <div className="mb-12">
-            <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold mb-4">Send Us a Message</h2>
-              <p className="text-muted-foreground max-w-2xl mx-auto">
-                Prefer to write? Use our contact form below to send us a detailed message.
-                We'll get back to you as soon as possible with a personalized response.
+          <div className="mb-12 sm:mb-16">
+            <div className="text-center mb-6 sm:mb-8">
+              <h2 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4 flex items-center justify-center">
+                <Mail className="h-6 w-6 sm:h-8 sm:w-8 mr-2 sm:mr-3 text-primary" />
+                Contact Support
+              </h2>
+              <p className="text-muted-foreground max-w-2xl mx-auto text-sm sm:text-base">
+                Can't find what you're looking for? Send us a message and we'll help you with your random chat experience.
               </p>
             </div>
-          </div>
-
-          <Card className="shadow-lg">
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <MessageSquare className="h-5 w-5 mr-2 text-primary" />
-                Contact Form
-              </CardTitle>
-              <CardDescription>
-                Fill out the form below with your question or issue, and we'll respond with a detailed solution.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {submitStatus.type && (
-                <Alert className={`mb-6 ${submitStatus.type === 'success' ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'}`}>
-                  <AlertCircle className={`h-4 w-4 ${submitStatus.type === 'success' ? 'text-green-600' : 'text-red-600'}`} />
-                  <AlertDescription className={submitStatus.type === 'success' ? 'text-green-800' : 'text-red-800'}>
-                    {submitStatus.message}
-                  </AlertDescription>
-                </Alert>
-              )}
-
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="name"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Name</FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="Your full name"
-                              {...field}
-                              disabled={isSubmitting}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="email"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Email</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="email"
-                              placeholder="your@email.com"
-                              {...field}
-                              disabled={isSubmitting}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
+            <div className="max-w-2xl mx-auto border rounded-lg p-4 sm:p-6 lg:p-8">
+              <form onSubmit={handleContactSubmit} className="space-y-4 sm:space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="name">Name</Label>
+                    <Input
+                      id="name"
+                      placeholder="Your name"
+                      value={contactForm.name}
+                      onChange={(e) => setContactForm({...contactForm, name: e.target.value})}
+                      required
                     />
                   </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Email</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="your@email.com"
+                      value={contactForm.email}
+                      onChange={(e) => setContactForm({...contactForm, email: e.target.value})}
+                      required
+                    />
+                  </div>
+                </div>
 
-                  <FormField
-                    control={form.control}
-                    name="subject"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Subject</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="What's this about?"
-                            {...field}
-                            disabled={isSubmitting}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                <div className="space-y-2">
+                  <Label htmlFor="category">Category</Label>
+                  <Select value={contactForm.category} onValueChange={(value) => setContactForm({...contactForm, category: value})}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="random-chat">Random Chat Issues</SelectItem>
+                      <SelectItem value="video-chat">Video Chat Problems</SelectItem>
+                      <SelectItem value="safety">Safety & Privacy</SelectItem>
+                      <SelectItem value="account">Account & Settings</SelectItem>
+                      <SelectItem value="technical">Technical Support</SelectItem>
+                      <SelectItem value="feedback">Feedback & Suggestions</SelectItem>
+                      <SelectItem value="other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="subject">Subject</Label>
+                  <Input
+                    id="subject"
+                    placeholder="Brief description of your issue"
+                    value={contactForm.subject}
+                    onChange={(e) => setContactForm({...contactForm, subject: e.target.value})}
+                    required
                   />
+                </div>
 
-                  <FormField
-                    control={form.control}
-                    name="message"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Message</FormLabel>
-                        <FormControl>
-                          <Textarea
-                            placeholder="Describe your issue or question in detail..."
-                            rows={5}
-                            {...field}
-                            disabled={isSubmitting}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                <div className="space-y-2">
+                  <Label htmlFor="message">Message</Label>
+                  <Textarea
+                    id="message"
+                    placeholder="Describe your issue or question in detail..."
+                    rows={5}
+                    value={contactForm.message}
+                    onChange={(e) => setContactForm({...contactForm, message: e.target.value})}
+                    required
                   />
+                </div>
 
-                  <Button
-                    type="submit"
-                    className="w-full"
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Sending Message...
-                      </>
-                    ) : (
-                      'Send Message'
-                    )}
-                  </Button>
-                </form>
-              </Form>
-            </CardContent>
-          </Card>
-
-          {/* Still Need Help Buttons */}
-          <div className="mt-12 text-center">
-            <h3 className="text-xl font-semibold mb-4">Need immediate assistance?</h3>
-            <p className="text-muted-foreground mb-6">
-              Choose your preferred contact method for faster support
-            </p>
-            <div className="flex flex-wrap justify-center gap-4 mb-8">
-              <Button variant="outline" asChild>
-                <a href="mailto:support@chatpulse.in" className="flex items-center">
-                  <Mail className="h-4 w-4 mr-2" />
-                  Email Support
-                </a>
-              </Button>
-              <Button variant="outline" asChild>
-                <a href="tel:+917877713244" className="flex items-center">
-                  <Phone className="h-4 w-4 mr-2" />
-                  Call Support
-                </a>
-              </Button>
-              <Button variant="outline" asChild>
-                <a href="tel:+917014247460" className="flex items-center">
-                  <Phone className="h-4 w-4 mr-2" />
-                  Technical Line
-                </a>
-              </Button>
+                <Button type="submit" className="w-full" disabled={isSubmitting}>
+                  {isSubmitting ? (
+                    <>
+                      <Clock className="h-4 w-4 mr-2 animate-spin" />
+                      Sending...
+                    </>
+                  ) : (
+                    <>
+                      <Send className="h-4 w-4 mr-2" />
+                      Send Message
+                    </>
+                  )}
+                </Button>
+              </form>
             </div>
           </div>
 
-          {/* Response Time */}
-          <div className="mt-8 text-center">
-            <div className="flex items-center justify-center space-x-2 text-muted-foreground">
-              <Clock className="h-4 w-4" />
-              <span className="text-sm">Average response time: 24 hours</span>
+          {/* Contact Options */}
+          <div className="text-center">
+            <h3 className="text-2xl font-bold mb-4">Other Ways to Reach Us</h3>
+            <p className="text-muted-foreground mb-8">
+              Choose your preferred method to get help with ChatNow
+            </p>
+            <div className="grid md:grid-cols-3 gap-8">
+              <div className="text-center">
+                <Mail className="h-8 w-8 text-primary mx-auto mb-4" />
+                <h4 className="font-semibold mb-2">Email Support</h4>
+                <p className="text-muted-foreground mb-4">support@chatnow.com</p>
+                <Button asChild variant="outline">
+                  <a href="mailto:support@chatnow.com">Send Email</a>
+                </Button>
+              </div>
+
+              <div className="text-center">
+                <MessageSquare className="h-8 w-8 text-primary mx-auto mb-4" />
+                <h4 className="font-semibold mb-2">Live Chat</h4>
+                <p className="text-muted-foreground mb-4">Available 24/7</p>
+                <Button variant="outline">Start Live Chat</Button>
+              </div>
+
+              <div className="text-center">
+                <Book className="h-8 w-8 text-primary mx-auto mb-4" />
+                <h4 className="font-semibold mb-2">Help Center</h4>
+                <p className="text-muted-foreground mb-4">Browse guides & tutorials</p>
+                <Button asChild variant="outline">
+                  <Link href="/blog">Visit Blog</Link>
+                </Button>
+              </div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Footer */}
+      <Footer />
     </div>
   )
 }

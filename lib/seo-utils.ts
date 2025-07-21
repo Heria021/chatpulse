@@ -2,11 +2,11 @@ import { BlogPost, BlogSEOData, BlogStructuredData } from "./types/blog"
 
 // App configuration
 const APP_CONFIG = {
-  name: 'ChatPulse',
+  name: 'ChatNow',
   description: 'Real-time chat application with advanced features',
-  baseUrl: process.env.NEXT_PUBLIC_BASE_URL || 'https://chatpulse.in',
+  baseUrl: process.env.NEXT_PUBLIC_BASE_URL || 'https://chatnow.com',
   logo: '/logo.png',
-  twitterHandle: '@chatpulse',
+  twitterHandle: '@chatnow',
   defaultImage: '/og-default.png',
 }
 

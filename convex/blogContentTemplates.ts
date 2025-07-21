@@ -38,7 +38,7 @@ export function createTutorialTemplate(
     metaKeywords: [topic, 'tutorial', 'guide', difficulty, 'how-to', 'step-by-step'],
     coverImage: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=1200&h=630&fit=crop',
     coverImageAlt: `Tutorial illustration for ${title}`,
-    author: 'ChatNow Development Team',
+    author: 'ChatPulse Development Team',
     authorBio: 'Expert developers specializing in real-time communication technologies and modern web development.',
     authorImage: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
     featured: difficulty === 'beginner',
@@ -115,7 +115,7 @@ export function createCaseStudyTemplate(
     metaKeywords: ['case study', company, challenge, solution, 'implementation', 'success story'],
     coverImage: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&h=630&fit=crop',
     coverImageAlt: `Case study illustration for ${company}`,
-    author: 'ChatNow Research Team',
+    author: 'ChatPulse Research Team',
     authorBio: 'Dedicated to analyzing successful implementations and sharing insights from industry leaders.',
     authorImage: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
     featured: true,
@@ -194,22 +194,22 @@ export function createNewsTemplate(
     'product-update': {
       category: 'product-updates',
       tags: ['product', 'update', 'features', 'announcement'],
-      author: 'ChatNow Product Team'
+      author: 'ChatPulse Product Team'
     },
     'industry-news': {
       category: 'industry-news', 
       tags: ['industry', 'news', 'trends', 'analysis'],
-      author: 'ChatNow Editorial Team'
+      author: 'ChatPulse Editorial Team'
     },
     'company-news': {
       category: 'company-news',
       tags: ['company', 'news', 'announcement', 'team'],
-      author: 'ChatNow Communications Team'
+      author: 'ChatPulse Communications Team'
     },
     'technology-trend': {
       category: 'technology-trends',
       tags: ['technology', 'trends', 'innovation', 'future'],
-      author: 'ChatNow Technology Team'
+      author: 'ChatPulse Technology Team'
     }
   }
 
@@ -283,7 +283,7 @@ export function createOpinionTemplate(
     metaKeywords: ['opinion', 'analysis', 'thought leadership', topic, 'insights', 'future'],
     coverImage: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=1200&h=630&fit=crop',
     coverImageAlt: `Opinion piece illustration for ${title}`,
-    author: 'ChatNow Leadership Team',
+    author: 'ChatPulse Leadership Team',
     authorBio: 'Industry veterans sharing insights and perspectives on the future of real-time communication.',
     authorImage: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
     featured: false,

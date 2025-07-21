@@ -15,12 +15,13 @@ import { generateNextMetadata, generateBlogStructuredData, generateBreadcrumbStr
 import { extractTableOfContents } from "@/lib/blog-content-utils"
 import { trackBlogView, trackBlogShare } from "@/lib/blog-analytics"
 import { toast } from "sonner"
-import { ReadingProgress, ReadingProgressIndicator } from "@/components/blog/reading-progress"
+
 import { RelatedPosts } from "@/components/blog/related-posts"
 import { AuthorCard, AuthorBio } from "@/components/blog/author-profile"
 import { SocialSharing, NewsletterSignup, Comments } from "@/components/blog/social-sharing"
 import { formatBlogDate } from "@/lib/blog-utils"
 import { BlogPostSkeleton } from "@/components/blog/blog-skeletons"
+import { Footer } from "@/components/ui/footer"
 
 import {
   MessageCircle,
@@ -72,22 +73,22 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
         {/* Navigation */}
-        <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
+        <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border shadow-sm">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between items-center h-16">
-              <Link href="/" className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
-                <div className="p-2 bg-primary/10 rounded-lg">
-                  <MessageCircle className="h-6 w-6 text-primary" />
+            <div className="flex justify-between items-center h-14 sm:h-16">
+              <Link href="/" className="flex items-center space-x-2 sm:space-x-3 hover:opacity-80 transition-opacity">
+                <div className="p-1.5 sm:p-2 bg-primary/10 rounded-lg">
+                  <MessageCircle className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
                 </div>
-                <span className="font-bold text-xl bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+                <span className="font-bold text-lg sm:text-xl bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
                   ChatNow
                 </span>
               </Link>
-              <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2 sm:space-x-4">
                 <TooltipProvider>
                   <ThemeToggle />
                 </TooltipProvider>
-                <Button asChild>
+                <Button asChild size="sm" className="text-xs sm:text-sm">
                   <Link href="/auth/signin">Sign In</Link>
                 </Button>
               </div>
@@ -95,11 +96,17 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
           </div>
         </nav>
 
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/* Content Spacer for Fixed Header */}
+        <div className="h-14 sm:h-16"></div>
+
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-12">
           <div className="max-w-4xl mx-auto">
             <BlogPostSkeleton />
           </div>
         </div>
+
+        {/* Footer */}
+        <Footer />
       </div>
     )
   }
@@ -109,22 +116,22 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
         {/* Navigation */}
-        <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
+        <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border shadow-sm">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between items-center h-16">
-              <Link href="/" className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
-                <div className="p-2 bg-primary/10 rounded-lg">
-                  <MessageCircle className="h-6 w-6 text-primary" />
+            <div className="flex justify-between items-center h-14 sm:h-16">
+              <Link href="/" className="flex items-center space-x-2 sm:space-x-3 hover:opacity-80 transition-opacity">
+                <div className="p-1.5 sm:p-2 bg-primary/10 rounded-lg">
+                  <MessageCircle className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
                 </div>
-                <span className="font-bold text-xl bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+                <span className="font-bold text-lg sm:text-xl bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
                   ChatNow
                 </span>
               </Link>
-              <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2 sm:space-x-4">
                 <TooltipProvider>
                   <ThemeToggle />
                 </TooltipProvider>
-                <Button asChild>
+                <Button asChild size="sm" className="text-xs sm:text-sm">
                   <Link href="/auth/signin">Sign In</Link>
                 </Button>
               </div>
@@ -132,22 +139,25 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
           </div>
         </nav>
 
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/* Content Spacer for Fixed Header */}
+        <div className="h-14 sm:h-16"></div>
+
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
           <div className="text-center">
-            <BookOpen className="h-16 w-16 text-muted-foreground mx-auto mb-6" />
-            <h1 className="text-3xl font-bold mb-4">Article Not Found</h1>
-            <p className="text-muted-foreground mb-8 max-w-md mx-auto">
+            <BookOpen className="h-12 w-12 sm:h-16 sm:w-16 text-muted-foreground mx-auto mb-4 sm:mb-6" />
+            <h1 className="text-2xl sm:text-3xl font-bold mb-4">Article Not Found</h1>
+            <p className="text-muted-foreground mb-6 sm:mb-8 max-w-md mx-auto text-sm sm:text-base">
               The article you're looking for doesn't exist or may have been moved.
               Explore our other articles or return to the blog homepage.
             </p>
-            <div className="space-x-4">
-              <Button asChild variant="outline">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 sm:justify-center">
+              <Button asChild variant="outline" size="sm">
                 <Link href="/blog">
                   <ArrowLeft className="h-4 w-4 mr-2" />
                   Back to Blog
                 </Link>
               </Button>
-              <Button asChild>
+              <Button asChild size="sm">
                 <Link href="/">
                   Go Home
                 </Link>
@@ -155,18 +165,15 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
             </div>
           </div>
         </div>
+
+        {/* Footer */}
+        <Footer />
       </div>
     )
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
-      {/* Reading Progress Bar */}
-      <ReadingProgress target="article" />
-
-      {/* Reading Progress Indicator */}
-      {post && <ReadingProgressIndicator content={contentSections} />}
-
       {/* Structured Data for SEO */}
       {structuredData && (
         <script
@@ -188,22 +195,22 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
       )}
 
       {/* Navigation */}
-      <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border shadow-sm">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <Link href="/" className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
-              <div className="p-2 bg-primary/10 rounded-lg">
-                <MessageCircle className="h-6 w-6 text-primary" />
+          <div className="flex justify-between items-center h-14 sm:h-16">
+            <Link href="/" className="flex items-center space-x-2 sm:space-x-3 hover:opacity-80 transition-opacity">
+              <div className="p-1.5 sm:p-2 bg-primary/10 rounded-lg">
+                <MessageCircle className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
               </div>
-              <span className="font-bold text-xl bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+              <span className="font-bold text-lg sm:text-xl bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
                 ChatNow
               </span>
             </Link>
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2 sm:space-x-4">
               <TooltipProvider>
                 <ThemeToggle />
               </TooltipProvider>
-              <Button asChild>
+              <Button asChild size="sm" className="text-xs sm:text-sm">
                 <Link href="/auth/signin">Sign In</Link>
               </Button>
             </div>
@@ -211,38 +218,43 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
         </div>
       </nav>
 
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      {/* Content Spacer for Fixed Header */}
+      <div className="h-14 sm:h-16"></div>
+
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-12">
         {/* Back Button */}
-        <div className="mb-8">
-          <Button variant="ghost" asChild>
+        <div className="mb-6 sm:mb-8">
+          <Button variant="ghost" asChild size="sm">
             <Link href="/blog">
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Blog
+              <span className="hidden sm:inline">Back to Blog</span>
+              <span className="sm:hidden">Back</span>
             </Link>
           </Button>
         </div>
 
         <div className="max-w-4xl mx-auto">
           {/* Article Header */}
-          <article className="mb-12">
-            <header className="mb-8">
-              <div className="flex items-center space-x-2 mb-4">
-                <Badge variant="secondary">{post.category}</Badge>
-                <div className="flex items-center space-x-1 text-sm text-muted-foreground">
+          <article className="mb-8 sm:mb-12">
+            <header className="mb-6 sm:mb-8">
+              <div className="flex flex-wrap items-center gap-2 mb-4">
+                <Badge variant="secondary" className="text-xs sm:text-sm">{post.category}</Badge>
+                <div className="flex items-center space-x-1 text-xs sm:text-sm text-muted-foreground">
                   <Eye className="h-3 w-3" />
                   <span>{post.views} views</span>
                 </div>
               </div>
-              
-              <h1 className="text-4xl font-bold mb-4 leading-tight">
+
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 leading-tight">
                 {post.title}
               </h1>
-              
-              <p className="text-xl text-muted-foreground mb-6">
+
+              <p className="text-base sm:text-lg text-muted-foreground mb-6">
                 {post.excerpt}
               </p>
-              
-              <div className="flex items-center justify-between">
+
+              {/* Author and Share Button */}
+              <div className="flex items-center justify-between gap-4">
                 <AuthorCard
                   author={{
                     name: post.author,
@@ -251,21 +263,41 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
                   }}
                   publishedAt={post.publishedAt || post.createdAt}
                   readTime={post.readTime}
+                  className="flex-1"
                 />
 
-                <SocialSharing
-                  title={post.title}
-                  url={`${window.location.origin}/blog/${post.slug}`}
-                  description={post.metaDescription}
-                  postId={post._id}
-                  postSlug={post.slug}
-                />
+                <Button
+                  variant="outline"
+                  onClick={async () => {
+                    if (navigator.share) {
+                      try {
+                        await navigator.share({
+                          title: post.title,
+                          text: post.metaDescription || post.title,
+                          url: `${window.location.origin}/blog/${post.slug}`
+                        })
+                      } catch (err) {
+                        // Fallback to copy URL
+                        navigator.clipboard.writeText(`${window.location.origin}/blog/${post.slug}`)
+                        toast.success("Link copied to clipboard!")
+                      }
+                    } else {
+                      // Fallback to copy URL
+                      navigator.clipboard.writeText(`${window.location.origin}/blog/${post.slug}`)
+                      toast.success("Link copied to clipboard!")
+                    }
+                  }}
+                  className="flex items-center space-x-2 flex-shrink-0"
+                >
+                  <Share2 className="h-4 w-4" />
+                  <span>Share</span>
+                </Button>
               </div>
             </header>
 
             {/* Cover Image */}
             {post.coverImage && (
-              <div className="aspect-video bg-muted rounded-lg mb-8 overflow-hidden">
+              <div className="aspect-video bg-muted rounded-lg mb-6 sm:mb-8 overflow-hidden">
                 <img
                   src={post.coverImage}
                   alt={post.coverImageAlt || post.title}
@@ -277,18 +309,18 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
 
             {/* Table of Contents */}
             {tableOfContents.length > 0 && (
-              <div className="bg-muted/30 rounded-lg p-6 mb-8">
-                <h2 className="text-lg font-semibold mb-4 flex items-center">
-                  <BookOpen className="h-5 w-5 mr-2" />
+              <div className="bg-muted/30 rounded-lg p-4 sm:p-6 mb-6 sm:mb-8">
+                <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4 flex items-center">
+                  <BookOpen className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                   Table of Contents
                 </h2>
-                <nav className="space-y-2">
+                <nav className="space-y-1 sm:space-y-2">
                   {tableOfContents.map((item) => (
                     <a
                       key={item.id}
                       href={`#${item.id}`}
                       className={`block text-sm hover:text-primary transition-colors ${
-                        item.level === 1 ? 'font-medium' : 'ml-4 text-muted-foreground'
+                        item.level === 1 ? 'font-medium' : 'ml-3 sm:ml-4 text-muted-foreground'
                       }`}
                     >
                       {item.text}
@@ -303,9 +335,9 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
               {contentSections.length > 0 ? (
                 <RichContentRenderer sections={contentSections} />
               ) : (
-                <div className="prose prose-lg max-w-none">
+                <div className="prose prose-sm sm:prose-lg max-w-none [&_ul]:text-sm sm:[&_ul]:text-base [&_ol]:text-sm sm:[&_ol]:text-base [&_li]:text-sm sm:[&_li]:text-base">
                   {post.content.split('\n\n').map((paragraph, index) => (
-                    <p key={index} className="mb-4 leading-relaxed">
+                    <p key={index} className="mb-4 leading-relaxed text-sm sm:text-base">
                       {paragraph}
                     </p>
                   ))}
@@ -315,14 +347,14 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
 
             {/* Tags */}
             {post.tags.length > 0 && (
-              <div className="mt-8 pt-8 border-t">
-                <div className="flex items-center space-x-2 mb-4">
+              <div className="mt-6 sm:mt-8 pt-6 sm:pt-8 border-t">
+                <div className="flex items-center space-x-2 mb-3 sm:mb-4">
                   <Tag className="h-4 w-4 text-muted-foreground" />
                   <span className="text-sm font-medium text-muted-foreground">Tags</span>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {post.tags.map((tag) => (
-                    <Badge key={tag} variant="outline">
+                    <Badge key={tag} variant="outline" className="text-xs sm:text-sm">
                       {tag}
                     </Badge>
                   ))}
@@ -331,7 +363,7 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
             )}
 
             {/* Newsletter Signup - Inline */}
-            <NewsletterSignup variant="inline" className="my-12" />
+            <NewsletterSignup variant="inline" className="my-8 sm:my-12" />
 
             {/* Author Bio */}
             <AuthorBio
@@ -343,11 +375,11 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
                 twitter: "chatnow",
                 linkedin: "https://linkedin.com/company/chatnow"
               }}
-              className="my-12"
+              className="my-8 sm:my-12"
             />
 
             {/* Social Sharing - Extended */}
-            <div className="my-12 p-6 bg-muted/30 rounded-lg">
+            <div className="my-8 sm:my-12 p-4 sm:p-6 bg-muted/30 rounded-lg">
               <SocialSharing
                 title={post.title}
                 url={`${window.location.origin}/blog/${post.slug}`}
@@ -358,45 +390,45 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
             </div>
 
             {/* Comments Section */}
-            <Comments postId={post._id} className="my-12" />
+            <Comments postId={post._id} className="my-8 sm:my-12" />
           </article>
 
           {/* Related Posts */}
           {relatedPosts && relatedPosts.filter(relatedPost => relatedPost._id !== post._id).length > 0 && (
             <div>
-              <Separator className="mb-8" />
-              <h2 className="text-2xl font-bold mb-6">Related Articles</h2>
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <Separator className="mb-6 sm:mb-8" />
+              <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Related Articles</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 {relatedPosts
                   .filter(relatedPost => relatedPost._id !== post._id)
                   .slice(0, 3)
                   .map((relatedPost) => (
                     <Card key={relatedPost._id} className="hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-                      <CardHeader className="pb-4">
+                      <CardHeader className="pb-3 sm:pb-4">
                         {relatedPost.coverImage && (
-                          <div className="aspect-video bg-muted rounded-lg mb-4 overflow-hidden">
-                            <img 
-                              src={relatedPost.coverImage} 
+                          <div className="aspect-video bg-muted rounded-lg mb-3 sm:mb-4 overflow-hidden">
+                            <img
+                              src={relatedPost.coverImage}
                               alt={relatedPost.title}
                               className="w-full h-full object-cover"
                             />
                           </div>
                         )}
-                        <Badge variant="secondary" className="w-fit mb-2">
+                        <Badge variant="secondary" className="w-fit mb-2 text-xs sm:text-sm">
                           {relatedPost.category}
                         </Badge>
-                        <CardTitle className="line-clamp-2">
+                        <CardTitle className="line-clamp-2 text-base sm:text-lg">
                           <Link href={`/blog/${relatedPost.slug}`} className="hover:text-primary transition-colors">
                             {relatedPost.title}
                           </Link>
                         </CardTitle>
-                        <CardDescription className="line-clamp-3">
+                        <CardDescription className="line-clamp-3 text-sm">
                           {relatedPost.excerpt}
                         </CardDescription>
                       </CardHeader>
-                      <CardContent>
-                        <div className="flex items-center justify-between text-sm text-muted-foreground">
-                          <div className="flex items-center space-x-2">
+                      <CardContent className="pt-0">
+                        <div className="flex items-center justify-between text-xs sm:text-sm text-muted-foreground">
+                          <div className="flex items-center space-x-1 sm:space-x-2">
                             <Clock className="h-3 w-3" />
                             <span>{relatedPost.readTime} min</span>
                           </div>
@@ -413,6 +445,9 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
           )}
         </div>
       </div>
+
+      {/* Footer */}
+      <Footer />
     </div>
   )
 }

@@ -29,7 +29,7 @@ export default defineSchema({
     lastSeen: v.number(), // timestamp
     lastActivity: v.optional(v.number()), // last meaningful activity (typing, sending, reading)
     currentStatus: v.optional(v.union(
-      v.literal("online"),      // actively using ChatNow (< 2 minutes)
+      v.literal("online"),      // actively using ChatPulse (< 2 minutes)
       v.literal("recently_active"), // used recently (2-15 minutes)
       v.literal("away"),        // last seen 15 minutes - 24 hours
       v.literal("offline")      // last seen 24+ hours or never

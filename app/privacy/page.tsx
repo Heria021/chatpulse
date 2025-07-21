@@ -1,31 +1,74 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
 import { TooltipProvider } from "@/components/ui/tooltip"
-import { MessageCircle, Shield, Eye, Lock, Database, UserCheck, Phone, Mail } from "lucide-react"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Footer } from "@/components/ui/footer"
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion"
+import {
+  MessageCircle,
+  Shield,
+  Lock,
+  Eye,
+  Database,
+  Globe,
+  UserCheck,
+  Settings,
+  AlertTriangle,
+  CheckCircle,
+  FileText,
+  Clock,
+  Mail,
+  Phone,
+  Info,
+  Cookie,
+  Trash2,
+  Download,
+  Edit,
+  Users
+} from "lucide-react"
+
+export const metadata = {
+  title: "Privacy Policy - ChatPulse Random Chat Platform",
+  description: "Learn how ChatPulse protects your privacy when using our random chat platform. Comprehensive privacy policy covering data collection, usage, and your rights.",
+  keywords: ["privacy policy", "chatpulse privacy", "random chat privacy", "data protection", "user privacy", "GDPR compliance"],
+  openGraph: {
+    title: "Privacy Policy - ChatPulse",
+    description: "Your privacy matters. Learn how ChatPulse protects your personal information and respects your privacy rights.",
+    type: "website"
+  },
+  robots: {
+    index: true,
+    follow: true
+  }
+}
 
 export default function PrivacyPolicy() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
       {/* Navigation */}
-      <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border shadow-sm">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <Link href="/" className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
-              <div className="p-2 bg-primary/10 rounded-lg">
-                <MessageCircle className="h-6 w-6 text-primary" />
+          <div className="flex justify-between items-center h-14 sm:h-16">
+            <Link href="/" className="flex items-center space-x-2 sm:space-x-3 hover:opacity-80 transition-opacity">
+              <div className="p-1.5 sm:p-2 bg-primary/10 rounded-lg">
+                <MessageCircle className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
               </div>
-              <span className="font-bold text-xl bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-                ChatPulse
+              <span className="font-bold text-lg sm:text-xl bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+                ChatNow
               </span>
             </Link>
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2 sm:space-x-4">
               <TooltipProvider>
                 <ThemeToggle />
               </TooltipProvider>
-              <Button asChild>
+              <Button asChild size="sm" className="text-xs sm:text-sm">
                 <Link href="/auth/signin">Sign In</Link>
               </Button>
             </div>
@@ -33,300 +76,290 @@ export default function PrivacyPolicy() {
         </div>
       </nav>
 
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      {/* Content Spacer for Fixed Header */}
+      <div className="h-14 sm:h-16"></div>
+
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         <div className="max-w-4xl mx-auto">
           {/* Header Section */}
-          <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold mb-4">Privacy Policy</h1>
-            <p className="text-xl text-muted-foreground">
+          <div className="text-center mb-8 sm:mb-12">
+            <div className="inline-flex items-center px-3 sm:px-4 py-2 bg-green-50 dark:bg-green-950 rounded-full mb-4 sm:mb-6">
+              <Shield className="h-3 w-3 sm:h-4 sm:w-4 text-green-600 dark:text-green-400 mr-2" />
+              <span className="text-xs sm:text-sm font-medium text-green-600 dark:text-green-400">Privacy Protected</span>
+            </div>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4">Privacy Policy</h1>
+            <p className="text-base sm:text-lg lg:text-xl text-muted-foreground mb-3 sm:mb-4">
               Last updated: December 2024
+            </p>
+            <p className="text-sm sm:text-base lg:text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+              Your privacy is fundamental to us. This policy explains how we collect, use, and protect
+              your information when you use ChatNow's random chat platform.
             </p>
           </div>
 
-          {/* Privacy Overview */}
+          {/* Privacy Commitment */}
+          <div className="mb-8 sm:mb-12 p-4 sm:p-6 border border-muted rounded-lg bg-muted/30">
+            <div className="flex items-start space-x-2 sm:space-x-3">
+              <Shield className="h-4 w-4 sm:h-5 sm:w-5 text-primary mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="font-medium mb-1 text-sm sm:text-base">Our Privacy Commitment</p>
+                <p className="text-muted-foreground text-xs sm:text-sm lg:text-base">
+                  We believe in privacy by design. ChatNow is built to minimize data collection
+                  while maximizing your safety and experience. We never sell your personal information.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Privacy at a Glance */}
+          <div className="mb-12 sm:mb-16">
+            <h2 className="text-xl sm:text-2xl font-bold mb-6 sm:mb-8 flex items-center justify-center sm:justify-start">
+              <Eye className="h-5 w-5 sm:h-6 sm:w-6 mr-2 sm:mr-3 text-primary" />
+              Privacy at a Glance
+            </h2>
+            <p className="text-muted-foreground mb-6 sm:mb-8 text-sm sm:text-base text-center sm:text-left">Quick overview of how we handle your privacy</p>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+              <div className="space-y-3 sm:space-y-4">
+                <div className="flex items-start space-x-2 sm:space-x-3">
+                  <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-primary mt-0.5 flex-shrink-0" />
+                  <div>
+                    <h4 className="font-medium text-sm sm:text-base">Anonymous Chat Available</h4>
+                    <p className="text-xs sm:text-sm text-muted-foreground">Chat without providing any personal information</p>
+                  </div>
+                </div>
+                <div className="flex items-start space-x-2 sm:space-x-3">
+                  <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-primary mt-0.5 flex-shrink-0" />
+                  <div>
+                    <h4 className="font-medium text-sm sm:text-base">No Chat Storage</h4>
+                    <p className="text-xs sm:text-sm text-muted-foreground">Messages are not permanently stored on our servers</p>
+                  </div>
+                </div>
+                <div className="flex items-start space-x-2 sm:space-x-3">
+                  <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-primary mt-0.5 flex-shrink-0" />
+                  <div>
+                    <h4 className="font-medium text-sm sm:text-base">GDPR & CCPA Compliant</h4>
+                    <p className="text-xs sm:text-sm text-muted-foreground">Full compliance with major privacy regulations</p>
+                  </div>
+                </div>
+              </div>
+              <div className="space-y-3 sm:space-y-4">
+                <div className="flex items-start space-x-2 sm:space-x-3">
+                  <Lock className="h-4 w-4 sm:h-5 sm:w-5 text-primary mt-0.5 flex-shrink-0" />
+                  <div>
+                    <h4 className="font-medium text-sm sm:text-base">End-to-End Encryption</h4>
+                    <p className="text-xs sm:text-sm text-muted-foreground">Your conversations are encrypted and secure</p>
+                  </div>
+                </div>
+                <div className="flex items-start space-x-2 sm:space-x-3">
+                  <Trash2 className="h-4 w-4 sm:h-5 sm:w-5 text-primary mt-0.5 flex-shrink-0" />
+                  <div>
+                    <h4 className="font-medium text-sm sm:text-base">Easy Data Deletion</h4>
+                    <p className="text-xs sm:text-sm text-muted-foreground">Request deletion of your data at any time</p>
+                  </div>
+                </div>
+                <div className="flex items-start space-x-2 sm:space-x-3">
+                  <Users className="h-4 w-4 sm:h-5 sm:w-5 text-primary mt-0.5 flex-shrink-0" />
+                  <div>
+                    <h4 className="font-medium text-sm sm:text-base">No Data Selling</h4>
+                    <p className="text-xs sm:text-sm text-muted-foreground">We never sell your personal information to third parties</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Data Collection Types */}
+          <div className="mb-16">
+            <h2 className="text-2xl font-bold mb-8 flex items-center">
+              <Database className="h-6 w-6 mr-3 text-primary" />
+              What Information We Collect
+            </h2>
+            <p className="text-muted-foreground mb-8">Transparent breakdown of data collection practices</p>
+
+            <div className="grid md:grid-cols-3 gap-8 text-center">
+              <div>
+                <UserCheck className="h-12 w-12 text-primary mx-auto mb-4" />
+                <h3 className="font-semibold mb-2">Account Information</h3>
+                <p className="text-sm text-muted-foreground">
+                  Optional email, username, and preferences you choose to provide
+                </p>
+              </div>
+              <div>
+                <Globe className="h-12 w-12 text-primary mx-auto mb-4" />
+                <h3 className="font-semibold mb-2">Usage Data</h3>
+                <p className="text-sm text-muted-foreground">
+                  Anonymous analytics to improve service quality and performance
+                </p>
+              </div>
+              <div>
+                <Settings className="h-12 w-12 text-primary mx-auto mb-4" />
+                <h3 className="font-semibold mb-2">Technical Data</h3>
+                <p className="text-sm text-muted-foreground">
+                  Device info, IP address, and browser data for security and functionality
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Detailed Privacy Policy */}
           <Card className="mb-8">
             <CardHeader>
               <CardTitle className="flex items-center">
-                <Eye className="h-5 w-5 mr-2 text-blue-500" />
-                Privacy at a Glance
+                <FileText className="h-5 w-5 mr-2 text-primary" />
+                Detailed Privacy Policy
               </CardTitle>
-              <CardDescription>
-                Your privacy is important to us. Here's how we protect your data.
-              </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-2">
-                    <Lock className="h-4 w-4 text-green-500" />
-                    <span className="text-sm">Messages are encrypted</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <UserCheck className="h-4 w-4 text-green-500" />
-                    <span className="text-sm">Minimal data collection</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Database className="h-4 w-4 text-green-500" />
-                    <span className="text-sm">Secure data storage</span>
-                  </div>
-                </div>
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-2">
-                    <Shield className="h-4 w-4 text-green-500" />
-                    <span className="text-sm">No data selling</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Eye className="h-4 w-4 text-green-500" />
-                    <span className="text-sm">Transparent practices</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <UserCheck className="h-4 w-4 text-green-500" />
-                    <span className="text-sm">User control over data</span>
-                  </div>
-                </div>
-              </div>
+              <Accordion type="single" collapsible className="w-full">
+                <AccordionItem value="collection">
+                  <AccordionTrigger className="text-left">
+                    1. Information Collection and Use
+                  </AccordionTrigger>
+                  <AccordionContent className="text-base space-y-4">
+                    <p>
+                      We collect information to provide better services to all our users. The types of information we collect include:
+                    </p>
+                    <div className="space-y-3">
+                      <div>
+                        <h4 className="font-medium mb-2">Information You Provide:</h4>
+                        <ul className="list-disc list-inside space-y-1 text-sm ml-4">
+                          <li>Account registration details (optional email, username)</li>
+                          <li>Profile preferences and settings</li>
+                          <li>Support communications and feedback</li>
+                        </ul>
+                      </div>
+                      <div>
+                        <h4 className="font-medium mb-2">Information We Collect Automatically:</h4>
+                        <ul className="list-disc list-inside space-y-1 text-sm ml-4">
+                          <li>Device information and browser type</li>
+                          <li>IP address and general location (country/region)</li>
+                          <li>Usage patterns and feature interactions</li>
+                          <li>Performance and error logs</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem value="usage">
+                  <AccordionTrigger className="text-left">
+                    2. How We Use Your Information
+                  </AccordionTrigger>
+                  <AccordionContent className="text-base space-y-4">
+                    <p>
+                      We use the information we collect for the following purposes:
+                    </p>
+                    <ul className="list-disc list-inside space-y-2 ml-4">
+                      <li><strong>Service Provision:</strong> To provide, maintain, and improve ChatPulse services</li>
+                      <li><strong>Safety & Security:</strong> To detect abuse, fraud, and ensure platform safety</li>
+                      <li><strong>Communication:</strong> To send important updates and respond to support requests</li>
+                      <li><strong>Analytics:</strong> To understand usage patterns and improve user experience</li>
+                      <li><strong>Legal Compliance:</strong> To comply with applicable laws and regulations</li>
+                    </ul>
+                    <p>
+                      <strong>Important:</strong> We do not read, store, or analyze the content of your private conversations.
+                      Chat messages are encrypted and automatically deleted after the conversation ends.
+                    </p>
+                  </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem value="rights">
+                  <AccordionTrigger className="text-left">
+                    3. Your Privacy Rights
+                  </AccordionTrigger>
+                  <AccordionContent className="text-base space-y-4">
+                    <p>
+                      You have the following rights regarding your personal information:
+                    </p>
+                    <div className="space-y-3">
+                      <div className="flex items-start space-x-3">
+                        <Download className="h-5 w-5 text-blue-500 mt-0.5 flex-shrink-0" />
+                        <div>
+                          <h4 className="font-medium">Access & Portability</h4>
+                          <p className="text-sm text-muted-foreground">Request a copy of your personal data in a portable format</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start space-x-3">
+                        <Edit className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+                        <div>
+                          <h4 className="font-medium">Correction</h4>
+                          <p className="text-sm text-muted-foreground">Update or correct inaccurate personal information</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start space-x-3">
+                        <Trash2 className="h-5 w-5 text-red-500 mt-0.5 flex-shrink-0" />
+                        <div>
+                          <h4 className="font-medium">Deletion</h4>
+                          <p className="text-sm text-muted-foreground">Request deletion of your personal data (right to be forgotten)</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start space-x-3">
+                        <Settings className="h-5 w-5 text-purple-500 mt-0.5 flex-shrink-0" />
+                        <div>
+                          <h4 className="font-medium">Control</h4>
+                          <p className="text-sm text-muted-foreground">Opt-out of certain data processing activities</p>
+                        </div>
+                      </div>
+                    </div>
+                    <p>
+                      To exercise these rights, contact us at <strong>privacy@chatpulse.in</strong>.
+                      We will respond within 30 days of receiving your request.
+                    </p>
+                  </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem value="contact">
+                  <AccordionTrigger className="text-left">
+                    4. Contact Information
+                  </AccordionTrigger>
+                  <AccordionContent className="text-base space-y-4">
+                    <p>
+                      If you have any questions about this Privacy Policy, please contact us:
+                    </p>
+                    <div className="bg-muted/30 p-4 rounded-lg">
+                      <div className="space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <Mail className="h-4 w-4 text-muted-foreground" />
+                          <span>privacy@chatpulse.in</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Globe className="h-4 w-4 text-muted-foreground" />
+                          <span>www.chatpulse.in/support</span>
+                        </div>
+                      </div>
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
             </CardContent>
           </Card>
 
-          {/* Main Content */}
-          <div className="space-y-8">
-            <section>
-              <h2 className="text-2xl font-semibold mb-4">1. Information We Collect</h2>
-              <p className="text-muted-foreground mb-4">
-                We collect only the information necessary to provide you with a great chat experience:
-              </p>
-              <div className="space-y-4">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg">Account Information</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-2 text-muted-foreground">
-                      <li>• Email address (for account creation and recovery)</li>
-                      <li>• Username and display name</li>
-                      <li>• Profile picture (optional)</li>
-                      <li>• Account preferences and settings</li>
-                    </ul>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg">Usage Information</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-2 text-muted-foreground">
-                      <li>• Messages you send and receive</li>
-                      <li>• Connection and activity logs</li>
-                      <li>• Device and browser information</li>
-                      <li>• IP address and general location</li>
-                    </ul>
-                  </CardContent>
-                </Card>
-              </div>
-            </section>
-
-            <Separator />
-
-            <section>
-              <h2 className="text-2xl font-semibold mb-4">2. How We Use Your Information</h2>
-              <p className="text-muted-foreground mb-4">
-                We use your information to:
-              </p>
-              <ul className="list-disc list-inside text-muted-foreground space-y-2 ml-4">
-                <li>Provide and maintain the ChatPulse service</li>
-                <li>Enable real-time messaging and communication</li>
-                <li>Improve and optimize our service</li>
-                <li>Provide customer support</li>
-                <li>Ensure security and prevent abuse</li>
-                <li>Comply with legal obligations</li>
-              </ul>
-            </section>
-
-            <Separator />
-
-            <section>
-              <h2 className="text-2xl font-semibold mb-4">3. Data Security</h2>
-              <p className="text-muted-foreground mb-4">
-                We implement industry-standard security measures to protect your data:
-              </p>
-              <div className="grid md:grid-cols-2 gap-4">
-                <Card>
-                  <CardContent className="pt-6">
-                    <div className="flex items-center space-x-3 mb-3">
-                      <Lock className="h-5 w-5 text-primary" />
-                      <h3 className="font-semibold">Encryption</h3>
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      All messages are encrypted in transit and at rest using industry-standard protocols.
-                    </p>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardContent className="pt-6">
-                    <div className="flex items-center space-x-3 mb-3">
-                      <Database className="h-5 w-5 text-primary" />
-                      <h3 className="font-semibold">Secure Storage</h3>
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      Your data is stored on secure servers with regular backups and monitoring.
-                    </p>
-                  </CardContent>
-                </Card>
-              </div>
-            </section>
-
-            <Separator />
-
-            <section>
-              <h2 className="text-2xl font-semibold mb-4">4. Data Sharing</h2>
-              <p className="text-muted-foreground mb-4">
-                We do not sell, trade, or rent your personal information to third parties. We may share your information only in these limited circumstances:
-              </p>
-              <ul className="list-disc list-inside text-muted-foreground space-y-2 ml-4">
-                <li>With your explicit consent</li>
-                <li>To comply with legal requirements</li>
-                <li>To protect our rights and prevent fraud</li>
-                <li>With service providers who help us operate ChatPulse (under strict confidentiality agreements)</li>
-              </ul>
-            </section>
-
-            <Separator />
-
-            <section>
-              <h2 className="text-2xl font-semibold mb-4">5. Your Rights</h2>
-              <p className="text-muted-foreground mb-4">
-                You have the following rights regarding your personal data:
-              </p>
-              <div className="grid md:grid-cols-2 gap-4">
-                <ul className="list-disc list-inside text-muted-foreground space-y-2">
-                  <li>Access your personal data</li>
-                  <li>Correct inaccurate information</li>
-                  <li>Delete your account and data</li>
-                  <li>Export your data</li>
-                </ul>
-                <ul className="list-disc list-inside text-muted-foreground space-y-2">
-                  <li>Restrict data processing</li>
-                  <li>Object to data processing</li>
-                  <li>Withdraw consent</li>
-                  <li>File a complaint</li>
-                </ul>
-              </div>
-            </section>
-
-            <Separator />
-
-            <section>
-              <h2 className="text-2xl font-semibold mb-4">6. Data Retention</h2>
-              <p className="text-muted-foreground mb-4">
-                We retain your data only as long as necessary to provide our services or as required by law. You can delete your account at any time, which will remove your personal data from our systems.
-              </p>
-            </section>
-
-            <Separator />
-
-            <section>
-              <h2 className="text-2xl font-semibold mb-6">7. Contact Us</h2>
-              <p className="text-muted-foreground mb-6">
-                If you have any questions about this Privacy Policy or your data, please contact us:
-              </p>
-              <div className="grid md:grid-cols-2 gap-6">
-                <Card className="border-border/50 hover:shadow-lg transition-all duration-300">
-                  <CardHeader className="pb-4">
-                    <div className="flex items-center space-x-3">
-                      <div className="p-2 bg-primary/10 rounded-lg">
-                        <Shield className="h-5 w-5 text-primary" />
-                      </div>
-                      <div>
-                        <CardTitle className="text-lg">Privacy Support</CardTitle>
-                        <CardDescription>Data protection and privacy inquiries</CardDescription>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-3">
-                      <div className="flex items-center space-x-3 p-3 bg-muted/30 rounded-lg">
-                        <div className="p-1.5 bg-primary/10 rounded">
-                          <Mail className="h-4 w-4 text-primary" />
-                        </div>
-                        <div>
-                          <p className="font-medium text-sm">Privacy Email</p>
-                          <a href="mailto:support@chatpulse.in" className="text-primary hover:underline text-sm">
-                            support@chatpulse.in
-                          </a>
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-3 p-3 bg-muted/30 rounded-lg">
-                        <div className="p-1.5 bg-primary/10 rounded">
-                          <Phone className="h-4 w-4 text-primary" />
-                        </div>
-                        <div>
-                          <p className="font-medium text-sm">Privacy Hotline</p>
-                          <a href="tel:+917877713244" className="text-primary hover:underline text-sm">
-                            +91 78777 13244
-                          </a>
-                        </div>
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        Data requests and privacy concerns
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card className="border-border/50 hover:shadow-lg transition-all duration-300">
-                  <CardHeader className="pb-4">
-                    <div className="flex items-center space-x-3">
-                      <div className="p-2 bg-primary/10 rounded-lg">
-                        <UserCheck className="h-5 w-5 text-primary" />
-                      </div>
-                      <div>
-                        <CardTitle className="text-lg">Developer Contact</CardTitle>
-                        <CardDescription>Technical privacy questions</CardDescription>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-3">
-                      <div className="flex items-center space-x-3 p-3 bg-muted/30 rounded-lg">
-                        <div className="p-1.5 bg-primary/10 rounded">
-                          <Mail className="h-4 w-4 text-primary" />
-                        </div>
-                        <div>
-                          <p className="font-medium text-sm">Technical Email</p>
-                          <a href="mailto:hariomsuthar7143@gmail.com" className="text-primary hover:underline text-sm">
-                            hariomsuthar7143@gmail.com
-                          </a>
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-3 p-3 bg-muted/30 rounded-lg">
-                        <div className="p-1.5 bg-primary/10 rounded">
-                          <Phone className="h-4 w-4 text-primary" />
-                        </div>
-                        <div>
-                          <p className="font-medium text-sm">Technical Support</p>
-                          <a href="tel:+917014247460" className="text-primary hover:underline text-sm">
-                            +91 70142 47460
-                          </a>
-                        </div>
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        Security and data architecture questions
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            </section>
-          </div>
-
-          {/* Footer Actions */}
-          <div className="mt-12 text-center">
-            <Button asChild>
-              <Link href="/">Return to ChatPulse</Link>
-            </Button>
+          {/* Footer */}
+          <div className="text-center pt-8 border-t">
+            <p className="text-muted-foreground mb-4">
+              This privacy policy is effective as of December 2024 and will remain in effect except with respect to any changes in its provisions in the future.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button variant="outline" asChild>
+                <Link href="/terms">
+                  <FileText className="h-4 w-4 mr-2" />
+                  Terms of Service
+                </Link>
+              </Button>
+              <Button variant="outline" asChild>
+                <Link href="/support">
+                  <Mail className="h-4 w-4 mr-2" />
+                  Contact Support
+                </Link>
+              </Button>
+            </div>
           </div>
         </div>
       </div>
+
+      {/* Footer */}
+      <Footer />
     </div>
   )
 }

@@ -229,18 +229,18 @@ export function NewsletterSignup({ className = "", variant = 'default' }: Newsle
 
   if (variant === 'inline') {
     return (
-      <div className={`border-l-4 border-primary bg-primary/5 p-4 rounded-r-lg ${className}`}>
-        <div className="flex items-start space-x-3">
-          <Mail className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+      <div className={`border-l-4 border-primary bg-primary/5 p-4 sm:p-6 rounded-r-lg ${className}`}>
+        <div className="flex flex-col sm:flex-row sm:items-start space-y-3 sm:space-y-0 sm:space-x-4">
+          <Mail className="h-6 w-6 text-primary flex-shrink-0" />
           <div className="flex-1">
-            <h4 className="font-medium mb-1">Enjoying this article?</h4>
-            <p className="text-sm text-muted-foreground mb-3">
+            <h4 className="font-semibold text-base sm:text-lg mb-2">Enjoying this article?</h4>
+            <p className="text-sm sm:text-base text-muted-foreground mb-4">
               Subscribe to get more insights like this delivered to your inbox.
             </p>
-            <form onSubmit={handleSubmit} className="flex space-x-2">
+            <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3">
               <Input
                 type="email"
-                placeholder="Enter your email"
+                placeholder="Enter your email address"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={isLoading}
@@ -266,7 +266,7 @@ export function NewsletterSignup({ className = "", variant = 'default' }: Newsle
         <CardTitle>Stay in the Loop</CardTitle>
         <CardDescription>
           Get the latest articles and insights delivered directly to your inbox. 
-          Join thousands of developers staying updated with ChatNow.
+          Join thousands of developers staying updated with ChatPulse.
         </CardDescription>
       </CardHeader>
       
@@ -348,12 +348,12 @@ export function Comments({ postId, className = "" }: CommentsProps) {
     <div className={`space-y-6 ${className}`}>
       <div className="flex items-center space-x-2">
         <MessageCircle className="h-5 w-5 text-primary" />
-        <h3 className="text-xl font-semibold">Comments ({comments.length})</h3>
+        <h3 className="text-lg sm:text-xl font-semibold">Comments ({comments.length})</h3>
       </div>
-      
+
       {/* Comment form */}
       <Card>
-        <CardContent className="p-4">
+        <CardContent className="p-4 sm:p-6">
           <form onSubmit={handleSubmit} className="space-y-4">
             <Textarea
               placeholder="Share your thoughts..."
@@ -361,25 +361,29 @@ export function Comments({ postId, className = "" }: CommentsProps) {
               onChange={(e) => setNewComment(e.target.value)}
               disabled={isSubmitting}
               rows={3}
+              className="resize-none"
             />
             <div className="flex justify-between items-center">
               <p className="text-xs text-muted-foreground">
                 Be respectful and constructive in your comments.
               </p>
-              <Button type="submit" disabled={isSubmitting || !newComment.trim()}>
+              <Button
+                type="submit"
+                disabled={isSubmitting || !newComment.trim()}
+              >
                 {isSubmitting ? "Posting..." : "Post Comment"}
               </Button>
             </div>
           </form>
         </CardContent>
       </Card>
-      
+
       {/* Comments list */}
       <div className="space-y-4">
         {comments.map((comment) => (
           <div key={comment.id} className="flex space-x-3 p-4 bg-muted/30 rounded-lg">
-            <img 
-              src={comment.avatar} 
+            <img
+              src={comment.avatar}
               alt={comment.author}
               className="w-10 h-10 rounded-full"
             />

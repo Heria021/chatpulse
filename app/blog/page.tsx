@@ -90,7 +90,7 @@ export default function BlogPage() {
                   <MessageCircle className="h-6 w-6 text-primary" />
                 </div>
                 <span className="font-bold text-xl bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-                  ChatPulse
+                  ChatNow
                 </span>
               </Link>
               <div className="flex items-center space-x-4">
@@ -127,7 +127,7 @@ export default function BlogPage() {
                 <MessageCircle className="h-6 w-6 text-primary" />
               </div>
               <span className="font-bold text-xl bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-                ChatPulse
+                ChatNow
               </span>
             </Link>
             <div className="flex items-center space-x-4">
@@ -147,7 +147,7 @@ export default function BlogPage() {
         <div className="text-center mb-12">
           <div className="flex items-center justify-center space-x-3 mb-4">
             <BookOpen className="h-8 w-8 text-primary" />
-            <h1 className="text-4xl font-bold">ChatPulse Blog</h1>
+            <h1 className="text-4xl font-bold">ChatNow Blog</h1>
           </div>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Insights, updates, and stories from the world of instant communication
@@ -405,7 +405,7 @@ export default function BlogPage() {
               {!selectedCategory && (
                 <div className="space-y-2">
                   <p className="text-sm text-muted-foreground">
-                    In the meantime, explore ChatPulse's features:
+                    In the meantime, explore ChatNow's features:
                   </p>
                   <div className="flex justify-center space-x-4">
                     <Button variant="outline" asChild>

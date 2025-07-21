@@ -490,22 +490,22 @@ async function generateDetailedContent(title: string, category: string) {
         order: 5
       },
       {
-        id: `heading-chatnow-${baseId}`,
+        id: `heading-chatpulse-${baseId}`,
         type: "heading" as const,
-        content: "1. ChatNow - Best Overall Random Chat Experience",
+        content: "1. ChatPulse - Best Overall Random Chat Experience",
         level: 3,
         order: 6
       },
       {
-        id: `paragraph-chatnow-${baseId}`,
+        id: `paragraph-chatpulse-${baseId}`,
         type: "paragraph" as const,
-        content: "**ChatNow** leads the pack with its intuitive interface, advanced matching algorithms, and robust safety features. This platform excels at connecting users based on interests and preferences, making conversations more meaningful and engaging.",
+        content: "**ChatPulse** leads the pack with its intuitive interface, advanced matching algorithms, and robust safety features. This platform excels at connecting users based on interests and preferences, making conversations more meaningful and engaging.",
         order: 7
       },
       {
-        id: `list-chatnow-features-${baseId}`,
+        id: `list-chatpulse-features-${baseId}`,
         type: "list" as const,
-        content: "ChatNow Features:",
+        content: "ChatPulse Features:",
         listType: "unordered" as const,
         listItems: [
           "✅ Smart interest-based matching",
@@ -1378,18 +1378,18 @@ Microservices:
 
 function getAuthorForCategory(category: string): string {
   const authors = {
-    tutorials: 'ChatNow Development Team',
-    'case-studies': 'ChatNow Research Team',
-    'product-updates': 'ChatNow Product Team',
-    'industry-news': 'ChatNow Editorial Team',
-    opinion: 'ChatNow Leadership Team',
-    technical: 'ChatNow Engineering Team',
-    security: 'ChatNow Security Team',
-    design: 'ChatNow Design Team',
-    business: 'ChatNow Strategy Team'
+    tutorials: 'ChatPulse Development Team',
+    'case-studies': 'ChatPulse Research Team',
+    'product-updates': 'ChatPulse Product Team',
+    'industry-news': 'ChatPulse Editorial Team',
+    opinion: 'ChatPulse Leadership Team',
+    technical: 'ChatPulse Engineering Team',
+    security: 'ChatPulse Security Team',
+    design: 'ChatPulse Design Team',
+    business: 'ChatPulse Strategy Team'
   }
 
-  return authors[category as keyof typeof authors] || 'ChatNow Team'
+  return authors[category as keyof typeof authors] || 'ChatPulse Team'
 }
 
 function getAuthorBio(category: string): string {
@@ -1461,7 +1461,7 @@ function generateMetaDescription(post: any): string {
   const descriptions = {
     tutorials: `Learn ${post.topic || post.title.toLowerCase()} with this comprehensive tutorial. Step-by-step guide with examples and best practices.`,
     'case-studies': `${post.company || 'Company'} case study: Learn how they solved ${post.challenge || 'technical challenges'} with ${post.solution || 'innovative solutions'}.`,
-    'product-updates': `Latest ChatNow updates: ${post.title}. Enhanced features and improved user experience.`,
+    'product-updates': `Latest ChatPulse updates: ${post.title}. Enhanced features and improved user experience.`,
     'industry-news': `Stay updated with ${post.title}. Latest industry insights and technology trends.`,
     opinion: `Expert opinion on ${post.topic || post.title.toLowerCase()}: ${post.perspective || 'industry insights and analysis'}.`,
     technical: `Deep technical dive into ${post.topic || post.title.toLowerCase()}. Advanced concepts and implementation strategies.`,

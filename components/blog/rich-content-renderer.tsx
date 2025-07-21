@@ -40,12 +40,12 @@ export function RichContentRenderer({ sections, className }: RichContentRenderer
     const HeadingTag = `h${Math.min(Math.max(level, 1), 6)}` as keyof React.JSX.IntrinsicElements
     
     const headingClasses = {
-      1: "text-4xl font-bold mb-6 mt-8 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent",
-      2: "text-3xl font-bold mb-5 mt-7 text-foreground",
-      3: "text-2xl font-semibold mb-4 mt-6 text-foreground",
-      4: "text-xl font-semibold mb-3 mt-5 text-foreground",
-      5: "text-lg font-medium mb-3 mt-4 text-foreground",
-      6: "text-base font-medium mb-2 mt-3 text-foreground"
+      1: "text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 sm:mb-6 mt-6 sm:mt-8 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent",
+      2: "text-xl sm:text-2xl lg:text-3xl font-bold mb-3 sm:mb-5 mt-5 sm:mt-7 text-foreground",
+      3: "text-lg sm:text-xl lg:text-2xl font-semibold mb-3 sm:mb-4 mt-4 sm:mt-6 text-foreground",
+      4: "text-base sm:text-lg lg:text-xl font-semibold mb-2 sm:mb-3 mt-3 sm:mt-5 text-foreground",
+      5: "text-sm sm:text-base lg:text-lg font-medium mb-2 sm:mb-3 mt-3 sm:mt-4 text-foreground",
+      6: "text-sm sm:text-base font-medium mb-2 mt-2 sm:mt-3 text-foreground"
     }
 
     return (
@@ -61,9 +61,9 @@ export function RichContentRenderer({ sections, className }: RichContentRenderer
 
   const renderSubheading = (section: BlogContentSection) => {
     return (
-      <h3 
+      <h3
         key={section.id}
-        className="text-xl font-semibold mb-3 mt-6 text-foreground/90 border-l-4 border-primary/30 pl-4"
+        className="text-lg sm:text-xl font-semibold mb-3 mt-4 sm:mt-6 text-foreground/90 border-l-4 border-primary/30 pl-3 sm:pl-4"
         id={section.id}
       >
         {section.content}
@@ -85,9 +85,9 @@ export function RichContentRenderer({ sections, className }: RichContentRenderer
     }
 
     return (
-      <p 
+      <p
         key={section.id}
-        className="mb-4 leading-relaxed text-foreground/90 text-base"
+        className="mb-3 sm:mb-4 leading-relaxed text-foreground/90 text-sm sm:text-base"
       >
         {formatInlineContent(section.content)}
       </p>
@@ -108,16 +108,16 @@ export function RichContentRenderer({ sections, className }: RichContentRenderer
     if (!section.imageUrl) return null
 
     return (
-      <div key={section.id} className="my-8">
-        <div className="relative overflow-hidden rounded-xl border border-border/50 bg-muted/20">
+      <div key={section.id} className="my-6 sm:my-8">
+        <div className="relative overflow-hidden rounded-lg sm:rounded-xl border border-border/50 bg-muted/20">
           <img
             src={section.imageUrl}
             alt={section.imageAlt || section.content}
             className="w-full h-auto object-cover"
           />
           {section.content && (
-            <div className="p-4 bg-muted/30 border-t border-border/50">
-              <p className="text-sm text-muted-foreground text-center italic">
+            <div className="p-3 sm:p-4 bg-muted/30 border-t border-border/50">
+              <p className="text-xs sm:text-sm text-muted-foreground text-center italic">
                 {section.content}
               </p>
             </div>
@@ -129,13 +129,13 @@ export function RichContentRenderer({ sections, className }: RichContentRenderer
 
   const renderQuote = (section: BlogContentSection) => {
     return (
-      <blockquote 
+      <blockquote
         key={section.id}
-        className="my-6 border-l-4 border-primary/50 bg-muted/30 p-4 rounded-r-lg"
+        className="my-4 sm:my-6 border-l-4 border-primary/50 bg-muted/30 p-3 sm:p-4 rounded-r-lg"
       >
-        <div className="flex items-start space-x-3">
-          <Quote className="h-5 w-5 text-primary/70 mt-1 flex-shrink-0" />
-          <p className="text-foreground/90 italic text-base leading-relaxed">
+        <div className="flex items-start space-x-2 sm:space-x-3">
+          <Quote className="h-4 w-4 sm:h-5 sm:w-5 text-primary/70 mt-1 flex-shrink-0" />
+          <p className="text-foreground/90 italic text-sm sm:text-base leading-relaxed">
             {section.content}
           </p>
         </div>
@@ -147,18 +147,18 @@ export function RichContentRenderer({ sections, className }: RichContentRenderer
     if (!section.listItems || section.listItems.length === 0) return null
 
     const ListTag = section.listType === 'ordered' ? 'ol' : 'ul'
-    const listClasses = section.listType === 'ordered' 
-      ? "list-decimal list-inside space-y-2 mb-4 ml-4"
-      : "list-disc list-inside space-y-2 mb-4 ml-4"
+    const listClasses = section.listType === 'ordered'
+      ? "list-decimal list-inside space-y-2 mb-3 sm:mb-4 ml-3 sm:ml-4 text-sm sm:text-base"
+      : "list-disc list-inside space-y-2 mb-3 sm:mb-4 ml-3 sm:ml-4 text-sm sm:text-base"
 
     return (
-      <div key={section.id} className="my-4">
+      <div key={section.id} className="my-3 sm:my-4">
         {section.content && (
-          <p className="font-medium text-foreground mb-2">{section.content}</p>
+          <p className="font-medium text-foreground mb-2 text-sm sm:text-base">{section.content}</p>
         )}
         <ListTag className={listClasses}>
           {section.listItems.map((item, index) => (
-            <li key={index} className="text-foreground/90 leading-relaxed">
+            <li key={index} className="text-foreground/90 leading-relaxed text-sm sm:text-base">
               {item}
             </li>
           ))}

@@ -186,30 +186,30 @@ export function AuthorCard({ author, publishedAt, readTime, className = "" }: Au
     .toUpperCase()
 
   return (
-    <div className={`flex items-center space-x-3 ${className}`}>
-      <Avatar className="w-10 h-10">
+    <div className={`flex items-center space-x-3 sm:space-x-4 ${className}`}>
+      <Avatar className="w-12 h-12 sm:w-14 sm:h-14 flex-shrink-0">
         <AvatarImage src={author.image} alt={author.name} />
-        <AvatarFallback className="text-sm font-medium">
+        <AvatarFallback className="text-sm sm:text-base font-medium">
           {initials}
         </AvatarFallback>
       </Avatar>
-      
-      <div className="flex-1">
-        <div className="font-medium text-sm">{author.name}</div>
-        <div className="flex items-center space-x-2 text-xs text-muted-foreground">
+
+      <div className="flex-1 min-w-0">
+        <div className="font-semibold text-sm sm:text-base truncate">{author.name}</div>
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs sm:text-sm text-muted-foreground">
           {publishedAt && (
-            <time>
+            <time className="flex-shrink-0">
               {new Date(publishedAt).toLocaleDateString('en-US', {
                 year: 'numeric',
-                month: 'long',
+                month: 'short',
                 day: 'numeric'
               })}
             </time>
           )}
           {readTime && (
             <>
-              <span>•</span>
-              <span>{readTime} min read</span>
+              <span className="hidden sm:inline">•</span>
+              <span className="flex-shrink-0">{readTime} min read</span>
             </>
           )}
         </div>
@@ -227,46 +227,50 @@ export function AuthorBio({ author, className = "" }: { author: AuthorProfilePro
     .toUpperCase()
 
   return (
-    <div className={`border rounded-lg p-6 bg-muted/30 ${className}`}>
-      <div className="flex items-start space-x-4">
-        <Avatar className="w-16 h-16">
-          <AvatarImage src={author.image} alt={author.name} />
-          <AvatarFallback className="text-lg font-semibold">
-            {initials}
-          </AvatarFallback>
-        </Avatar>
-        
-        <div className="flex-1">
-          <h3 className="text-lg font-semibold mb-2">About {author.name}</h3>
+    <div className={`border rounded-lg p-4 sm:p-6 bg-muted/30 ${className}`}>
+      {/* Mobile: Stack vertically, Desktop: Side by side */}
+      <div className="flex flex-col sm:flex-row sm:items-start space-y-4 sm:space-y-0 sm:space-x-4">
+        {/* Avatar - centered on mobile */}
+        <div className="flex justify-center sm:justify-start">
+          <Avatar className="w-16 h-16 sm:w-16 sm:h-16">
+            <AvatarImage src={author.image} alt={author.name} />
+            <AvatarFallback className="text-lg font-semibold">
+              {initials}
+            </AvatarFallback>
+          </Avatar>
+        </div>
+
+        <div className="flex-1 text-center sm:text-left">
+          <h3 className="text-base sm:text-lg font-semibold mb-2">About {author.name}</h3>
           {author.bio && (
-            <p className="text-muted-foreground mb-4 leading-relaxed">
+            <p className="text-muted-foreground mb-4 leading-relaxed text-sm sm:text-base">
               {author.bio}
             </p>
           )}
-          
-          {/* Social Links */}
-          <div className="flex items-center space-x-3">
+
+          {/* Social Links - stack on mobile, inline on desktop */}
+          <div className="flex flex-col sm:flex-row items-center sm:items-start space-y-2 sm:space-y-0 sm:space-x-3">
             {author.website && (
-              <Button variant="outline" size="sm" asChild>
+              <Button variant="outline" size="sm" asChild className="w-full sm:w-auto">
                 <a href={author.website} target="_blank" rel="noopener noreferrer">
                   <Globe className="h-4 w-4 mr-2" />
-                  Website
+                  <span className="text-xs sm:text-sm">Website</span>
                 </a>
               </Button>
             )}
             {author.twitter && (
-              <Button variant="outline" size="sm" asChild>
+              <Button variant="outline" size="sm" asChild className="w-full sm:w-auto">
                 <a href={`https://twitter.com/${author.twitter}`} target="_blank" rel="noopener noreferrer">
                   <Twitter className="h-4 w-4 mr-2" />
-                  Twitter
+                  <span className="text-xs sm:text-sm">Twitter</span>
                 </a>
               </Button>
             )}
             {author.linkedin && (
-              <Button variant="outline" size="sm" asChild>
+              <Button variant="outline" size="sm" asChild className="w-full sm:w-auto">
                 <a href={author.linkedin} target="_blank" rel="noopener noreferrer">
                   <Linkedin className="h-4 w-4 mr-2" />
-                  LinkedIn
+                  <span className="text-xs sm:text-sm">LinkedIn</span>
                 </a>
               </Button>
             )}

@@ -181,7 +181,7 @@ function SignUpForm() {
   return (
     <AuthLayout 
       title="Create account" 
-      subtitle="Join ChatNow to start connecting with people"
+      subtitle="Join ChatPulse to start connecting with people"
     >
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
