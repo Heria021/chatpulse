@@ -5,7 +5,7 @@ import { ConvexError } from "convex/values";
 // Helper function to hash passwords (simplified for demo - in production use bcrypt)
 function hashPassword(password: string): string {
   // Simple hash with salt for better security than plain base64
-  const salt = "chatnow_salt_2024"; // In production, use random salt per user
+  const salt = "chatpulse_salt_2024"; // In production, use random salt per user
   const combined = password + salt;
 
   // Convert to base64 without using Buffer (Convex compatible)

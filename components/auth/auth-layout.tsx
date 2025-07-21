@@ -31,7 +31,7 @@ export function AuthLayout({
                 <div className="p-2 bg-primary rounded-lg">
                   <MessageCircle className="h-6 w-6 text-primary-foreground" />
                 </div>
-                <h1 className="text-2xl font-bold">ChatNow</h1>
+                <h1 className="text-2xl font-bold">ChatPulse</h1>
               </div>
 
               <div>

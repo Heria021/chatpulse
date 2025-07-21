@@ -299,8 +299,8 @@ export default function About() {
                   <Instagram className="h-8 w-8 text-primary mx-auto" />
                   <h3 className="font-semibold">Follow Us</h3>
                   <p className="text-muted-foreground">
-                    <a href="https://instagram.com/chatnow" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
-                      @chatnow
+                    <a href="https://instagram.com/chatpulse" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                      @chatpulse
                     </a>
                   </p>
                 </div>

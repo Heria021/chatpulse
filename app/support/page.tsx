@@ -109,7 +109,7 @@ export default function Support() {
                 <MessageCircle className="h-6 w-6 text-primary" />
               </div>
               <span className="font-bold text-xl bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-                ChatNow
+                ChatPulse
               </span>
             </Link>
             <div className="flex items-center space-x-4">
@@ -157,7 +157,7 @@ export default function Support() {
               </CardHeader>
               <CardContent>
                 <Button asChild className="w-full">
-                  <a href="mailto:support@chatnow.com">
+                  <a href="mailto:support@chatpulse.in">
                     Contact Support
                   </a>
                 </Button>
@@ -190,7 +190,7 @@ export default function Support() {
                 </div>
                 <CardTitle>Documentation</CardTitle>
                 <CardDescription>
-                  Browse our guides and learn how to use ChatNow effectively.
+                  Browse our guides and learn how to use ChatPulse effectively.
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -210,7 +210,7 @@ export default function Support() {
             <div className="text-center mb-8">
               <h2 className="text-3xl font-bold mb-4">Frequently Asked Questions</h2>
               <p className="text-muted-foreground max-w-2xl mx-auto">
-                Find quick answers to common questions about ChatNow. Can't find what you're looking for? Contact our support team.
+                Find quick answers to common questions about ChatPulse. Can't find what you're looking for? Contact our support team.
               </p>
             </div>
 
@@ -249,13 +249,13 @@ export default function Support() {
                       <div className="p-2 bg-primary/10 rounded-lg">
                         <Users className="h-4 w-4 text-primary" />
                       </div>
-                      <span className="font-medium">Can I use ChatNow without an account?</span>
+                      <span className="font-medium">Can I use ChatPulse without an account?</span>
                     </div>
                   </AccordionTrigger>
                   <AccordionContent className="pt-4 pb-6">
                     <div className="ml-12 space-y-3">
                       <p className="text-muted-foreground">
-                        Yes! You can use our Guest Mode to try ChatNow without creating an account.
+                        Yes! You can use our Guest Mode to try ChatPulse without creating an account.
                       </p>
                       <ul className="list-disc list-inside space-y-2 text-muted-foreground">
                         <li>Click "Try as Guest" on the homepage</li>
@@ -276,13 +276,13 @@ export default function Support() {
                       <div className="p-2 bg-primary/10 rounded-lg">
                         <CheckCircle className="h-4 w-4 text-primary" />
                       </div>
-                      <span className="font-medium">Is ChatNow free to use?</span>
+                      <span className="font-medium">Is ChatPulse free to use?</span>
                     </div>
                   </AccordionTrigger>
                   <AccordionContent className="pt-4 pb-6">
                     <div className="ml-12 space-y-3">
                       <p className="text-muted-foreground">
-                        Yes, ChatNow is completely free to use! We believe in providing accessible communication for everyone.
+                        Yes, ChatPulse is completely free to use! We believe in providing accessible communication for everyone.
                       </p>
                       <ul className="list-disc list-inside space-y-2 text-muted-foreground">
                         <li>No subscription fees</li>
@@ -363,7 +363,7 @@ export default function Support() {
                         We take inappropriate content seriously. Here's how to report it:
                       </p>
                       <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-                        <li>Email us immediately at support@chatnow.com</li>
+                        <li>Email us immediately at support@chatpulse.in</li>
                         <li>Call our support line: +91 78777 13244</li>
                         <li>Include screenshots if possible</li>
                         <li>Provide details about the incident</li>
@@ -575,7 +575,7 @@ export default function Support() {
             </p>
             <div className="flex flex-wrap justify-center gap-4 mb-8">
               <Button variant="outline" asChild>
-                <a href="mailto:support@chatnow.com" className="flex items-center">
+                <a href="mailto:support@chatpulse.in" className="flex items-center">
                   <Mail className="h-4 w-4 mr-2" />
                   Email Support
                 </a>

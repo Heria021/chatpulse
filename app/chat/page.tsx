@@ -38,7 +38,7 @@ export default function ChatPage() {
         </div>
 
         <div className="space-y-3">
-          <h2 className="text-xl lg:text-2xl font-bold">Welcome to ChatNow</h2>
+          <h2 className="text-xl lg:text-2xl font-bold">Welcome to ChatPulse</h2>
           <p className="text-sm lg:text-base text-muted-foreground">
             Select a conversation from the sidebar to start chatting, or start a new conversation.
           </p>

@@ -5,7 +5,7 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Get session token from cookies or headers
-  const sessionToken = request.cookies.get('chatnow_session_token')?.value ||
+  const sessionToken = request.cookies.get('chatpulse_session_token')?.value ||
                       request.headers.get('authorization')?.replace('Bearer ', '') ||
                       '';
 

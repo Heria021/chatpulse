@@ -466,15 +466,15 @@ export default defineSchema({
   .index("by_email", ["email"])
   .index("by_creation", ["createdAt"]),
 
-  // Blog posts
+  // Blog posts - SEO-optimized structure
   blogPosts: defineTable({
+    // Core content
     title: v.string(),
     slug: v.string(), // URL-friendly version of title
-    excerpt: v.string(), // Short description
-    content: v.string(), // Legacy content field (markdown)
+    excerpt: v.string(), // Short description for previews and SEO
 
-    // Rich content structure
-    richContent: v.optional(v.array(v.object({
+    // Rich content structure (no legacy content field)
+    richContent: v.array(v.object({
       id: v.string(),
       type: v.union(
         v.literal("heading"),
@@ -499,28 +499,40 @@ export default defineSchema({
       listItems: v.optional(v.array(v.string())), // For list sections
       listType: v.optional(v.union(v.literal("ordered"), v.literal("unordered"))), // For list sections
       order: v.number(), // For ordering sections
-    }))),
+    })),
 
-    coverImage: v.optional(v.string()), // Cover image URL
+    // Media
+    coverImage: v.optional(v.string()),
+    coverImageAlt: v.optional(v.string()), // SEO-friendly alt text
 
     // Author info
     author: v.string(),
     authorImage: v.optional(v.string()),
+    authorBio: v.optional(v.string()), // For author schema markup
 
-    // Categories and tags
+    // Categories and tags for SEO
     category: v.string(),
     tags: v.array(v.string()),
 
-    // Publishing
+    // Publishing (only published posts are accessible)
     isPublished: v.boolean(),
     publishedAt: v.optional(v.number()),
 
-    // SEO
-    metaDescription: v.optional(v.string()),
+    // SEO optimization
+    metaDescription: v.string(), // Required for SEO
+    metaKeywords: v.optional(v.array(v.string())), // Additional SEO keywords
+    canonicalUrl: v.optional(v.string()), // For duplicate content handling
 
-    // Engagement
+    // Social media optimization
+    ogTitle: v.optional(v.string()), // Open Graph title
+    ogDescription: v.optional(v.string()), // Open Graph description
+    ogImage: v.optional(v.string()), // Open Graph image
+    twitterCard: v.optional(v.string()), // Twitter card type
+
+    // Engagement and analytics
     readTime: v.number(), // estimated read time in minutes
     views: v.number(),
+    featured: v.optional(v.boolean()), // For featured posts
 
     // Timestamps
     createdAt: v.number(),
@@ -529,7 +541,9 @@ export default defineSchema({
   .index("by_slug", ["slug"])
   .index("by_category", ["category", "isPublished"])
   .index("by_published", ["isPublished", "publishedAt"])
+  .index("by_featured", ["featured", "publishedAt"])
   .index("by_author", ["author", "publishedAt"])
+  .index("by_views", ["views"])
   .index("by_creation", ["createdAt"]),
 
 });

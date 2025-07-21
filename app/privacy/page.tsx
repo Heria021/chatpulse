@@ -18,7 +18,7 @@ export default function PrivacyPolicy() {
                 <MessageCircle className="h-6 w-6 text-primary" />
               </div>
               <span className="font-bold text-xl bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-                ChatNow
+                ChatPulse
               </span>
             </Link>
             <div className="flex items-center space-x-4">
@@ -133,7 +133,7 @@ export default function PrivacyPolicy() {
                 We use your information to:
               </p>
               <ul className="list-disc list-inside text-muted-foreground space-y-2 ml-4">
-                <li>Provide and maintain the ChatNow service</li>
+                <li>Provide and maintain the ChatPulse service</li>
                 <li>Enable real-time messaging and communication</li>
                 <li>Improve and optimize our service</li>
                 <li>Provide customer support</li>
@@ -186,7 +186,7 @@ export default function PrivacyPolicy() {
                 <li>With your explicit consent</li>
                 <li>To comply with legal requirements</li>
                 <li>To protect our rights and prevent fraud</li>
-                <li>With service providers who help us operate ChatNow (under strict confidentiality agreements)</li>
+                <li>With service providers who help us operate ChatPulse (under strict confidentiality agreements)</li>
               </ul>
             </section>
 
@@ -250,8 +250,8 @@ export default function PrivacyPolicy() {
                         </div>
                         <div>
                           <p className="font-medium text-sm">Privacy Email</p>
-                          <a href="mailto:support@chatnow.com" className="text-primary hover:underline text-sm">
-                            support@chatnow.com
+                          <a href="mailto:support@chatpulse.in" className="text-primary hover:underline text-sm">
+                            support@chatpulse.in
                           </a>
                         </div>
                       </div>
@@ -322,7 +322,7 @@ export default function PrivacyPolicy() {
           {/* Footer Actions */}
           <div className="mt-12 text-center">
             <Button asChild>
-              <Link href="/">Return to ChatNow</Link>
+              <Link href="/">Return to ChatPulse</Link>
             </Button>
           </div>
         </div>

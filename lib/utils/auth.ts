@@ -74,7 +74,7 @@ export function checkPasswordStrength(password: string): PasswordStrengthResult 
 }
 
 // Form persistence utilities
-const FORM_STORAGE_PREFIX = "chatnow_form_";
+const FORM_STORAGE_PREFIX = "chatpulse_form_";
 
 export function saveFormData(formName: string, data: Record<string, any>) {
   try {
@@ -111,13 +111,13 @@ export function clearFormData(formName: string) {
 }
 
 // Session management
-const SESSION_TOKEN_KEY = "chatnow_session_token";
+const SESSION_TOKEN_KEY = "chatpulse_session_token";
 
 export function saveSessionToken(token: string) {
   try {
     localStorage.setItem(SESSION_TOKEN_KEY, token);
     // Also save in cookie for middleware access
-    document.cookie = `chatnow_session_token=${token}; path=/; max-age=${30 * 24 * 60 * 60}; SameSite=Lax`;
+    document.cookie = `chatpulse_session_token=${token}; path=/; max-age=${30 * 24 * 60 * 60}; SameSite=Lax`;
   } catch (error) {
     console.warn("Failed to save session token:", error);
   }
@@ -140,7 +140,7 @@ export function clearSessionToken() {
   try {
     localStorage.removeItem(SESSION_TOKEN_KEY);
     // Also clear cookie
-    document.cookie = "chatnow_session_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+    document.cookie = "chatpulse_session_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
   } catch (error) {
     console.warn("Failed to clear session token:", error);
   }

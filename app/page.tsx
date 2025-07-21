@@ -31,7 +31,7 @@ export default function Home() {
                 <MessageCircle className="h-6 w-6 text-primary" />
               </div>
               <span className="font-bold text-xl bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-                Slicky
+                ChatPulse
               </span>
             </Link>
             <div className="flex items-center space-x-4">
@@ -55,7 +55,7 @@ export default function Home() {
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight mb-6">
             Connect Instantly with{" "}
             <span className="bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">
-              Slicky
+              ChatPulse
             </span>
           </h1>
           <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">

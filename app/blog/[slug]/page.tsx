@@ -11,8 +11,10 @@ import { Separator } from "@/components/ui/separator"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { RichContentRenderer, TableOfContents } from "@/components/blog/rich-content-renderer"
-import { parseLegacyContent } from "@/lib/blog-parser"
-import { generateBlogSEO, generateBlogStructuredData } from "@/lib/seo-utils"
+import { generateNextMetadata, generateBlogStructuredData, generateBreadcrumbStructuredData, generateFAQStructuredData } from "@/lib/seo-utils"
+import { extractTableOfContents } from "@/lib/blog-content-utils"
+import { trackBlogView, trackBlogShare } from "@/lib/blog-analytics"
+import { toast } from "sonner"
 import { formatBlogDate } from "@/lib/blog-utils"
 import { BlogPostSkeleton } from "@/components/blog/blog-skeletons"
 
@@ -34,6 +36,18 @@ interface BlogPostPageProps {
   }>
 }
 
+// Generate metadata for SEO
+export async function generateMetadata({ params }: BlogPostPageProps) {
+  const resolvedParams = await params
+
+  // In a real app, you'd fetch the post data here
+  // For now, we'll return basic metadata
+  return {
+    title: "Blog Post | ChatNow",
+    description: "Read our latest blog post on ChatNow",
+  }
+}
+
 export default function BlogPostPage({ params }: BlogPostPageProps) {
   const resolvedParams = use(params)
   const post = useQuery(api.blog.getBlogPost, { slug: resolvedParams.slug })
@@ -43,29 +57,23 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
   })
   const incrementViews = useMutation(api.blog.incrementBlogPostViews)
 
-  // Increment view count when post loads
+  // Increment view count and track analytics when post loads
   useEffect(() => {
     if (post?._id) {
       incrementViews({ postId: post._id })
+      // Track view for analytics
+      trackBlogView(post._id, post.slug, document.referrer)
     }
-  }, [post?._id, incrementViews])
+  }, [post?._id, incrementViews, post?.slug])
 
   // SEO and structured data
-  const seoData = post ? generateBlogSEO(post) : null
   const structuredData = post ? generateBlogStructuredData(post) : null
+  const breadcrumbData = post ? generateBreadcrumbStructuredData(post) : null
+  const faqData = post ? generateFAQStructuredData(post) : null
 
-  const getContentSections = () => {
-    if (!post) return []
-
-    // Use rich content if available, otherwise parse legacy content
-    if (post.richContent && post.richContent.length > 0) {
-      return post.richContent
-    } else {
-      return parseLegacyContent(post.content)
-    }
-  }
-
-  const contentSections = getContentSections()
+  // Get rich content sections and table of contents
+  const contentSections = post?.richContent || []
+  const tableOfContents = post ? extractTableOfContents(post.richContent) : []
 
   // Loading state
   if (post === undefined) {
@@ -161,7 +169,27 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
-        {/* Navigation */}
+      {/* Structured Data for SEO */}
+      {structuredData && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        />
+      )}
+      {breadcrumbData && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbData) }}
+        />
+      )}
+      {faqData && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqData) }}
+        />
+      )}
+
+      {/* Navigation */}
       <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
@@ -244,7 +272,28 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
                   </div>
                 </div>
                 
-                <Button variant="outline" size="sm">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    const shareData = {
+                      title: post.title,
+                      text: post.metaDescription,
+                      url: `${window.location.origin}/blog/${post.slug}`
+                    }
+
+                    if (navigator.share) {
+                      navigator.share(shareData).then(() => {
+                        trackBlogShare(post._id, post.slug, 'native')
+                      }).catch(console.error)
+                    } else {
+                      navigator.clipboard.writeText(shareData.url).then(() => {
+                        trackBlogShare(post._id, post.slug, 'clipboard')
+                        toast.success("Link copied to clipboard!")
+                      }).catch(console.error)
+                    }
+                  }}
+                >
                   <Share2 className="h-4 w-4 mr-2" />
                   Share
                 </Button>
@@ -254,17 +303,36 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
             {/* Cover Image */}
             {post.coverImage && (
               <div className="aspect-video bg-muted rounded-lg mb-8 overflow-hidden">
-                <img 
-                  src={post.coverImage} 
-                  alt={post.title}
+                <img
+                  src={post.coverImage}
+                  alt={post.coverImageAlt || post.title}
                   className="w-full h-full object-cover"
+                  loading="eager"
                 />
               </div>
             )}
 
             {/* Table of Contents */}
-            {contentSections.length > 0 && (
-              <TableOfContents sections={contentSections} />
+            {tableOfContents.length > 0 && (
+              <div className="bg-muted/30 rounded-lg p-6 mb-8">
+                <h2 className="text-lg font-semibold mb-4 flex items-center">
+                  <BookOpen className="h-5 w-5 mr-2" />
+                  Table of Contents
+                </h2>
+                <nav className="space-y-2">
+                  {tableOfContents.map((item) => (
+                    <a
+                      key={item.id}
+                      href={`#${item.id}`}
+                      className={`block text-sm hover:text-primary transition-colors ${
+                        item.level === 1 ? 'font-medium' : 'ml-4 text-muted-foreground'
+                      }`}
+                    >
+                      {item.text}
+                    </a>
+                  ))}
+                </nav>
+              </div>
             )}
 
             {/* Article Content */}

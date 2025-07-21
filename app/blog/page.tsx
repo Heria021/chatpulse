@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { useQuery } from "convex/react"
 import { api } from "@/convex/_generated/api"
 import { BlogListSkeleton } from "@/components/blog/blog-skeletons"
@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
 import { TooltipProvider } from "@/components/ui/tooltip"
+import { toast } from "sonner"
 import {
   MessageCircle,
   Search,
@@ -21,26 +22,60 @@ import {
   Eye,
   User,
   BookOpen,
-  TrendingUp
+  TrendingUp,
+  Star,
+  Filter,
+  SortAsc,
+  Share2
 } from "lucide-react"
 
 export default function BlogPage() {
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
+  const [sortBy, setSortBy] = useState<"latest" | "popular" | "featured">("latest")
 
-  const posts = useQuery(api.blog.getBlogPosts, { 
+  const posts = useQuery(api.blog.getBlogPosts, {
     category: selectedCategory || undefined,
-    limit: 12 
+    limit: 24
   })
   const featuredPosts = useQuery(api.blog.getFeaturedPosts)
   const categories = useQuery(api.blog.getBlogCategories)
 
+  // Filter and sort posts
+  const filteredAndSortedPosts = useMemo(() => {
+    if (!posts) return []
 
+    let filtered = posts
+
+    // Filter by search term
+    if (searchTerm.trim()) {
+      const term = searchTerm.toLowerCase()
+      filtered = filtered.filter(post =>
+        post.title.toLowerCase().includes(term) ||
+        post.excerpt.toLowerCase().includes(term) ||
+        post.tags.some(tag => tag.toLowerCase().includes(term))
+      )
+    }
+
+    // Sort posts
+    switch (sortBy) {
+      case "popular":
+        return [...filtered].sort((a, b) => b.views - a.views)
+      case "featured":
+        return [...filtered].sort((a, b) => {
+          if (a.featured && !b.featured) return -1
+          if (!a.featured && b.featured) return 1
+          return (b.publishedAt || b.createdAt) - (a.publishedAt || a.createdAt)
+        })
+      case "latest":
+      default:
+        return [...filtered].sort((a, b) => (b.publishedAt || b.createdAt) - (a.publishedAt || a.createdAt))
+    }
+  }, [posts, searchTerm, sortBy])
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
-    // Search functionality can be implemented here
-    console.log("Searching for:", searchTerm)
+    // Search is handled by the useMemo above
   }
 
   // Loading state
@@ -55,7 +90,7 @@ export default function BlogPage() {
                   <MessageCircle className="h-6 w-6 text-primary" />
                 </div>
                 <span className="font-bold text-xl bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-                  ChatNow
+                  ChatPulse
                 </span>
               </Link>
               <div className="flex items-center space-x-4">
@@ -92,7 +127,7 @@ export default function BlogPage() {
                 <MessageCircle className="h-6 w-6 text-primary" />
               </div>
               <span className="font-bold text-xl bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-                ChatNow
+                ChatPulse
               </span>
             </Link>
             <div className="flex items-center space-x-4">
@@ -112,7 +147,7 @@ export default function BlogPage() {
         <div className="text-center mb-12">
           <div className="flex items-center justify-center space-x-3 mb-4">
             <BookOpen className="h-8 w-8 text-primary" />
-            <h1 className="text-4xl font-bold">ChatNow Blog</h1>
+            <h1 className="text-4xl font-bold">ChatPulse Blog</h1>
           </div>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Insights, updates, and stories from the world of instant communication
@@ -219,43 +254,110 @@ export default function BlogPage() {
 
         {/* All Posts */}
         <div>
-          <div className="flex items-center space-x-2 mb-8">
-            <BookOpen className="h-5 w-5 text-primary" />
-            <h2 className="text-2xl font-bold">
-              {selectedCategory ? `${selectedCategory} Articles` : 'Latest Articles'}
-            </h2>
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center space-x-2">
+              <BookOpen className="h-5 w-5 text-primary" />
+              <h2 className="text-2xl font-bold">
+                {selectedCategory ? `${selectedCategory} Articles` : 'Latest Articles'}
+              </h2>
+              <Badge variant="outline" className="ml-2">
+                {filteredAndSortedPosts.length} posts
+              </Badge>
+            </div>
+
+            {/* Sort Controls */}
+            <div className="flex items-center space-x-2">
+              <SortAsc className="h-4 w-4 text-muted-foreground" />
+              <div className="flex space-x-1">
+                <Button
+                  variant={sortBy === "latest" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setSortBy("latest")}
+                >
+                  Latest
+                </Button>
+                <Button
+                  variant={sortBy === "popular" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setSortBy("popular")}
+                >
+                  Popular
+                </Button>
+                <Button
+                  variant={sortBy === "featured" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setSortBy("featured")}
+                >
+                  Featured
+                </Button>
+              </div>
+            </div>
           </div>
-          
-          {posts && posts.length > 0 ? (
+
+          {filteredAndSortedPosts.length > 0 ? (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {posts.map((post) => (
-                <Card key={post._id} className="hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+              {filteredAndSortedPosts.map((post) => (
+                <Card key={post._id} className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 relative">
+                  {post.featured && (
+                    <div className="absolute top-2 right-2 z-10">
+                      <Badge className="bg-yellow-500 text-yellow-50">
+                        <Star className="h-3 w-3 mr-1" />
+                        Featured
+                      </Badge>
+                    </div>
+                  )}
+
                   <CardHeader className="pb-4">
                     {post.coverImage && (
-                      <div className="aspect-video bg-muted rounded-lg mb-4 overflow-hidden">
-                        <img 
-                          src={post.coverImage} 
-                          alt={post.title}
-                          className="w-full h-full object-cover"
+                      <div className="aspect-video bg-muted rounded-lg mb-4 overflow-hidden relative">
+                        <img
+                          src={post.coverImage}
+                          alt={post.coverImageAlt || post.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          loading="lazy"
                         />
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
                       </div>
                     )}
+
                     <div className="flex items-center justify-between mb-2">
                       <Badge variant="secondary">
                         {post.category}
                       </Badge>
-                      <div className="flex items-center space-x-1 text-xs text-muted-foreground">
-                        <Eye className="h-3 w-3" />
-                        <span>{post.views}</span>
+                      <div className="flex items-center space-x-3 text-xs text-muted-foreground">
+                        <div className="flex items-center space-x-1">
+                          <Eye className="h-3 w-3" />
+                          <span>{post.views}</span>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                          onClick={(e) => {
+                            e.preventDefault()
+                            navigator.share?.({
+                              title: post.title,
+                              text: post.excerpt,
+                              url: `${window.location.origin}/blog/${post.slug}`
+                            }).catch(() => {
+                              navigator.clipboard.writeText(`${window.location.origin}/blog/${post.slug}`)
+                              toast.success("Link copied to clipboard!")
+                            })
+                          }}
+                        >
+                          <Share2 className="h-3 w-3" />
+                        </Button>
                       </div>
                     </div>
-                    <CardTitle className="line-clamp-2">
+
+                    <CardTitle className="line-clamp-2 mb-2">
                       <Link href={`/blog/${post.slug}`} className="hover:text-primary transition-colors">
                         {post.title}
                       </Link>
                     </CardTitle>
+
                     <CardDescription className="line-clamp-3">
-                      {post.excerpt}
+                      {post.metaDescription || post.excerpt}
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
@@ -303,7 +405,7 @@ export default function BlogPage() {
               {!selectedCategory && (
                 <div className="space-y-2">
                   <p className="text-sm text-muted-foreground">
-                    In the meantime, explore ChatNow's features:
+                    In the meantime, explore ChatPulse's features:
                   </p>
                   <div className="flex justify-center space-x-4">
                     <Button variant="outline" asChild>

@@ -18,7 +18,7 @@ export default function TermsOfService() {
                 <MessageCircle className="h-6 w-6 text-primary" />
               </div>
               <span className="font-bold text-xl bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-                ChatNow
+                ChatPulse
               </span>
             </Link>
             <div className="flex items-center space-x-4">
@@ -51,12 +51,12 @@ export default function TermsOfService() {
                 Quick Overview
               </CardTitle>
               <CardDescription>
-                By using ChatNow, you agree to these terms. Please read them carefully.
+                By using ChatPulse, you agree to these terms. Please read them carefully.
               </CardDescription>
             </CardHeader>
             <CardContent>
               <ul className="space-y-2 text-muted-foreground">
-                <li>• You must be 13+ years old to use ChatNow</li>
+                <li>• You must be 13+ years old to use ChatPulse</li>
                 <li>• Be respectful and follow community guidelines</li>
                 <li>• Don't share harmful, illegal, or inappropriate content</li>
                 <li>• We may suspend accounts that violate these terms</li>
@@ -70,7 +70,7 @@ export default function TermsOfService() {
             <section>
               <h2 className="text-2xl font-semibold mb-4">1. Acceptance of Terms</h2>
               <p className="text-muted-foreground mb-4">
-                By accessing and using ChatNow ("the Service"), you accept and agree to be bound by the terms and provision of this agreement.
+                By accessing and using ChatPulse ("the Service"), you accept and agree to be bound by the terms and provision of this agreement.
               </p>
               <p className="text-muted-foreground">
                 If you do not agree to abide by the above, please do not use this service.
@@ -82,7 +82,7 @@ export default function TermsOfService() {
             <section>
               <h2 className="text-2xl font-semibold mb-4">2. Eligibility</h2>
               <p className="text-muted-foreground mb-4">
-                You must be at least 13 years old to use ChatNow. By using the Service, you represent and warrant that:
+                You must be at least 13 years old to use ChatPulse. By using the Service, you represent and warrant that:
               </p>
               <ul className="list-disc list-inside text-muted-foreground space-y-2 ml-4">
                 <li>You are at least 13 years of age</li>
@@ -96,7 +96,7 @@ export default function TermsOfService() {
             <section>
               <h2 className="text-2xl font-semibold mb-4">3. User Conduct</h2>
               <p className="text-muted-foreground mb-4">
-                You agree to use ChatNow responsibly and in accordance with these guidelines:
+                You agree to use ChatPulse responsibly and in accordance with these guidelines:
               </p>
               <div className="grid md:grid-cols-2 gap-6">
                 <Card>
@@ -135,7 +135,7 @@ export default function TermsOfService() {
             <section>
               <h2 className="text-2xl font-semibold mb-4">4. Account Security</h2>
               <p className="text-muted-foreground mb-4">
-                You are responsible for maintaining the security of your account and password. ChatNow cannot and will not be liable for any loss or damage from your failure to comply with this security obligation.
+                You are responsible for maintaining the security of your account and password. ChatPulse cannot and will not be liable for any loss or damage from your failure to comply with this security obligation.
               </p>
             </section>
 
@@ -144,7 +144,7 @@ export default function TermsOfService() {
             <section>
               <h2 className="text-2xl font-semibold mb-4">5. Service Availability</h2>
               <p className="text-muted-foreground mb-4">
-                We strive to provide reliable service, but ChatNow is provided "as is" without any warranties. We do not guarantee that the service will be uninterrupted or error-free.
+                We strive to provide reliable service, but ChatPulse is provided "as is" without any warranties. We do not guarantee that the service will be uninterrupted or error-free.
               </p>
             </section>
 
@@ -194,8 +194,8 @@ export default function TermsOfService() {
                         </div>
                         <div>
                           <p className="font-medium text-sm">Email Support</p>
-                          <a href="mailto:support@chatnow.com" className="text-primary hover:underline text-sm">
-                            support@chatnow.com
+                          <a href="mailto:support@chatpulse.in" className="text-primary hover:underline text-sm">
+                            support@chatpulse.in
                           </a>
                         </div>
                       </div>
@@ -266,7 +266,7 @@ export default function TermsOfService() {
           {/* Footer Actions */}
           <div className="mt-12 text-center">
             <Button asChild>
-              <Link href="/">Return to ChatNow</Link>
+              <Link href="/">Return to ChatPulse</Link>
             </Button>
           </div>
         </div>
