@@ -6,7 +6,7 @@ export function generateBlogSEO(post: BlogPost) {
   const postUrl = `${baseUrl}/blog/${post.slug}`
   
   return {
-    title: `${post.title} | ChatNow Blog`,
+    title: `${post.title} | ChatPulse Blog`,
     description: post.metaDescription || post.excerpt,
     canonical: postUrl,
     openGraph: {
@@ -64,7 +64,7 @@ export function generateBlogStructuredData(post: BlogPost) {
     },
     publisher: {
       '@type': 'Organization',
-      name: 'ChatNow',
+      name: 'ChatPulse',
       logo: {
         '@type': 'ImageObject',
         url: `${baseUrl}/logo.png`,

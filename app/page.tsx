@@ -31,7 +31,7 @@ export default function Home() {
                 <MessageCircle className="h-6 w-6 text-primary" />
               </div>
               <span className="font-bold text-xl bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-                ChatNow
+                Slicky
               </span>
             </Link>
             <div className="flex items-center space-x-4">
@@ -55,7 +55,7 @@ export default function Home() {
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight mb-6">
             Connect Instantly with{" "}
             <span className="bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">
-              ChatNow
+              Slicky
             </span>
           </h1>
           <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
@@ -248,7 +248,7 @@ export default function Home() {
               Loved by users worldwide
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              See what our community has to say about their ChatNow experience.
+              See what our community has to say about their ChatPulse experience.
             </p>
           </div>
 
@@ -261,7 +261,7 @@ export default function Home() {
                   ))}
                 </div>
                 <p className="text-muted-foreground mb-4">
-                  "ChatNow is incredibly fast and reliable. The interface is so clean and intuitive.
+                  "ChatPulse is incredibly fast and reliable. The interface is so clean and intuitive.
                   Best chat app I've ever used!"
                 </p>
                 <div className="flex items-center">
@@ -372,7 +372,7 @@ export default function Home() {
                   <MessageCircle className="h-5 w-5 text-primary" />
                 </div>
                 <span className="font-bold text-lg bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-                  ChatNow
+                  ChatPulse
                 </span>
               </div>
               <p className="text-muted-foreground">
@@ -404,8 +404,8 @@ export default function Home() {
             <div>
               <h3 className="font-semibold mb-4">Connect</h3>
               <ul className="space-y-2 text-muted-foreground">
-                <li><a href="https://instagram.com/chatnow" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">Instagram</a></li>
-                <li><a href="mailto:support@chatnow.com" className="hover:text-foreground transition-colors">Support</a></li>
+                <li><a href="https://instagram.com/chatpulse" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">Instagram</a></li>
+                <li><a href="mailto:support@chatpulse.in" className="hover:text-foreground transition-colors">Support</a></li>
                 <li><a href="mailto:hariomsuthar7143@gmail.com" className="hover:text-foreground transition-colors">Developer</a></li>
               </ul>
             </div>
@@ -416,7 +416,7 @@ export default function Home() {
           <div className="flex flex-col sm:flex-row justify-between items-center">
             <div className="text-center sm:text-left">
               <p className="text-muted-foreground text-sm">
-                © 2024 ChatNow. All rights reserved.
+                © 2024 ChatPulse. All rights reserved.
               </p>
               <p className="text-muted-foreground text-xs mt-1">
                 Open for collaboration & partnership opportunities

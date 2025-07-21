@@ -18,7 +18,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ChatNow - Connect and Chat",
+  title: "ChatPulse - Connect and Chat",
   description: "A modern chat application for connecting with people",
 };
 

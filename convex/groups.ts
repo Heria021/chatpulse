@@ -2628,7 +2628,7 @@ export const createDefaultGroups = mutation({
     const defaultGroups = [
       {
         name: "General Chat",
-        description: "Welcome to ChatNow! Introduce yourself and chat with everyone.",
+        description: "Welcome to ChatPulse! Introduce yourself and chat with everyone.",
         maxMembers: 1000,
         isPublic: true,
         requiresApproval: false,
@@ -2649,7 +2649,7 @@ export const createDefaultGroups = mutation({
       },
       {
         name: "Help & Support",
-        description: "Get help with ChatNow or ask questions.",
+        description: "Get help with ChatPulse or ask questions.",
         maxMembers: 300,
         isPublic: true,
         requiresApproval: false,

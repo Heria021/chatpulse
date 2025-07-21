@@ -31,7 +31,7 @@ export default function About() {
                 <MessageCircle className="h-6 w-6 text-primary" />
               </div>
               <span className="font-bold text-xl bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-                ChatNow
+                ChatPulse
               </span>
             </Link>
             <div className="flex items-center space-x-4">
@@ -290,8 +290,8 @@ export default function About() {
                   <Mail className="h-8 w-8 text-primary mx-auto" />
                   <h3 className="font-semibold">Support</h3>
                   <p className="text-muted-foreground">
-                    <a href="mailto:support@chatnow.com" className="text-primary hover:underline">
-                      support@chatnow.com
+                    <a href="mailto:support@chatpulse.in" className="text-primary hover:underline">
+                      support@chatpulse.in
                     </a>
                   </p>
                 </div>

@@ -204,7 +204,7 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
             <TooltipContent side="right" className="lg:block hidden">
               <div>
                 <p className="font-medium">Sign Out</p>
-                <p className="text-xs text-muted-foreground">Leave ChatNow</p>
+                <p className="text-xs text-muted-foreground">Leave ChatPulse</p>
               </div>
             </TooltipContent>
           </Tooltip>

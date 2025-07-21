@@ -73,7 +73,7 @@ export function AppLayout({ children, sidebar = true, mobileHeaderExtra, isLoadi
                   <div className="p-1.5 bg-primary rounded-md">
                     <MessageCircle className="h-4 w-4 text-primary-foreground" />
                   </div>
-                  <h1 className="font-bold">ChatNow</h1>
+                  <h1 className="font-bold">ChatPulse</h1>
                 </div>
                 {mobileHeaderExtra || (
                   <Button
