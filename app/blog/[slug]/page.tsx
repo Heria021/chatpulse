@@ -335,12 +335,10 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
               {contentSections.length > 0 ? (
                 <RichContentRenderer sections={contentSections} />
               ) : (
-                <div className="prose prose-sm sm:prose-lg max-w-none [&_ul]:text-sm sm:[&_ul]:text-base [&_ol]:text-sm sm:[&_ol]:text-base [&_li]:text-sm sm:[&_li]:text-base">
-                  {post.content.split('\n\n').map((paragraph, index) => (
-                    <p key={index} className="mb-4 leading-relaxed text-sm sm:text-base">
-                      {paragraph}
-                    </p>
-                  ))}
+                <div className="prose prose-sm sm:prose-lg max-w-none text-center py-8">
+                  <p className="text-muted-foreground text-sm sm:text-base">
+                    No content available for this post.
+                  </p>
                 </div>
               )}
             </div>
