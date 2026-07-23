@@ -10,7 +10,7 @@ Current product screenshots from the `public/` folder.
 
 <table>
   <tr>
-    <td width="100%">
+    <td width="50%">
       <strong>Guest Authentication</strong><br><br>
       <img src="public/Screenshot%202026-07-23%20at%203.27.25%E2%80%AFPM.png" alt="Guest authentication page">
     </td>
