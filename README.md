@@ -8,25 +8,36 @@ The product is centered on low-friction connection: users can create a permanent
 
 Current product screenshots from the `public/` folder.
 
-### Guest Authentication
+<table>
+  <tr>
+    <td width="100%">
+      <strong>Guest Authentication</strong><br><br>
+      <img src="public/Screenshot%202026-07-23%20at%203.27.25%E2%80%AFPM.png" alt="Guest authentication page">
+    </td>
+    <td width="50%">
+      <strong>Direct Messaging</strong><br><br>
+      <img src="public/Screenshot%202026-07-23%20at%203.24.05%E2%80%AFPM.png" alt="Realtime direct chat interface">
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <strong>Group Conversations</strong><br><br>
+      <img src="public/Screenshot%202026-07-23%20at%203.25.50%E2%80%AFPM.png" alt="Group conversation with mentions">
+    </td>
+    <td width="50%">
+      <strong>Group Creation</strong><br><br>
+      <img src="public/Screenshot%202026-07-23%20at%203.25.00%E2%80%AFPM.png" alt="Create new group dialog">
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <strong>Member Invitations</strong><br><br>
+      <img src="public/Screenshot%202026-07-23%20at%203.25.14%E2%80%AFPM.png" alt="Invite members dialog">
+    </td>
+    <td width="50%"></td>
+  </tr>
+</table>
 
-![Guest authentication page](public/Screenshot%202026-07-23%20at%203.27.25%E2%80%AFPM.png)
-
-### Direct Messaging
-
-![Realtime direct chat interface](public/Screenshot%202026-07-23%20at%203.24.05%E2%80%AFPM.png)
-
-### Group Conversations
-
-![Group conversation with mentions](public/Screenshot%202026-07-23%20at%203.25.50%E2%80%AFPM.png)
-
-### Group Creation
-
-![Create new group dialog](public/Screenshot%202026-07-23%20at%203.25.00%E2%80%AFPM.png)
-
-### Member Invitations
-
-![Invite members dialog](public/Screenshot%202026-07-23%20at%203.25.14%E2%80%AFPM.png)
 
 ## What It Does
 
