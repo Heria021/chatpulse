@@ -6,17 +6,27 @@ The product is centered on low-friction connection: users can create a permanent
 
 ## Preview
 
-Add your final screenshots by replacing the placeholder paths below with local image files or direct image URLs.
+Current product screenshots from the `public/` folder.
 
-![ChatPulse landing page](docs/images/landing-page-placeholder.png)
+### Guest Authentication
 
-![Realtime chat interface](docs/images/chat-interface-placeholder.png)
+![Guest authentication page](public/Screenshot%202026-07-23%20at%203.27.25%E2%80%AFPM.png)
 
-![Group conversation view](docs/images/group-conversation-placeholder.png)
+### Direct Messaging
 
-![Guest access flow](docs/images/guest-access-placeholder.png)
+![Realtime direct chat interface](public/Screenshot%202026-07-23%20at%203.24.05%E2%80%AFPM.png)
 
-![Blog and content hub](docs/images/blog-placeholder.png)
+### Group Conversations
+
+![Group conversation with mentions](public/Screenshot%202026-07-23%20at%203.25.50%E2%80%AFPM.png)
+
+### Group Creation
+
+![Create new group dialog](public/Screenshot%202026-07-23%20at%203.25.00%E2%80%AFPM.png)
+
+### Member Invitations
+
+![Invite members dialog](public/Screenshot%202026-07-23%20at%203.25.14%E2%80%AFPM.png)
 
 ## What It Does
 
@@ -272,21 +282,21 @@ Scheduled jobs are defined in `convex/scheduler.ts`.
 
 ## Image Placeholder Guide
 
-For local README images, add files under a stable folder such as `docs/images/`:
+The README currently uses the five screenshots in `public/`. For cleaner long-term paths, you can rename or add final images under a stable folder such as `public/readme/`:
 
 ```text
-docs/images/
-  landing-page.png
+public/readme/
+  guest-auth.png
   chat-interface.png
   group-conversation.png
-  guest-access.png
-  blog.png
+  create-group.png
+  invite-members.png
 ```
 
-Then update the placeholders:
+Then update the preview image paths:
 
 ```md
-![ChatPulse landing page](docs/images/landing-page.png)
+![Guest authentication page](public/readme/guest-auth.png)
 ```
 
 For direct hosted images, use the final image URL:
